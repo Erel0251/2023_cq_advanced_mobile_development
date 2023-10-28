@@ -10,7 +10,7 @@ import 'views/history_screen.dart';
 import 'views/call_screen.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: HomePage(), // home has implicit route set at '/'
   ));
 }

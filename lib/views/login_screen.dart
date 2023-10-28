@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:test_route/widgets/button.dart';
 
 class FormInput extends StatelessWidget {
   FormInput({super.key});
@@ -131,8 +130,8 @@ class FormInput extends StatelessWidget {
   }
 }
 
-class Footer extends StatelessWidget {
-  const Footer({super.key});
+class Signup extends StatelessWidget {
+  const Signup({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -159,8 +158,8 @@ class Footer extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
 
   final String title1 = 'Say hello to your English tutors';
   final String title2 =
@@ -177,24 +176,7 @@ class HomePage extends StatelessWidget {
           width: 150.0,
           fit: BoxFit.fitWidth,
         ),
-        actions: <Widget>[
-          Container(
-            margin: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(60)),
-              color: Colors.grey,
-            ),
-            child: IconButton(
-              color: Colors.black,
-              icon: SvgPicture.asset(
-                'assets/images/united-states.eb0c11f1.svg',
-              ),
-              //icon: const Icon(Icons.add_alert),
-              tooltip: 'Show Snackbar',
-              onPressed: () {},
-            ),
-          ),
-        ],
+        actions: const <Widget>[LanguageButton()],
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 10),
@@ -223,7 +205,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 FormInput(),
-                const Footer(),
+                const Signup(),
               ],
             ),
           )
