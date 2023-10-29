@@ -115,42 +115,99 @@ class TagCard extends StatelessWidget {
 
 class Card extends StatelessWidget {
   const Card(this.name,
-      {this.tags, this.bio, this.country, this.point, super.key});
+      {this.avatar,
+      this.tags,
+      this.bio,
+      this.code,
+      this.country,
+      this.point = 0,
+      this.isLiked = false,
+      super.key});
+
   final String name;
-  final String? bio;
-  final String? country;
-  final int? point;
+  final String? avatar;
   final List<String>? tags;
+  final String? bio;
+  final String? code;
+  final String? country;
+  final int point;
+  final bool isLiked;
+
+  String getName() {
+    return name.split(' ').map((e) => e[0]).join();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.all(15),
       decoration: const BoxDecoration(
-        color: Colors.black12,
+        color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      constraints: const BoxConstraints(
+        minHeight: 300,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              Wrap(
                 children: [
-                  const Icon(Icons.do_disturb),
+                  Container(
+                    width: 70,
+                    height: 70,
+                    margin: const EdgeInsets.only(right: 20),
+                    clipBehavior: Clip.hardEdge,
+                    decoration: const BoxDecoration(
+                      color: Color.fromRGBO(0, 133, 240, 1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: (avatar != null)
+                        ? Image.asset(
+                            avatar!,
+                            fit: BoxFit.cover,
+                          )
+                        : Center(
+                            child: Text(
+                              getName(),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 40),
+                            ),
+                          ),
+                  ),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         name,
                         style: const TextStyle(
-                          fontSize: 22,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       (country != null)
-                          ? Flag.fromString(country!)
+                          ? Row(
+                              children: [
+                                Flag.fromString(
+                                  code!,
+                                  height: 22,
+                                  width: 22,
+                                ),
+                                Text(country!),
+                              ],
+                            )
                           : const Icon(Icons.image_not_supported),
                       (point != 0)
                           ? Row(
@@ -159,6 +216,7 @@ class Card extends StatelessWidget {
                                   const Icon(
                                     Icons.star,
                                     color: Colors.yellow,
+                                    size: 16,
                                   ),
                               ],
                             )
@@ -170,7 +228,17 @@ class Card extends StatelessWidget {
                   ),
                 ],
               ),
-              const Icon(Icons.favorite),
+              (isLiked)
+                  ? const Icon(
+                      Icons.favorite,
+                      color: Colors.pink,
+                      size: 32,
+                    )
+                  : const Icon(
+                      Icons.favorite_border,
+                      color: Color.fromRGBO(0, 133, 240, 1),
+                      size: 32,
+                    ),
             ],
           ),
           Wrap(
@@ -183,7 +251,38 @@ class Card extends StatelessWidget {
             softWrap: true,
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
-          )
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                width: 100,
+                margin: const EdgeInsets.all(5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.blue,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(16))),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.fact_check_rounded,
+                      size: 18,
+                      color: Colors.blue,
+                    ),
+                    Text(
+                      ' Book',
+                      style: TextStyle(fontSize: 14, color: Colors.blue),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -221,6 +320,7 @@ class Body extends StatelessWidget {
           ),
           Card(
             'Keegan',
+            avatar: 'assets/images/avatar01.jpg',
             tags: [
               'English for Business',
               'Conversational',
@@ -234,6 +334,70 @@ class Body extends StatelessWidget {
             bio:
                 'I am passionate about running and fitness, I often compete in trail/mountain running events and I love pushing myself. I am training to one day take part in ultra-endurance events. I also enjoy watching rugby on the weekends, reading and watching podcasts on Youtube. My most memorable life experience would be living in and traveling around Southeast Asia.',
             point: 5,
+            isLiked: true,
+            code: 'TN',
+            country: ' Tunisia',
+          ),
+          Card(
+            'Adelia Rice',
+            tags: ['', '', '', '', ''],
+            bio: 'Recusandae dignissimos ut commodi et iste qui eum quos.',
+          ),
+          Card(
+            'Allison Murray',
+            tags: ['', '', '', '', ''],
+            bio: 'Odit est ratione et dolorem tenetur illum.',
+          ),
+          Card(
+            'Ana Lubowitz',
+            tags: ['', ''],
+            bio: 'Debitis distinctio minus qui accusantium voluptatum.',
+          ),
+          Card(
+            'Angus Dickinson',
+            tags: ['', '', '', '', ''],
+            bio: 'Enim expedita explicabo saepe perferendis est et.',
+          ),
+          Card(
+            'April Baldo',
+            avatar: 'assets/images/avatar02.jpg',
+            tags: ['English for Business', 'IELTS', 'PET', 'KET'],
+            bio:
+                'Hello! My name is April Baldo, you can just call me Teacher April. I am an English teacher and currently teaching in senior high school. I have been teaching grammar and literature for almost 10 years. I am fond of reading and teaching literature as one way of knowing one’s beliefs and culture. I am friendly and full of positivity. I love teaching because I know each student has something to bring on. Molding them to become an individual is a great success.',
+            point: 5,
+            code: 'PH',
+            country: ' Philippines (the)',
+          ),
+          Card(
+            'Bradley Zieme',
+            tags: ['', ''],
+            bio: 'Asperiores cupiditate sint et neque quasi.',
+          ),
+          Card(
+            'Cassandre Balistreri',
+            tags: ['', '', ''],
+            bio: 'Est et vel',
+          ),
+          Card(
+            'Chad Ankunding',
+            tags: ['', '', '', ''],
+            bio: 'Rem neque quidem aliquam magni quasi et.',
+          ),
+          Card(
+            'Damon Carroll',
+            tags: ['', '', ''],
+            bio:
+                'Tenetur sit dolorem qui aspernatur suscipit fugit sequi facere.',
+          ),
+          Card(
+            'Dangelo Wehner',
+            tags: ['', '', ''],
+            bio: 'Quibusdam nam sint in aut et eius.',
+          ),
+          Card(
+            'David Nikolaus',
+            tags: ['', '', '', ''],
+            bio: 'Ut autem possimus ipsum esse.',
           ),
         ],
       ),

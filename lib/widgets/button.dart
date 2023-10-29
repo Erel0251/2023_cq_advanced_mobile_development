@@ -124,7 +124,7 @@ class TagFilter extends StatelessWidget {
     if (isChecked) {
       return const Color.fromARGB(255, 0, 113, 240);
     } else {
-      return Colors.black;
+      return Colors.black87;
     }
   }
 
@@ -132,7 +132,7 @@ class TagFilter extends StatelessWidget {
     if (isChecked) {
       return const Color.fromARGB(255, 221, 234, 255);
     } else {
-      return Colors.black12;
+      return const Color.fromRGBO(228, 230, 235, 1);
     }
   }
 
