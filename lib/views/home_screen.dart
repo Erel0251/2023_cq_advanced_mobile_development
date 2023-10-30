@@ -306,6 +306,81 @@ class Body extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          SizedBox(height: 20),
+          Wrap(
+            spacing: 10,
+            children: [
+              SizedBox(
+                width: 165,
+                child: TextField(
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    hintText: 'Enter a tutor name...',
+                    isDense: true, // Added this
+                    contentPadding: EdgeInsets.all(8),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 165,
+                child: TextField(
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    hintText: 'Select tutor nationality',
+                    isDense: true, // Added this
+                    contentPadding: EdgeInsets.all(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            'Select available tutoring time:',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              height: 2,
+            ),
+          ),
+          Wrap(
+            spacing: 10,
+            children: [
+              SizedBox(
+                width: 140,
+                child: TextField(
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    hintText: 'Select a day',
+
+                    isDense: true, // Added this
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    suffixIcon: Icon(Icons.calendar_month),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 200,
+                child: TextField(
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        gapPadding: 0,
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    hintText: 'Start time End time',
+                    isDense: true, // Added this
+                    contentPadding: EdgeInsets.all(8),
+                    suffixIcon: Icon(Icons.schedule),
+                  ),
+                ),
+              ),
+            ],
+          ),
           TagCard(),
           ResetFilterButton('Reset Filter'),
           Divider(
@@ -315,6 +390,7 @@ class Body extends StatelessWidget {
             'Recommended Tutors',
             style: TextStyle(
               fontSize: 25,
+              height: 2,
               fontWeight: FontWeight.bold,
             ),
           ),
