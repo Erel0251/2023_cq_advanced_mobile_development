@@ -11,6 +11,6 @@ import 'views/call_screen.dart';
 
 void main() {
   runApp(const MaterialApp(
-    home: HomePage(), // home has implicit route set at '/'
+    home: TutorPage(), // home has implicit route set at '/'
   ));
 }

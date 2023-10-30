@@ -175,3 +175,39 @@ class ResetFilterButton extends StatelessWidget {
     );
   }
 }
+
+class SquareButton extends StatelessWidget {
+  const SquareButton({
+    required this.child,
+    this.edge = 30,
+    this.active = false,
+    super.key,
+  });
+
+  final Widget child;
+  final double edge;
+  final bool active;
+
+  Color isActive() {
+    if (active) {
+      return Colors.blue;
+    } else {
+      return Colors.black;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      width: edge,
+      height: edge,
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        border: Border.all(color: isActive()),
+        color: Colors.white,
+      ),
+      child: child,
+    );
+  }
+}
