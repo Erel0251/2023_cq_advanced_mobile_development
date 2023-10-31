@@ -481,8 +481,8 @@ class Body extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -511,14 +511,14 @@ class HomePage extends StatelessWidget {
         alignment: AlignmentDirectional.bottomEnd,
         children: <Widget>[
           FloatingActionButton(
-            backgroundColor: Color.fromRGBO(128, 128, 128, 1),
+            backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
             onPressed: () {},
             child: const Icon(Icons.chat_outlined),
           ),
           Container(
             margin: const EdgeInsets.only(bottom: 80),
             child: FloatingActionButton(
-              backgroundColor: Color.fromRGBO(128, 128, 128, 1),
+              backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
               onPressed: () {},
               child: const Icon(Icons.card_giftcard),
             ),

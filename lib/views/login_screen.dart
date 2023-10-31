@@ -158,8 +158,8 @@ class Signup extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   final String title1 = 'Say hello to your English tutors';
   final String title2 =

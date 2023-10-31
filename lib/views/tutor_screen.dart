@@ -1,6 +1,7 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:test_route/widgets/avatar.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/footer.dart';
 import 'package:test_route/widgets/pagination.dart';
@@ -525,8 +526,8 @@ class Body extends StatelessWidget {
   }
 }
 
-class TutorPage extends StatelessWidget {
-  const TutorPage({super.key});
+class TutorScreen extends StatelessWidget {
+  const TutorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -554,14 +555,14 @@ class TutorPage extends StatelessWidget {
         alignment: AlignmentDirectional.bottomEnd,
         children: <Widget>[
           FloatingActionButton(
-            backgroundColor: Color.fromRGBO(128, 128, 128, 1),
+            backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
             onPressed: () {},
             child: const Icon(Icons.chat_outlined),
           ),
           Container(
             margin: const EdgeInsets.only(bottom: 80),
             child: FloatingActionButton(
-              backgroundColor: Color.fromRGBO(128, 128, 128, 1),
+              backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
               onPressed: () {},
               child: const Icon(Icons.card_giftcard),
             ),
