@@ -181,12 +181,14 @@ class SquareButton extends StatelessWidget {
     required this.child,
     this.edge = 30,
     this.active = false,
+    this.color = Colors.black,
     super.key,
   });
 
   final Widget child;
   final double edge;
   final bool active;
+  final Color color;
 
   Color isActive() {
     if (active) {
@@ -204,7 +206,7 @@ class SquareButton extends StatelessWidget {
       height: edge,
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        border: Border.all(color: isActive()),
+        border: Border.all(color: color),
         color: Colors.white,
       ),
       child: child,

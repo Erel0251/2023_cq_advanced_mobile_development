@@ -6,6 +6,7 @@ class Avatar extends StatelessWidget {
     required this.avatar,
     this.time,
     this.alignment = CrossAxisAlignment.start,
+    this.detailAlignment = MainAxisAlignment.spaceEvenly,
     this.edge = 32,
     this.children,
     super.key,
@@ -16,12 +17,13 @@ class Avatar extends StatelessWidget {
   final String? time;
   final double edge;
   final CrossAxisAlignment alignment;
+  final MainAxisAlignment detailAlignment;
   final List<Widget>? children;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 15),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,13 +42,15 @@ class Avatar extends StatelessWidget {
           ),
           Column(
             crossAxisAlignment: alignment,
+            mainAxisAlignment: detailAlignment,
             children: [
               RichText(
                 text: TextSpan(
                   text: name,
                   style: const TextStyle(
-                    fontSize: 12,
-                    color: Color.fromRGBO(0, 0, 0, 0.45),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                   children: [
                     if (time != null)
@@ -62,7 +66,6 @@ class Avatar extends StatelessWidget {
               ),
               if (children != null)
                 for (Widget child in children!) ...[
-                  const SizedBox(height: 5),
                   child,
                 ],
             ],

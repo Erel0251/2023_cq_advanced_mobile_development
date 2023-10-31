@@ -34,8 +34,10 @@ class Pagination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         SquareButton(
+          color: isStart(),
           child: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: isStart(),
@@ -44,7 +46,7 @@ class Pagination extends StatelessWidget {
         ),
         for (int i = 1; i <= total; i++)
           SquareButton(
-            active: true,
+            color: isCurrent(i),
             child: Text(
               i.toString(),
               style: TextStyle(
@@ -54,6 +56,7 @@ class Pagination extends StatelessWidget {
             ),
           ),
         SquareButton(
+          color: isEnd(),
           child: Icon(
             Icons.arrow_forward_ios_rounded,
             color: isEnd(),
