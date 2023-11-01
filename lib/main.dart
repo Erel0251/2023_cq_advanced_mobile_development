@@ -7,11 +7,11 @@ import 'views/booking_screen.dart'; // 4 85% need Date row and implement class
 import 'views/history_screen.dart'; // 5 95% dropdown Request and Review
 import 'views/courses_screen.dart'; //6 95%
 import 'views/course_info_screen.dart'; // 7 100%
-import 'views/course_detail_screen.dart'; //8
-import 'views/call_screen.dart'; //9
+import 'views/course_detail_screen.dart'; //8 80% view pdf
+import 'views/call_screen.dart'; //9 80% minor stuff
 
 void main() {
   runApp(const MaterialApp(
-    home: CourseInfoScreen(),
+    home: CallScreen(),
   ));
 }
