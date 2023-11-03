@@ -77,41 +77,23 @@ class MenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 15),
-      padding: const EdgeInsets.all(8.0),
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.black12,
-      ),
-      child: const Icon(
-        Icons.list_rounded,
-        color: Colors.black,
-      ),
-    );
-    /*
-    InkWell(
-      borderRadius: BorderRadius.circular(8.0),
+    return GestureDetector(
+      onTap: () {
+        Scaffold.of(context).openEndDrawer();
+      },
       child: Container(
+        margin: const EdgeInsets.only(right: 15),
         padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          color: Colors.white,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black12,
         ),
-        child: ClipOval(
-          child: Container(
-            color: Colors.black26,
-            padding: const EdgeInsets.all(8.0),
-            child: const Icon(
-              Icons.list_rounded,
-              color: Colors.black,
-            ),
-          ),
+        child: const Icon(
+          Icons.list_rounded,
+          color: Colors.black,
         ),
       ),
-      onTap: () {},
     );
-    */
   }
 }
 

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/card.dart';
+import 'package:test_route/widgets/drawer.dart';
 import 'package:test_route/widgets/footer.dart';
 import 'package:test_route/widgets/header.dart';
+import 'package:test_route/widgets/mainBody.dart';
 
 class NavigationBar extends StatelessWidget {
   const NavigationBar({
@@ -266,7 +268,7 @@ class Body extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DiscoverCoursesHeader(
@@ -301,7 +303,7 @@ class Body extends StatelessWidget {
             ],
           ),
           NavigationBar(),
-          Container(
+          SizedBox(
             height: double.maxFinite,
             child: TabBarView(
               children: [
@@ -322,47 +324,6 @@ class CoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 70,
-          backgroundColor: Colors.white,
-          title: SvgPicture.asset(
-            'assets/images/lettutor_logo.svg',
-            width: 150.0,
-            fit: BoxFit.fitWidth,
-          ),
-          actions: const <Widget>[
-            LanguageButton(),
-            MenuButton(),
-          ],
-        ),
-        body: ListView(
-          children: const [
-            Body(),
-            Footer(),
-          ],
-        ),
-        floatingActionButton: Stack(
-          alignment: AlignmentDirectional.bottomEnd,
-          children: <Widget>[
-            FloatingActionButton(
-              backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
-              onPressed: () {},
-              child: const Icon(Icons.chat_outlined),
-            ),
-            Container(
-              margin: const EdgeInsets.only(bottom: 80),
-              child: FloatingActionButton(
-                backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
-                onPressed: () {},
-                child: const Icon(Icons.card_giftcard),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const MainBody(Body());
   }
 }
