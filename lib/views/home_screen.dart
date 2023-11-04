@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:test_route/views/tutor_screen.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
+import 'package:test_route/widgets/pagination.dart';
 
 class Banner extends StatelessWidget {
   const Banner({super.key});
@@ -10,8 +11,8 @@ class Banner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
       padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
         gradient: LinearGradient(
@@ -21,7 +22,7 @@ class Banner extends StatelessWidget {
           ],
         ),
       ),
-      height: 200,
+      height: 230,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -70,6 +71,7 @@ class Banner extends StatelessWidget {
                 Text(
                   'Enter lesson room',
                   style: TextStyle(
+                    height: 2,
                     color: Color.fromARGB(255, 12, 61, 223),
                   ),
                 ),
@@ -80,6 +82,7 @@ class Banner extends StatelessWidget {
             'Total lesson time is 512 hours 55 minutes',
             style: TextStyle(
               fontSize: 16,
+              height: 2,
               color: Colors.white,
             ),
           )
@@ -308,6 +311,7 @@ class Body extends StatelessWidget {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Banner(),
           Text(
             'Find a tutor',
             style: TextStyle(
@@ -484,6 +488,7 @@ class Body extends StatelessWidget {
             tags: ['', '', '', ''],
             bio: 'Ut autem possimus ipsum esse.',
           ),
+          Pagination(5),
         ],
       ),
     );

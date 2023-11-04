@@ -1,7 +1,6 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:test_route/views/call_screen.dart';
-import 'package:test_route/views/schedule_screen.dart';
 import 'package:test_route/widgets/avatar.dart';
 import 'package:test_route/views/course_info_screen.dart';
 

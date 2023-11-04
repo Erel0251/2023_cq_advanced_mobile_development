@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:test_route/widgets/avatar.dart';
 import 'package:test_route/widgets/card.dart';
 import 'package:test_route/widgets/header.dart';
 import 'package:test_route/widgets/body.dart';

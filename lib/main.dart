@@ -12,9 +12,9 @@ import 'views/login_screen.dart'; //            1
 
 /*
 Login                           95% password hide/show
-  |-- Home (Tutors)             80% menu list item
-      |-- Tutor (Detail)        70% table
-      |-- Schedule              85% need Date row and implement class
+  |-- Home (Tutors)             90% Button filter time
+      |-- Tutor (Detail)        80% table
+      |-- Schedule              90% need implement class
           |-- Call              80% minor stuff
       |-- History               95% dropdown Request and Review
       |-- Courses               95%
