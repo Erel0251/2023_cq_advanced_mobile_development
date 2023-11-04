@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:test_route/views/home_screen.dart';
 import 'package:test_route/widgets/button.dart';
 
 class FormInput extends StatelessWidget {
@@ -8,16 +9,12 @@ class FormInput extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+/*
   void _handleLogin() {
     String username = _usernameController.text;
     String password = _passwordController.text;
-
-    // Add your authentication logic here
-    // For simplicity, this example just prints the entered username and password
-    print('Username: $username');
-    print('Password: $password');
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -76,7 +73,12 @@ class FormInput extends StatelessWidget {
           ),
         ),
         ElevatedButton(
-          onPressed: _handleLogin,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          },
           child: const Text(
             'LOG IN',
             style: TextStyle(

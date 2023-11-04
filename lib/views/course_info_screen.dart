@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:test_route/widgets/button.dart';
+import 'package:test_route/views/course_detail_screen.dart';
 import 'package:test_route/widgets/card.dart';
-import 'package:test_route/widgets/footer.dart';
-import 'package:test_route/widgets/mainBody.dart';
+import 'package:test_route/widgets/body.dart';
 
 class Part extends StatelessWidget {
   const Part(this.title, {required this.children, super.key});
@@ -76,28 +74,37 @@ class Topic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.maxFinite,
-      height: 130,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black12),
-          borderRadius: BorderRadius.circular(8)),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (index != null)
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CourseDetailScreen()),
+        );
+      },
+      child: Container(
+        width: double.maxFinite,
+        height: 130,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black12),
+            borderRadius: BorderRadius.circular(8)),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (index != null)
+                Text(
+                  '$index.',
+                  style: const TextStyle(fontSize: 16),
+                ),
               Text(
-                '$index.',
-                style: const TextStyle(fontSize: 16),
+                title,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ]),
+            ]),
+      ),
     );
   }
 }

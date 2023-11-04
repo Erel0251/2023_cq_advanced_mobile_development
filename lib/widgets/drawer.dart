@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:test_route/views/booking_screen.dart';
+import 'package:test_route/views/schedule_screen.dart';
+import 'package:test_route/views/courses_screen.dart';
+import 'package:test_route/views/history_screen.dart';
 
 class DrawerOnly extends StatelessWidget {
   const DrawerOnly({super.key});
@@ -19,8 +21,7 @@ class DrawerOnly extends StatelessWidget {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Container()));
+                Navigator.pop(context);
               },
             ),
             ListTile(
@@ -50,13 +51,10 @@ class DrawerOnly extends StatelessWidget {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                //Route route = MaterialPageRoute(
-                //    builder: (context) => const BookingScreen());
-                //Navigator.pushReplacement(context, route);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const BookingScreen()),
+                      builder: (context) => const ScheduleScreen()),
                 );
               },
             ),
@@ -67,7 +65,11 @@ class DrawerOnly extends StatelessWidget {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HistoryScreen()),
+                );
               },
             ),
             ListTile(
@@ -77,7 +79,11 @@ class DrawerOnly extends StatelessWidget {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CoursesScreen()),
+                );
               },
             ),
             ListTile(
@@ -107,7 +113,7 @@ class DrawerOnly extends StatelessWidget {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.of(context).popUntil((route) => route.isFirst);
               },
             ),
           ],

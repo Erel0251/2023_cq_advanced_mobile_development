@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'views/login_screen.dart'; // 1 95% password
-import 'views/home_screen.dart'; // 2 80% menu list item
-import 'views/tutor_screen.dart'; // 3 70% table
-import 'views/booking_screen.dart'; // 4 85% need Date row and implement class
-import 'views/history_screen.dart'; // 5 95% dropdown Request and Review
-import 'views/courses_screen.dart'; //6 95%
-import 'views/course_info_screen.dart'; // 7 100%
-import 'views/course_detail_screen.dart'; //8 80% view pdf
-import 'views/call_screen.dart'; //9 80% minor stuff
+import 'views/login_screen.dart'; //            1
+//import 'views/home_screen.dart'; //           2
+//import 'views/tutor_screen.dart'; //          3
+//import 'views/schedule_screen.dart'; //       4
+//import 'views/history_screen.dart'; //        5
+//import 'views/courses_screen.dart'; //        6
+//import 'views/course_info_screen.dart'; //    7
+//import 'views/course_detail_screen.dart'; //  8
+//import 'views/call_screen.dart'; //           9
+//import 'package:go_router/go_router.dart';
+
+/*
+Login                           95% password hide/show
+  |-- Home (Tutors)             80% menu list item
+      |-- Tutor (Detail)        70% table
+      |-- Schedule              85% need Date row and implement class
+          |-- Call              80% minor stuff
+      |-- History               95% dropdown Request and Review
+      |-- Courses               95%
+          |-- Course Info       100%
+              |-- COurse Detail 80% view pdf
+*/
 
 void main() {
   runApp(const MaterialApp(
-    home: CoursesScreen(),
+    home: LoginScreen(),
   ));
 }

@@ -1,9 +1,8 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:test_route/views/tutor_screen.dart';
 import 'package:test_route/widgets/button.dart';
-import 'package:test_route/widgets/footer.dart';
-import 'package:test_route/widgets/mainBody.dart';
+import 'package:test_route/widgets/body.dart';
 
 class Banner extends StatelessWidget {
   const Banner({super.key});
@@ -140,151 +139,160 @@ class Card extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(15),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      constraints: const BoxConstraints(
-        minHeight: 300,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                children: [
-                  Container(
-                    width: 70,
-                    height: 70,
-                    margin: const EdgeInsets.only(right: 20),
-                    clipBehavior: Clip.hardEdge,
-                    decoration: const BoxDecoration(
-                      color: Color.fromRGBO(0, 133, 240, 1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: (avatar != null)
-                        ? Image.asset(
-                            avatar!,
-                            fit: BoxFit.cover,
-                          )
-                        : Center(
-                            child: Text(
-                              getName(),
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 40),
-                            ),
-                          ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      (country != null)
-                          ? Row(
-                              children: [
-                                Flag.fromString(
-                                  code!,
-                                  height: 22,
-                                  width: 22,
-                                ),
-                                Text(country!),
-                              ],
-                            )
-                          : const Icon(Icons.image_not_supported),
-                      (point != 0)
-                          ? Row(
-                              children: [
-                                for (int i = 1; i <= point!; i++)
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.yellow,
-                                    size: 16,
-                                  ),
-                              ],
-                            )
-                          : const Text(
-                              'No reviews yet',
-                              style: TextStyle(fontStyle: FontStyle.italic),
-                            ),
-                    ],
-                  ),
-                ],
-              ),
-              (isLiked)
-                  ? const Icon(
-                      Icons.favorite,
-                      color: Colors.pink,
-                      size: 32,
-                    )
-                  : const Icon(
-                      Icons.favorite_border,
-                      color: Color.fromRGBO(0, 133, 240, 1),
-                      size: 32,
-                    ),
-            ],
-          ),
-          Wrap(
-            children: [
-              for (String tag in tags!) TagFilter(tag, isChecked: true),
-            ],
-          ),
-          Text(
-            bio!,
-            softWrap: true,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                width: 100,
-                margin: const EdgeInsets.all(5),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.blue,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(16))),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const TutorScreen()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(15),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+            ),
+          ],
+        ),
+        constraints: const BoxConstraints(
+          minHeight: 300,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
                   children: [
-                    Icon(
-                      Icons.fact_check_rounded,
-                      size: 18,
-                      color: Colors.blue,
+                    Container(
+                      width: 70,
+                      height: 70,
+                      margin: const EdgeInsets.only(right: 20),
+                      clipBehavior: Clip.hardEdge,
+                      decoration: const BoxDecoration(
+                        color: Color.fromRGBO(0, 133, 240, 1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: (avatar != null)
+                          ? Image.asset(
+                              avatar!,
+                              fit: BoxFit.cover,
+                            )
+                          : Center(
+                              child: Text(
+                                getName(),
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 40),
+                              ),
+                            ),
                     ),
-                    Text(
-                      ' Book',
-                      style: TextStyle(fontSize: 14, color: Colors.blue),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        (country != null)
+                            ? Row(
+                                children: [
+                                  Flag.fromString(
+                                    code!,
+                                    height: 22,
+                                    width: 22,
+                                  ),
+                                  Text(country!),
+                                ],
+                              )
+                            : const Icon(Icons.image_not_supported),
+                        (point != 0)
+                            ? Row(
+                                children: [
+                                  for (int i = 1; i <= point; i++)
+                                    const Icon(
+                                      Icons.star,
+                                      color: Colors.yellow,
+                                      size: 16,
+                                    ),
+                                ],
+                              )
+                            : const Text(
+                                'No reviews yet',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                      ],
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ],
+                (isLiked)
+                    ? const Icon(
+                        Icons.favorite,
+                        color: Colors.pink,
+                        size: 32,
+                      )
+                    : const Icon(
+                        Icons.favorite_border,
+                        color: Color.fromRGBO(0, 133, 240, 1),
+                        size: 32,
+                      ),
+              ],
+            ),
+            Wrap(
+              children: [
+                for (String tag in tags!) TagFilter(tag, isChecked: true),
+              ],
+            ),
+            Text(
+              bio!,
+              softWrap: true,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  width: 100,
+                  margin: const EdgeInsets.all(5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.blue,
+                      ),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(16))),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.fact_check_rounded,
+                        size: 18,
+                        color: Colors.blue,
+                      ),
+                      Text(
+                        ' Book',
+                        style: TextStyle(fontSize: 14, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

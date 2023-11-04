@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class Body extends StatelessWidget {
   const Body({super.key});
@@ -111,14 +110,19 @@ class CallScreen extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              Container(
-                width: edge,
-                height: edge,
-                color: Colors.red,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.call_end_outlined,
-                  color: Colors.white,
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  width: edge,
+                  height: edge,
+                  color: Colors.red,
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.call_end_outlined,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],

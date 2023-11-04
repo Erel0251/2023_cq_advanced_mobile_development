@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:test_route/widgets/button.dart';
-import 'package:test_route/widgets/footer.dart';
-import 'package:test_route/widgets/mainBody.dart';
+import 'package:test_route/widgets/body.dart';
 
 class DetailTopic extends StatelessWidget {
   const DetailTopic(this.title, {this.index, this.isPicked = false, super.key});
@@ -12,7 +9,7 @@ class DetailTopic extends StatelessWidget {
   final bool isPicked;
 
   Color checkPicked() {
-    return (isPicked) ? Color.fromRGBO(0, 0, 0, 0.08) : Colors.white;
+    return (isPicked) ? const Color.fromRGBO(0, 0, 0, 0.08) : Colors.white;
   }
 
   @override

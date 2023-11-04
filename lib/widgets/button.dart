@@ -44,7 +44,7 @@ class LanguageButton extends StatelessWidget {
           elevation: 8.0,
         ).then((value) {
           if (value != null) {
-            print('Selected: $value');
+            //print('Selected: $value');
           }
         });
       },
@@ -192,6 +192,34 @@ class SquareButton extends StatelessWidget {
         color: Colors.white,
       ),
       child: child,
+    );
+  }
+}
+
+class FloatButtons extends StatelessWidget {
+  const FloatButtons({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.bottomEnd,
+      children: <Widget>[
+        FloatingActionButton(
+          heroTag: null,
+          backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
+          onPressed: () {},
+          child: const Icon(Icons.chat_outlined),
+        ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 80),
+          child: FloatingActionButton(
+            heroTag: null,
+            backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
+            onPressed: () {},
+            child: const Icon(Icons.card_giftcard),
+          ),
+        ),
+      ],
     );
   }
 }

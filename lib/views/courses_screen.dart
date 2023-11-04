@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/card.dart';
-import 'package:test_route/widgets/drawer.dart';
-import 'package:test_route/widgets/footer.dart';
 import 'package:test_route/widgets/header.dart';
-import 'package:test_route/widgets/mainBody.dart';
+import 'package:test_route/widgets/body.dart';
 
 class NavigationBar extends StatelessWidget {
   const NavigationBar({
@@ -51,17 +47,6 @@ class NavigationBar extends StatelessWidget {
           ),
         ],
       ),
-
-      /*
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          ,
-          ,
-          ,
-        ],
-      ),
-      */
     );
   }
 }
@@ -324,6 +309,6 @@ class CoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MainBody(Body());
+    return const DefaultTabController(length: 3, child: MainBody(Body()));
   }
 }
