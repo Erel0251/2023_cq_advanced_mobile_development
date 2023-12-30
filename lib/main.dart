@@ -31,6 +31,6 @@ Login                           95% password hide/show
 
 void main() {
   runApp(const MaterialApp(
-    home: CallScreen(),
+    home: LoginScreen(),
   ));
 }

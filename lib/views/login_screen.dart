@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:test_route/utils/validInput.dart';
 
 import 'package:test_route/views/home_screen.dart';
 import 'package:test_route/widgets/button.dart';
-
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -15,21 +15,21 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: _appBar(),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 30),
         children: [
           Image.asset('assets/images/login.8d01124a.png'),
           ...buildBanner(),
           FormInput(),
-          signUp(),
+          _signUp(context),
         ],
       ),
     );
   }
 
   // Appbar widget
-  AppBar buildAppBar() {
+  AppBar _appBar() {
     return AppBar(
       toolbarHeight: 70,
       backgroundColor: Colors.white,
@@ -45,67 +45,70 @@ class LoginScreen extends StatelessWidget {
   // Banner widget
   List<Widget> buildBanner() {
     return <Widget>[
-     Text(
-      title1,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        color: Color.fromRGBO(0, 113, 240, 1),
-        fontSize: 28,
-        overflow: TextOverflow.clip,
+      Text(
+        title1,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Color.fromRGBO(0, 113, 240, 1),
+          fontSize: 28,
+          overflow: TextOverflow.clip,
+        ),
       ),
+      Text(
+        title2,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Color.fromRGBO(42, 52, 83, 1),
+          fontSize: 16,
+          overflow: TextOverflow.clip,
+        ),
       ),
-    Text(
-      title2,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        color: Color.fromRGBO(42, 52, 83, 1),
-        fontSize: 16,
-        overflow: TextOverflow.clip,
-      ),
-    ),
-   ];
+    ];
   }
 
-  Widget signUp() {
-    return const Row(
+  Widget _signUp(BuildContext context) {
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
+        const Text(
           'Not a member yet? ',
           style: TextStyle(
             height: 3,
             fontSize: 14,
           ),
         ),
-        Text(
-          'Sign up',
-          style: TextStyle(
-            height: 3,
-            fontSize: 14,
-            color: Color.fromRGBO(40, 106, 210, 1),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+              (Route<dynamic> route) => false,
+            );
+          },
+          child: const Text(
+            'Sign up',
+            style: TextStyle(
+              height: 3,
+              fontSize: 14,
+              color: Color.fromRGBO(40, 106, 210, 1),
+            ),
           ),
         ),
       ],
     );
-
   }
 }
 
-
 class FormInput extends StatelessWidget {
-  FormInput({super.key});
+  // constructor with 1 optional parameter as login or signup
+  FormInput({super.key, this.type = 'log in'});
 
+  final String type;
   // valid input email
   final TextEditingController _usernameController = TextEditingController();
   // valid input password
   final TextEditingController _passwordController = TextEditingController();
 
-/*
-  void _handleLogin() {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-  }
-*/
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -117,18 +120,29 @@ class FormInput extends StatelessWidget {
         // Password fields
         ...passwordSection(),
         // Forgot password
-        textTitle(title: 'Forgot password?', color: const Color.fromRGBO(40, 106, 210, 1)),
+        textTitle(
+            title: 'Forgot password?',
+            color: const Color.fromRGBO(40, 106, 210, 1)),
         // Widget login button with logic check logic and exist email and password
         ElevatedButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            // Logic check input valid email and password
+            if (validEmail(_usernameController.text) &&
+                validPassword(_passwordController.text) &&
+                _usernameController.text == 'student@lettutor.com' &&
+                _passwordController.text == '123456') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => type == 'log in'
+                        ? const HomeScreen()
+                        : const LoginScreen()),
+              );
+            }
           },
-          child: const Text(
-            'LOG IN',
-            style: TextStyle(
+          child: Text(
+            type.toUpperCase(),
+            style: const TextStyle(
               fontSize: 20,
               color: Colors.white,
             ),
@@ -188,7 +202,7 @@ class FormInput extends StatelessWidget {
   }
 
   // Login title and field
-  List<Widget> loginSection(){
+  List<Widget> loginSection() {
     return [
       textTitle(title: 'Login'),
       // Login text form with logic check input valid Email
@@ -209,7 +223,7 @@ class FormInput extends StatelessWidget {
   }
 
   // Password title and field
-  List<Widget> passwordSection(){
+  List<Widget> passwordSection() {
     return [
       textTitle(title: 'Password'),
       // Password input field with hide characters and logic check input valid password
@@ -229,11 +243,11 @@ class FormInput extends StatelessWidget {
       ),
     ];
   }
+
   // text title and color, avoid duplicate code
-  Widget textTitle({
-    required String title,
-    Color? color = const Color.fromRGBO(164, 176, 190, 1)
-  }) {
+  Widget textTitle(
+      {required String title,
+      Color? color = const Color.fromRGBO(164, 176, 190, 1)}) {
     return Text(
       title,
       style: TextStyle(
@@ -245,4 +259,97 @@ class FormInput extends StatelessWidget {
   }
 }
 
+class SignUpScreen extends StatelessWidget {
+  const SignUpScreen({super.key});
 
+  final String title1 = 'Say hello to your English tutors';
+  final String title2 =
+      'Become fluent faster through one on one video chat lessons tailored to your goals.';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _appBar(),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 30),
+        children: [
+          Image.asset('assets/images/login.8d01124a.png'),
+          ...buildBanner(),
+          FormInput(type: 'sign up'),
+          _login(context),
+        ],
+      ),
+    );
+  }
+
+  // Appbar widget
+  AppBar _appBar() {
+    return AppBar(
+      toolbarHeight: 70,
+      backgroundColor: Colors.white,
+      title: SvgPicture.asset(
+        'assets/images/lettutor_logo.svg',
+        width: 150.0,
+        fit: BoxFit.fitWidth,
+      ),
+      actions: const <Widget>[LanguageButton()],
+    );
+  }
+
+  // Banner widget
+  List<Widget> buildBanner() {
+    return <Widget>[
+      Text(
+        title1,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Color.fromRGBO(0, 113, 240, 1),
+          fontSize: 28,
+          overflow: TextOverflow.clip,
+        ),
+      ),
+      Text(
+        title2,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Color.fromRGBO(42, 52, 83, 1),
+          fontSize: 16,
+          overflow: TextOverflow.clip,
+        ),
+      ),
+    ];
+  }
+
+  Widget _login(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Already have an account? ',
+          style: TextStyle(
+            height: 3,
+            fontSize: 14,
+          ),
+        ),
+        // link navigate to login screen
+        GestureDetector(
+          onTap: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+              (Route<dynamic> route) => false,
+            );
+          },
+          child: const Text(
+            'Log in',
+            style: TextStyle(
+              height: 3,
+              fontSize: 14,
+              color: Color.fromRGBO(40, 106, 210, 1),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
