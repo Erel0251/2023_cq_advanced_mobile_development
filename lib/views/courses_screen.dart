@@ -3,6 +3,73 @@ import 'package:test_route/widgets/card.dart';
 import 'package:test_route/widgets/header.dart';
 import 'package:test_route/widgets/body.dart';
 
+class CoursesScreen extends StatelessWidget {
+  const CoursesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const DefaultTabController(length: 3, child: MainBody(Body()));
+  }
+}
+
+class Body extends StatelessWidget {
+  const Body({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DiscoverCoursesHeader(
+            'Discover Courses',
+            description:
+                "LiveTutor has built the most quality, methodical and scientific courses in the fields of life for those who are in need of improving their knowledge of the fields.",
+            image: 'assets/images/course.svg',
+          ),
+          Wrap(
+            children: [
+              FilterCourses(
+                ['Any Level', 'Beginner', 'Intermediate', 'Advanced'],
+                hint: 'Select level',
+              ),
+              FilterCourses(
+                [
+                  'For Studying Abroad',
+                  'English For Traveling',
+                  'Conversational ENglish',
+                  'English For Beginners',
+                  'Business English'
+                ],
+                hint: 'Select category',
+              ),
+              FilterCourses(
+                [
+                  'Level decreasing',
+                  'Level ascending',
+                ],
+                hint: 'Sort by level',
+              ),
+            ],
+          ),
+          NavigationBar(),
+          SizedBox(
+            height: double.maxFinite,
+            child: TabBarView(
+              children: [
+                CourseTab(),
+                EbookTab(),
+                InteractiveEbookTab(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class NavigationBar extends StatelessWidget {
   const NavigationBar({
     super.key,
@@ -243,72 +310,5 @@ class InteractiveEbookTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container();
-  }
-}
-
-class Body extends StatelessWidget {
-  const Body({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DiscoverCoursesHeader(
-            'Discover Courses',
-            description:
-                "LiveTutor has built the most quality, methodical and scientific courses in the fields of life for those who are in need of improving their knowledge of the fields.",
-            image: 'assets/images/course.svg',
-          ),
-          Wrap(
-            children: [
-              FilterCourses(
-                ['Any Level', 'Beginner', 'Intermediate', 'Advanced'],
-                hint: 'Select level',
-              ),
-              FilterCourses(
-                [
-                  'For Studying Abroad',
-                  'English For Traveling',
-                  'Conversational ENglish',
-                  'English For Beginners',
-                  'Business English'
-                ],
-                hint: 'Select category',
-              ),
-              FilterCourses(
-                [
-                  'Level decreasing',
-                  'Level ascending',
-                ],
-                hint: 'Sort by level',
-              ),
-            ],
-          ),
-          NavigationBar(),
-          SizedBox(
-            height: double.maxFinite,
-            child: TabBarView(
-              children: [
-                CourseTab(),
-                EbookTab(),
-                InteractiveEbookTab(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CoursesScreen extends StatelessWidget {
-  const CoursesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const DefaultTabController(length: 3, child: MainBody(Body()));
   }
 }

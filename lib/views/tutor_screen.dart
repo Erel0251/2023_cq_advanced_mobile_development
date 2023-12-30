@@ -5,6 +5,47 @@ import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
 import 'package:video_player/video_player.dart';
 
+class TutorScreen extends StatelessWidget {
+  const TutorScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MainBody(Body());
+  }
+}
+
+class Body extends StatelessWidget {
+  const Body({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 35),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Detail About Tutor
+          Detail(
+            'Keegan',
+            avatar: 'assets/images/avatar01.jpg',
+            point: 5,
+            count: 128,
+            bio:
+                'I am passionate about running and fitness, I often compete in trail/mountain running events and I love pushing myself. I am training to one day take part in ultra-endurance events. I also enjoy watching rugby on the weekends, reading and watching podcasts on Youtube. My most memorable life experience would be living in and traveling around Southeast Asia.',
+            code: 'TN',
+            country: ' Tunisia',
+          ),
+          VideoPlayerScreen(),
+          // Detail Description
+          ..._categories(),
+          ..._templateReview(),
+        ],
+      ),
+    );
+  }
+}
+
 class Detail extends StatelessWidget {
   const Detail(this.name,
       {this.avatar,
@@ -396,139 +437,109 @@ class Review extends StatelessWidget {
   }
 }
 
-class Body extends StatelessWidget {
-  const Body({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 35),
-      color: Colors.white,
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Detail About Tutor
-          Detail(
-            'Keegan',
-            avatar: 'assets/images/avatar01.jpg',
-            point: 5,
-            count: 128,
-            bio:
-                'I am passionate about running and fitness, I often compete in trail/mountain running events and I love pushing myself. I am training to one day take part in ultra-endurance events. I also enjoy watching rugby on the weekends, reading and watching podcasts on Youtube. My most memorable life experience would be living in and traveling around Southeast Asia.',
-            code: 'TN',
-            country: ' Tunisia',
-          ),
-          VideoPlayerScreen(),
-          // Detail Description
-          Part(
-            'Education',
-            description: 'BA',
-          ),
-          Part(
-            'Languages',
-            tags: ['English'],
-          ),
-          Part(
-            'Specialties',
-            tags: [
-              'English for Business',
-              'Conversational',
-              'English for kids',
-              'IELTS',
-              'STARTERS',
-              'MOVERS',
-              'FLYTERS',
-              'KET',
-              'PET',
-              'TOEFL',
-              'TOEIC'
-            ],
-          ),
-          Part(
-            'Suggested courses',
-            contents: [
-              'Basic Conversation Topics',
-              'Life in the Internet Age',
-            ],
-          ),
-          Part(
-            'Interests',
-            description:
-                'I loved the weather, the scenery and the laid-back lifestyle of the locals.',
-          ),
-          Part(
-            'Teaching experience',
-            description:
-                'I have more than 10 years of teaching english experience',
-          ),
-          // Reviews
-          Text(
-            'Other review',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 17,
-              height: 2.5,
-            ),
-          ),
-          Review(
-            'Phhai123',
-            avatar: 'assets/images/avatar03.jpeg',
-            time: '4 days ago',
-            point: 1,
-            review: 'DD',
-          ),
-          Review(
-            'Phhai',
-            avatar: 'assets/images/avatar04.png',
-            time: '8 days ago',
-            point: 1,
-            review: 'asdfasdf',
-          ),
-          Review(
-            'Phhai',
-            avatar: 'assets/images/avatar04.png',
-            time: '8 days ago',
-            point: 5,
-            review: 'asdf',
-          ),
-          Review(
-            'Phhai',
-            avatar: 'assets/images/avatar04.png',
-            time: '8 days ago',
-            point: 3,
-            review: 'asdfasdf',
-          ),
-          Review(
-            'Phhai123',
-            avatar: 'assets/images/avatar03.jpeg',
-            time: '8 days ago',
-            point: 5,
-          ),
-          Review(
-            'Phhai123',
-            avatar: 'assets/images/avatar03.jpeg',
-            time: '8 days ago',
-            point: 5,
-          ),
-          Review(
-            'Minh Duc Le',
-            avatar: 'assets/images/avatar05.jpg',
-            time: '5 months ago',
-            point: 5,
-            review: 'great jd đ',
-          ),
-          Pagination(1)
-        ],
-      ),
-    );
-  }
+List<Widget> _categories() {
+  return [
+    Part(
+      'Education',
+      description: 'BA',
+    ),
+    Part(
+      'Languages',
+      tags: ['English'],
+    ),
+    Part(
+      'Specialties',
+      tags: [
+        'English for Business',
+        'Conversational',
+        'English for kids',
+        'IELTS',
+        'STARTERS',
+        'MOVERS',
+        'FLYTERS',
+        'KET',
+        'PET',
+        'TOEFL',
+        'TOEIC'
+      ],
+    ),
+    Part(
+      'Suggested courses',
+      contents: [
+        'Basic Conversation Topics',
+        'Life in the Internet Age',
+      ],
+    ),
+    Part(
+      'Interests',
+      description:
+          'I loved the weather, the scenery and the laid-back lifestyle of the locals.',
+    ),
+    Part(
+      'Teaching experience',
+      description: 'I have more than 10 years of teaching english experience',
+    ),
+  ];
 }
 
-class TutorScreen extends StatelessWidget {
-  const TutorScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MainBody(Body());
-  }
+List<Widget> _templateReview() {
+  return [
+    // Reviews
+    Text(
+      'Other review',
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 17,
+        height: 2.5,
+      ),
+    ),
+    Review(
+      'Phhai123',
+      avatar: 'assets/images/avatar03.jpeg',
+      time: '4 days ago',
+      point: 1,
+      review: 'DD',
+    ),
+    Review(
+      'Phhai',
+      avatar: 'assets/images/avatar04.png',
+      time: '8 days ago',
+      point: 1,
+      review: 'asdfasdf',
+    ),
+    Review(
+      'Phhai',
+      avatar: 'assets/images/avatar04.png',
+      time: '8 days ago',
+      point: 5,
+      review: 'asdf',
+    ),
+    Review(
+      'Phhai',
+      avatar: 'assets/images/avatar04.png',
+      time: '8 days ago',
+      point: 3,
+      review: 'asdfasdf',
+    ),
+    Review(
+      'Phhai123',
+      avatar: 'assets/images/avatar03.jpeg',
+      time: '8 days ago',
+      point: 5,
+    ),
+    Review(
+      'Phhai123',
+      avatar: 'assets/images/avatar03.jpeg',
+      time: '8 days ago',
+      point: 5,
+    ),
+    Review(
+      'Minh Duc Le',
+      avatar: 'assets/images/avatar05.jpg',
+      time: '5 months ago',
+      point: 5,
+      review: 'great jd đ',
+    ),
+    Pagination(1)
+  ];
 }

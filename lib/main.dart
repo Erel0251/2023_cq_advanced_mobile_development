@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:test_route/views/call_screen.dart';
+import 'package:test_route/views/course_detail_screen.dart';
+import 'package:test_route/views/course_info_screen.dart';
+import 'package:test_route/views/courses_screen.dart';
+import 'package:test_route/views/history_screen.dart';
+import 'package:test_route/views/schedule_screen.dart';
+import 'package:test_route/views/tutor_screen.dart';
 import 'views/login_screen.dart'; //            1
 //import 'views/home_screen.dart'; //           2
 //import 'views/tutor_screen.dart'; //          3
@@ -24,6 +31,6 @@ Login                           95% password hide/show
 
 void main() {
   runApp(const MaterialApp(
-    home: LoginScreen(),
+    home: CallScreen(),
   ));
 }

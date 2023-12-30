@@ -39,6 +39,9 @@ dependencies:
   flutter_svg: ^2.0.8
   flag: ^7.0.0
   video_player: ^2.7.2
+  provider: ^6.1.1
+  flutter_facebook_auth: ^6.0.3
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
