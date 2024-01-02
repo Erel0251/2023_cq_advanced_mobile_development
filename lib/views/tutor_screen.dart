@@ -1,6 +1,9 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:test_route/models/meeting.dart';
+import 'package:test_route/utils/format_date_range.dart';
+import 'package:test_route/utils/validInput.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
@@ -15,9 +18,14 @@ class TutorScreen extends StatelessWidget {
   }
 }
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   const Body({super.key});
 
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +35,7 @@ class Body extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Detail About Tutor
-          Detail(
+          const Detail(
             'Keegan',
             avatar: 'assets/images/avatar01.jpg',
             point: 5,
@@ -37,28 +45,197 @@ class Body extends StatelessWidget {
             code: 'TN',
             country: ' Tunisia',
           ),
-          VideoPlayerScreen(),
+          const VideoPlayerScreen(),
           // Detail Description
           ..._categories(),
           ..._templateReview(),
           // weekly schedule
-          SfCalendar(
-            view: CalendarView.week,
-            firstDayOfWeek: 1,
-            showNavigationArrow: true,
-            showDatePickerButton: true,
-            showCurrentTimeIndicator: true,
-            timeSlotViewSettings: const TimeSlotViewSettings(
-              startHour: 8,
-              endHour: 24,
-              timeIntervalHeight: 50,
-              timeIntervalWidth: 100,
-              timeInterval: Duration(minutes: 30),
-              timeFormat: 'hh:mm a',
-            ),
-          ),
+          _calendar(),
         ],
       ),
+    );
+  }
+
+  SfCalendar _calendar() {
+    return SfCalendar(
+      view: CalendarView.week,
+      firstDayOfWeek: 1,
+      showNavigationArrow: true,
+      showDatePickerButton: true,
+      showCurrentTimeIndicator: true,
+      timeSlotViewSettings: const TimeSlotViewSettings(
+        startHour: 8,
+        endHour: 24,
+        timeIntervalHeight: 50,
+        timeIntervalWidth: 100,
+        timeInterval: Duration(minutes: 60),
+        timeFormat: 'hh:mm a',
+      ),
+      dataSource: MeetingDataSource(_getDataSource()),
+      onTap: calendarTapped,
+    );
+  }
+
+  List<Meeting> _getDataSource() {
+    final List<Meeting> meetings = <Meeting>[];
+    final DateTime today = DateTime.now();
+    final DateTime startTime =
+        DateTime(today.year, today.month, today.day, 9, 0, 0);
+    final DateTime endTime = startTime.add(const Duration(hours: 1));
+    meetings.add(
+        Meeting('Book', startTime, endTime, const Color(0xFF0F8644), false));
+    return meetings;
+  }
+
+  void calendarTapped(CalendarTapDetails calendarTapDetails) {
+    if (calendarTapDetails.targetElement == CalendarElement.appointment ||
+        calendarTapDetails.targetElement == CalendarElement.agenda) {
+      final Meeting appointmentDetails = calendarTapDetails.appointments![0];
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(appointmentDetails.eventName),
+          content: _form(appointmentDetails),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Book'),
+              child: const Text('Book'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Form _form(Meeting appointmentDetails) {
+    return Form(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          // horizontal line
+          const Divider(thickness: 0.7),
+          _time(
+            formatTimeRange(
+              appointmentDetails.from,
+              appointmentDetails.to,
+            ),
+          ),
+          _price(),
+
+          const Divider(thickness: 0.7),
+          _notes(),
+        ],
+      ),
+    );
+  }
+
+  Widget _time(String formatTimeRange) {
+    return Table(
+      border: TableBorder.all(
+        color: Colors.black12,
+        width: 0.7,
+      ),
+      children: [
+        TableRow(
+          children: [_titleSection('Booking time')],
+        ),
+        TableRow(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: const Color.fromARGB(255, 223, 202, 243),
+              ),
+              child: Center(
+                child: Text(
+                  formatTimeRange,
+                  style: const TextStyle(
+                    color: Colors.deepPurple,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _price() {
+    return Table(
+      border: TableBorder.all(
+        color: Colors.black12,
+        width: 0.7,
+      ),
+      children: [
+        TableRow(
+          children: [
+            _titleSection('Balance'),
+            Text('You have n lessons left'),
+          ],
+        ),
+        TableRow(
+          children: [
+            _titleSection('Price'),
+            Text('1 lesson'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _notes() {
+    return Table(
+      border: TableBorder.all(
+        color: Colors.black12,
+        width: 0.7,
+      ),
+      children: [
+        TableRow(
+          children: [
+            _titleSection('Notes'),
+          ],
+        ),
+        TableRow(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              child: _textFormField(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _titleSection(String title) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(10, 0, 0, 0),
+      ),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  TextFormField _textFormField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+      ),
+      maxLines: 4,
     );
   }
 }
@@ -93,124 +270,248 @@ class Detail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Container(
-              width: 110,
-              height: 110,
-              margin: const EdgeInsets.only(right: 20),
-              clipBehavior: Clip.hardEdge,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
+        _infoSection(),
+        _bioTutor(),
+        _interactionButtons(),
+      ],
+    );
+  }
+
+  Widget _infoSection() {
+    return Row(
+      children: [
+        // Avatar of tutor
+        Container(
+          width: 110,
+          height: 110,
+          margin: const EdgeInsets.only(right: 20),
+          clipBehavior: Clip.hardEdge,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: Image.asset(
+            avatar!,
+            fit: BoxFit.cover,
+          ),
+        ),
+        // Information of tutor
+        SizedBox(
+          height: 110,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Tutor name
+              Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              child: Image.asset(
-                avatar!,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(
-              height: 110,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              // Review score
+              Row(
                 children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  for (int i = 1; i <= point; i++)
+                    const Icon(
+                      Icons.star,
+                      color: Colors.yellow,
+                      size: 16,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      for (int i = 1; i <= point; i++)
-                        const Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                          size: 16,
-                        ),
-                      Text(' ($count)'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Flag.fromString(
-                        code!,
-                        height: 22,
-                        width: 22,
-                      ),
-                      Text(country!),
-                    ],
-                  )
-                  /*
-                (point != 0)
-                    ? Row(
-                        children: [
-                          for (int i = 1; i <= point!; i++)
-                            const Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                              size: 16,
-                            ),
-                          Text(' ($count)'),
-                        ],
-                      )
-                    : const Text(
-                        'No reviews yet',
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                (country != null)
-                    ? Row(
-                        children: [
-                          Flag.fromString(
-                            code!,
-                            height: 22,
-                            width: 22,
-                          ),
-                          Text(country!),
-                        ],
-                      )
-                    : const Icon(Icons.image_not_supported),
-              */
+                  Text(' ($count)'),
                 ],
               ),
-            ),
-          ],
+              // Country Flag
+              Row(
+                children: [
+                  Flag.fromString(
+                    code!,
+                    height: 22,
+                    width: 22,
+                  ),
+                  Text(country!),
+                ],
+              )
+            ],
+          ),
         ),
-        Text(
-          bio!,
-          softWrap: true,
-          style: const TextStyle(height: 1.5),
+      ],
+    );
+  }
+
+  Widget _bioTutor() {
+    return Text(
+      bio!,
+      softWrap: true,
+      style: const TextStyle(height: 1.5),
+    );
+  }
+
+  Widget _interactionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        const FavoriteButton(),
+        ReportButton(name),
+      ],
+    );
+  }
+}
+
+class FavoriteButton extends StatefulWidget {
+  const FavoriteButton({super.key});
+
+  @override
+  State<FavoriteButton> createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<FavoriteButton> {
+  bool isLiked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isLiked = !isLiked;
+        });
+      },
+      child: Column(
+        children: [
+          Icon(
+            isLiked ? Icons.favorite : Icons.favorite_outline_rounded,
+            color: isLiked ? Colors.redAccent : Colors.blue,
+          ),
+          Text(
+            'Favorite',
+            style: TextStyle(color: isLiked ? Colors.redAccent : Colors.blue),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ReportButton extends StatelessWidget {
+  const ReportButton(this.nameTutor, {super.key});
+  final String nameTutor;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: const Column(
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: Colors.blue,
+          ),
+          Text(
+            'Report',
+            style: TextStyle(color: Colors.blue),
+          ),
+        ],
+      ),
+      // popup report form dialog
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: _titleDialog(),
+            content: _formReport(),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Submit'),
+                child: const Text('Submit'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _titleDialog() {
+    return Text(
+      'Report $nameTutor',
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _formReport() {
+    return Form(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // horizontal line
+          const Divider(thickness: 1),
+          // little header
+          const Text(
+            "Help us understand what's happening",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          // Checkbox button and description about reason report
+          const CheckBoxReasonReport('This tutor is annoying me'),
+          const CheckBoxReasonReport(
+              'This profile is pretending be someone or is fake'),
+          const CheckBoxReasonReport('Inappropriate profile photo'),
+          // Textfield for more detail
+          _textFormField(),
+        ],
+      ),
+    );
+  }
+
+  TextFormField _textFormField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        hintText: 'Please let us know details about your problem',
+        border: OutlineInputBorder(),
+      ),
+      maxLines: 3,
+    );
+  }
+}
+
+class CheckBoxReasonReport extends StatefulWidget {
+  const CheckBoxReasonReport(this.reason, {super.key});
+  final String reason;
+
+  @override
+  State<CheckBoxReasonReport> createState() => _CheckBoxReasonReportState();
+}
+
+class _CheckBoxReasonReportState extends State<CheckBoxReasonReport> {
+  bool isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Checkbox(
+          value: isChecked,
+          onChanged: (value) {
+            setState(() {
+              isChecked = value!;
+            });
+          },
         ),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              children: [
-                Icon(
-                  Icons.favorite_outline_rounded,
-                  color: Colors.blue,
-                ),
-                Text(
-                  'Favorite',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Icon(
-                  Icons.info_outline_rounded,
-                  color: Colors.blue,
-                ),
-                Text(
-                  'Report',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ],
-            ),
-          ],
-        )
+        // wrap text if it's too long
+        Expanded(
+          child: Text(
+            widget.reason,
+            overflow: TextOverflow.visible,
+          ),
+        ),
       ],
     );
   }
