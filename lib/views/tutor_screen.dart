@@ -1,5 +1,6 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
@@ -40,6 +41,22 @@ class Body extends StatelessWidget {
           // Detail Description
           ..._categories(),
           ..._templateReview(),
+          // weekly schedule
+          SfCalendar(
+            view: CalendarView.week,
+            firstDayOfWeek: 1,
+            showNavigationArrow: true,
+            showDatePickerButton: true,
+            showCurrentTimeIndicator: true,
+            timeSlotViewSettings: const TimeSlotViewSettings(
+              startHour: 8,
+              endHour: 24,
+              timeIntervalHeight: 50,
+              timeIntervalWidth: 100,
+              timeInterval: Duration(minutes: 30),
+              timeFormat: 'hh:mm a',
+            ),
+          ),
         ],
       ),
     );

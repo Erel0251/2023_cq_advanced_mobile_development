@@ -6,6 +6,7 @@ import 'package:test_route/views/courses_screen.dart';
 import 'package:test_route/views/history_screen.dart';
 import 'package:test_route/views/home_screen.dart';
 import 'package:test_route/views/schedule_screen.dart';
+import 'package:test_route/views/setting_screen.dart';
 import 'package:test_route/views/tutor_screen.dart';
 import 'views/login_screen.dart'; //            1
 //import 'views/home_screen.dart'; //           2
@@ -32,6 +33,6 @@ Login                           95% password hide/show
 
 void main() {
   runApp(const MaterialApp(
-    home: HomeScreen(),
+    home: TutorScreen(),
   ));
 }
