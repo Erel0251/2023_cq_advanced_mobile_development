@@ -3,6 +3,140 @@ import 'package:test_route/widgets/card.dart';
 import 'package:test_route/widgets/header.dart';
 import 'package:test_route/widgets/body.dart';
 
+class ScheduleScreen extends StatelessWidget {
+  const ScheduleScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MainBody(Body());
+  }
+}
+
+class Body extends StatelessWidget {
+  const Body({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 35),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _header(),
+          ..._latestBook(),
+          _lessonCard(),
+        ],
+      ),
+    );
+  }
+
+  Widget _header() {
+    return const Header(
+      'Schedule',
+      descriptions: [
+        'Here is a list of the sessions you have booked',
+        'You can track when the meeting starts, join the meeting with one click or can cancel the meeting before 2 hours',
+      ],
+      image: 'assets/images/calendar-check.svg',
+    );
+  }
+
+  List<Widget> _latestBook() {
+    return [
+      const Text(
+        'Latest Book',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 3),
+      ),
+      Table(
+        border: TableBorder.all(color: Colors.black26),
+        columnWidths: const <int, TableColumnWidth>{
+          0: IntrinsicColumnWidth(),
+          1: FlexColumnWidth(),
+        },
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: [
+          TableRow(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                color: Colors.white12,
+                child: const Text(
+                  'Name',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              Table(
+                border: TableBorder.symmetric(
+                    inside: const BorderSide(color: Colors.black26)),
+                children: [
+                  TableRow(children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      alignment: Alignment.center,
+                      color: Colors.white,
+                      child: const Text(
+                        'sample.pdf',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      alignment: Alignment.center,
+                      color: Colors.white12,
+                      child: const Text(
+                        'Page',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      alignment: Alignment.center,
+                      color: Colors.white,
+                      child: const Text(
+                        '0',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ]),
+                ],
+              )
+            ],
+          ),
+          TableRow(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                color: Colors.white12,
+                child: const Text(
+                  'Description',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              Container(
+                color: Colors.white,
+                child: const Text(
+                  '',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Widget _lessonCard() {
+    return const LessonCard(
+      time: '1 lesson',
+      date: 'Sat, 04 Nov 23',
+      courseTime: '18:00 - 18:25',
+      avatar: 'assets/images/avatar01.jpg',
+      callable: true,
+    );
+  }
+}
+
 class Reservation extends StatelessWidget {
   const Reservation(
       {required this.time,
@@ -76,126 +210,8 @@ class Reservation extends StatelessWidget {
   }
 }
 
-class Body extends StatelessWidget {
-  const Body({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 35),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Header(
-            'Schedule',
-            descriptions: [
-              'Here is a list of the sessions you have booked',
-              'You can track when the meeting starts, join the meeting with one click or can cancel the meeting before 2 hours',
-            ],
-            image: 'assets/images/calendar-check.svg',
-          ),
-          const Text(
-            'Latest Book',
-            style:
-                TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 3),
-          ),
-          Table(
-            border: TableBorder.all(color: Colors.black26),
-            columnWidths: const <int, TableColumnWidth>{
-              0: IntrinsicColumnWidth(),
-              1: FlexColumnWidth(),
-            },
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: [
-              TableRow(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.white12,
-                    child: const Text(
-                      'Name',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                  Table(
-                    border: TableBorder.symmetric(
-                        inside: const BorderSide(color: Colors.black26)),
-                    children: [
-                      TableRow(children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          alignment: Alignment.center,
-                          color: Colors.white,
-                          child: const Text(
-                            'sample.pdf',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          alignment: Alignment.center,
-                          color: Colors.white12,
-                          child: const Text(
-                            'Page',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          alignment: Alignment.center,
-                          color: Colors.white,
-                          child: const Text(
-                            '0',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ]),
-                    ],
-                  )
-                ],
-              ),
-              TableRow(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.white12,
-                    child: const Text(
-                      'Description',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                  Container(
-                    color: Colors.white,
-                    child: const Text(
-                      '',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const LessonCard(
-            time: '1 lesson',
-            date: 'Sat, 04 Nov 23',
-            courseTime: '18:00 - 18:25',
-            avatar: 'assets/images/avatar01.jpg',
-            callable: true,
-          )
-        ],
-      ),
-    );
-  }
-}
 
-class ScheduleScreen extends StatelessWidget {
-  const ScheduleScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MainBody(Body());
-  }
-}
 
 /*
 

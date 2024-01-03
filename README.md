@@ -1,16 +1,75 @@
-# Project
+# Flutter Chat AI
 
-A new Flutter project.
+Flutter Chat AI is a minor Project to create a mobile app to represent ChatGPT, using OpenAI API
 
-## Getting Started
+* Môn học: Nhập môn công nghệ phần mềm
+* Lớp: 20_1
+* Khóa: 2020 - 2024
+* Giảng viên lý thuyết: Ngô Ngọc Đăng Khoa
+* Giảng viên thực hành: Nguyễn Đức Huy
 
-This project is a starting point for a Flutter application.
+## Table of content
 
-A few resources to get you started if this is your first Flutter project:
+- [Flutter Chat AI](#flutter-chat-ai)
+  - [Table of content](#table-of-content)
+  - [Thành viên](#thành-viên)
+  - [Description](#description)
+  - [Visuals](#visuals)
+  - [Installation](#installation)
+  - [Folder Structure](#folder-structure)
+  - [Usage](#usage)
+  - [Images](#images)
+  - [Contributing](#contributing)
+  - [License](#license)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+<!-- MEMBER -->
+## Thành viên
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Description
+
+## Visuals
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Erel0251/2023_cq_advanced_mobile_development.git
+```
+
+Add Packages:
+
+```bash
+flutter pub add
+```
+
+<!-- FOLDER STRUCTURE -->
+## Folder Structure
+
+lib
+    ├── asset                   
+    │   ├── css                 
+    │   ├── js
+    |   └── images              
+    ├── Model                   
+    ├── View                    
+    ├── Control                 
+    ├── license
+    ├── index.php
+    ├── register.php
+    └── README.md               
+
+## Usage
+
+## Images
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
