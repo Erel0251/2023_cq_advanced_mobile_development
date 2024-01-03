@@ -1,6 +1,6 @@
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "milestone-3"]
   merge_group:
     branches: ["master"]
 
