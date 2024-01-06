@@ -2,30 +2,32 @@
 
 Flutter Chat AI is a minor Project to create a mobile app to represent ChatGPT, using OpenAI API
 
-* Môn học: Nhập môn công nghệ phần mềm
-* Lớp: 20_1
+* Môn học: Phát triển ứng dụng cho thiết bị di động nâng cao
+* Lớp: 20_3
 * Khóa: 2020 - 2024
-* Giảng viên lý thuyết: Ngô Ngọc Đăng Khoa
-* Giảng viên thực hành: Nguyễn Đức Huy
+* Giảng viên lý thuyết: Phạm Hoàng Hải
+* Giảng viên thực hành: Trương Phước Lộc
 
 ## Table of content
 
 - [Flutter Chat AI](#flutter-chat-ai)
   - [Table of content](#table-of-content)
   - [Thành viên](#thành-viên)
-  - [Description](#description)
   - [Visuals](#visuals)
   - [Installation](#installation)
   - [Folder Structure](#folder-structure)
   - [Usage](#usage)
   - [Images](#images)
+  - [Commit Convention](#commit-convention)
   - [Contributing](#contributing)
   - [License](#license)
 
 <!-- MEMBER -->
 ## Thành viên
 
-## Description
+* Họ và tên: Trần Đức Anh
+* MSSV: 20120251
+
 
 ## Visuals
 
@@ -62,6 +64,24 @@ lib
 ## Usage
 
 ## Images
+
+## Commit Convention
+
+<Type> (<Subject>): <Description>
+
+**Type** include
+
+  * build
+  * chore
+  * ci
+  * docs
+  * feat
+  * fix
+  * perf
+  * refactor
+  * revert
+  * style
+  * test
 
 ## Contributing
 
