@@ -1,19 +1,29 @@
+import 'dart:convert';
+
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
+import 'package:test_route/models/tutor.dart';
+import 'package:test_route/utils/format_tags_card.dart';
 import 'package:test_route/views/tutor_screen.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
   Widget build(BuildContext context) {
     return MainBody(
-      // Every search section will effect the list of tutor cards
       ChangeNotifierProvider(
         create: (context) => SearchModel(),
         child: const Body(),
@@ -22,8 +32,42 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   const Body({super.key});
+
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  late Future<ResponseTutors> futureTutorsInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    futureTutorsInfo = fetchTutorsInfo();
+  }
+
+  Future<ResponseTutors> fetchTutorsInfo() async {
+    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+
+    final response = await http.get(
+      Uri.parse('${baseUrl}tutor/more?perPage=9&page=1'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final ResponseTutors responseTutors = ResponseTutors.fromJson(
+          jsonDecode(response.body) as Map<String, dynamic>);
+      return responseTutors;
+    } else {
+      throw Exception('Failed to load tutors');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +94,24 @@ class Body extends StatelessWidget {
                 ),
               ),
               // filter by search model then sort by liked
-              ...cards(searchModel),
+              //...cards(searchModel),
+              FutureBuilder<ResponseTutors>(
+                future: futureTutorsInfo,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ChangeNotifierProvider(
+                        create: (context) => SearchModel(),
+                        child: Column(
+                          children: [
+                            ...cards(searchModel, snapshot.data!),
+                          ],
+                        ));
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  return const CircularProgressIndicator();
+                },
+              ),
               const Pagination(5),
             ],
           ),
@@ -59,98 +120,23 @@ class Body extends StatelessWidget {
     );
   }
 
-  List<Card> cards(SearchModel searchModel) {
-    List<Card> original = [
-      Card(
-        'Keegan',
-        avatar: 'assets/images/avatar01.jpg',
-        tags: [
-          'English for Business',
-          'Conversational',
-          'English for kids',
-          'IELTS',
-          'STARTERS',
-          'MOVERS',
-          'FLYTERS',
-          'KET',
-        ],
-        bio:
-            'I am passionate about running and fitness, I often compete in trail/mountain running events and I love pushing myself. I am training to one day take part in ultra-endurance events. I also enjoy watching rugby on the weekends, reading and watching podcasts on Youtube. My most memorable life experience would be living in and traveling around Southeast Asia.',
-        point: 5,
-        isLiked: true,
-        code: 'TN',
-        country: ' Tunisia',
-      ),
-      Card(
-        'Adelia Rice',
-        tags: ['', '', '', '', ''],
-        bio: 'Recusandae dignissimos ut commodi et iste qui eum quos.',
-      ),
-      Card(
-        'Allison Murray',
-        tags: ['', '', '', '', ''],
-        bio: 'Odit est ratione et dolorem tenetur illum.',
-      ),
-      Card(
-        'Ana Lubowitz',
-        tags: ['', ''],
-        bio: 'Debitis distinctio minus qui accusantium voluptatum.',
-      ),
-      Card(
-        'Angus Dickinson',
-        tags: ['', '', '', '', ''],
-        bio: 'Enim expedita explicabo saepe perferendis est et.',
-      ),
-      Card(
-        'April Baldo',
-        avatar: 'assets/images/avatar02.jpg',
-        tags: ['English for Business', 'IELTS', 'PET', 'KET'],
-        bio:
-            'Hello! My name is April Baldo, you can just call me Teacher April. I am an English teacher and currently teaching in senior high school. I have been teaching grammar and literature for almost 10 years. I am fond of reading and teaching literature as one way of knowing one’s beliefs and culture. I am friendly and full of positivity. I love teaching because I know each student has something to bring on. Molding them to become an individual is a great success.',
-        point: 5,
-        code: 'PH',
-        country: ' Philippines (the)',
-      ),
-      Card(
-        'Bradley Zieme',
-        tags: ['', ''],
-        bio: 'Asperiores cupiditate sint et neque quasi.',
-      ),
-      Card(
-        'Cassandre Balistreri',
-        tags: ['', '', ''],
-        bio: 'Est et vel',
-      ),
-      Card(
-        'Chad Ankunding',
-        tags: ['', '', '', ''],
-        bio: 'Rem neque quidem aliquam magni quasi et.',
-      ),
-      Card(
-        'Damon Carroll',
-        tags: ['', '', ''],
-        bio: 'Tenetur sit dolorem qui aspernatur suscipit fugit sequi facere.',
-      ),
-      Card(
-        'Dangelo Wehner',
-        tags: ['', '', ''],
-        bio: 'Quibusdam nam sint in aut et eius.',
-      ),
-      Card(
-        'David Nikolaus',
-        tags: ['', '', '', ''],
-        bio: 'Ut autem possimus ipsum esse.',
-      ),
-    ];
-
-    /*
-    ..where((card) =>
-                    card.name.contains(searchModel.name) &&
-                    (searchModel.tag == 'All' ||
-                        card.tags!.contains(searchModel.tag)) &&
-                    card.country == searchModel.nationality)
-                ..sort((a, b) => a.isLiked ? 0 : 1),
-    */
+  List<Card> cards(SearchModel searchModel, ResponseTutors data) {
+    List<Card> original = data.tutors.row
+        .map((e) => Card(
+              e.userId!,
+              name: e.name!,
+              avatar: e.avatar,
+              tags: formatTagsCard(e.specialties!),
+              bio: e.bio,
+              point: e.rating != null ? e.rating!.toInt() : 0,
+              // check data.favoriteTutors if its secondId contains e.userId
+              isLiked: data.favoriteTutors!
+                  .map((e) => e.secondId)
+                  .contains(e.userId),
+              code: e.country,
+              country: e.language,
+            ))
+        .toList();
 
     original = original
         .where((card) =>
@@ -440,16 +426,20 @@ class TagCard extends StatelessWidget {
 }
 
 class Card extends StatelessWidget {
-  const Card(this.name,
-      {this.avatar,
-      this.tags,
-      this.bio,
-      this.code,
-      this.country,
-      this.point = 0,
-      this.isLiked = false,
-      super.key});
+  const Card(
+    this.id, {
+    required this.name,
+    this.avatar,
+    this.tags,
+    this.bio,
+    this.code,
+    this.country,
+    this.point = 0,
+    this.isLiked = false,
+    super.key,
+  });
 
+  final String id;
   final String name;
   final String? avatar;
   final List<String>? tags;
@@ -508,7 +498,7 @@ class Card extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: (avatar != null)
-                          ? Image.asset(
+                          ? Image.network(
                               avatar!,
                               fit: BoxFit.cover,
                             )

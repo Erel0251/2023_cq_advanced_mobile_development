@@ -71,17 +71,17 @@ lib
 
 **Type** include
 
-  * build
-  * chore
-  * ci
-  * docs
-  * feat
-  * fix
-  * perf
-  * refactor
-  * revert
-  * style
-  * test
+* build
+* chore
+* ci
+* docs
+* feat
+* fix
+* perf
+* refactor
+* revert
+* style
+* test
 
 ## Contributing
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:test_route/views/call_screen.dart';
 import 'package:test_route/views/course_detail_screen.dart';
 import 'package:test_route/views/course_info_screen.dart';
@@ -31,8 +32,9 @@ Login                           95% password hide/show
               |-- COurse Detail 80% view pdf
 */
 
-void main() {
+Future main() async {
+  await dotenv.load();
   runApp(const MaterialApp(
-    home: TutorScreen(),
+    home: HomeScreen(),
   ));
 }
