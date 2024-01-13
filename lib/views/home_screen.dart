@@ -23,17 +23,26 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return MainBody(
-      ChangeNotifierProvider(
-        create: (context) => SearchModel(),
-        child: const Body(),
-      ),
-    );
+    return const MainBody(Body());
   }
 }
 
 class Body extends StatefulWidget {
   const Body({super.key});
+  final List<String> tags = const [
+    'All',
+    'English for kids',
+    'English for Business',
+    'Conversational',
+    'STARTERS',
+    'MOVERS',
+    'FLYERS',
+    'KET',
+    'PET',
+    'IELTS',
+    'TOEFL',
+    'TOEIC',
+  ];
 
   @override
   State<Body> createState() => _BodyState();
@@ -41,6 +50,10 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   late Future<ResponseTutors> futureTutorsInfo;
+  String name = '';
+  String tag = 'All';
+  String date = '';
+  String nationality = '';
 
   @override
   void initState() {
@@ -71,56 +84,47 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SearchModel>(
-      builder: (context, searchModel, child) {
-        return Container(
-          margin: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Banner(),
-              // Search section
-              ...searchSection(searchModel),
-              const Divider(
-                color: Colors.black54,
-              ),
-              // Recommended tutors
-              const Text(
-                'Recommended Tutors',
-                style: TextStyle(
-                  fontSize: 25,
-                  height: 2,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              // filter by search model then sort by liked
-              //...cards(searchModel),
-              FutureBuilder<ResponseTutors>(
-                future: futureTutorsInfo,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ChangeNotifierProvider(
-                        create: (context) => SearchModel(),
-                        child: Column(
-                          children: [
-                            ...cards(searchModel, snapshot.data!),
-                          ],
-                        ));
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-                  return const CircularProgressIndicator();
-                },
-              ),
-              const Pagination(5),
-            ],
+    return Container(
+      margin: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Banner(),
+          // Search section
+          ...searchSection(),
+          const Divider(
+            color: Colors.black54,
           ),
-        );
-      },
+          // Recommended tutors
+          const Text(
+            'Recommended Tutors',
+            style: TextStyle(
+              fontSize: 25,
+              height: 2,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          // filter by search model then sort by liked
+          FutureBuilder<ResponseTutors>(
+            future: futureTutorsInfo,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Column(
+                  children: cards(snapshot.data!),
+                );
+              } else if (snapshot.hasError) {
+                return Text('${snapshot.error}');
+              }
+              return const CircularProgressIndicator();
+            },
+          ),
+          const Pagination(5),
+        ],
+      ),
     );
   }
 
-  List<Card> cards(SearchModel searchModel, ResponseTutors data) {
+  List<Card> cards(ResponseTutors data) {
     List<Card> original = data.tutors.row
         .map((e) => Card(
               e.userId!,
@@ -140,13 +144,13 @@ class _BodyState extends State<Body> {
 
     original = original
         .where((card) =>
-            card.name.toLowerCase().contains(searchModel.name.toLowerCase()) &&
-            (card.tags!.contains(searchModel.tag) || searchModel.tag == 'All'))
+            card.name.toLowerCase().contains(name.toLowerCase()) &&
+            (card.tags!.contains(tag) || tag == 'All'))
         .toList();
     return original..sort((a, b) => a.isLiked ? 0 : 1);
   }
 
-  List<Widget> searchSection(SearchModel searchModel) {
+  List<Widget> searchSection() {
     return [
       const Text(
         'Find a tutor',
@@ -162,11 +166,12 @@ class _BodyState extends State<Body> {
           SizedBox(
             width: 165,
             child: TextField(
-              // if searchModel.name is not empty, then the textfield will be filled with that value
-              onChanged: (value) {
-                searchModel.setName(value);
+              onSubmitted: (value) {
+                setState(() {
+                  name = value;
+                });
               },
-              controller: TextEditingController(text: searchModel.name),
+              controller: TextEditingController(text: name),
               style: const TextStyle(fontSize: 14, color: Colors.black),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
@@ -180,10 +185,12 @@ class _BodyState extends State<Body> {
           SizedBox(
             width: 165,
             child: TextField(
-              onChanged: (value) {
-                searchModel.setNationlity(value);
+              onSubmitted: (value) {
+                setState(() {
+                  nationality = value;
+                });
               },
-              controller: TextEditingController(text: searchModel.nationality),
+              controller: TextEditingController(text: nationality),
               style: const TextStyle(fontSize: 14, color: Colors.black),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
@@ -238,46 +245,31 @@ class _BodyState extends State<Body> {
           ),
         ],
       ),
-      TagCard(selectedTag: searchModel.tag),
+      tags(),
       ResetFilterButton('Reset Filter', onPressed: () {
-        searchModel.resetFilter();
+        setState(() {
+          name = '';
+          tag = 'All';
+          date = '';
+          nationality = '';
+        });
       }),
     ];
   }
-}
 
-class SearchModel extends ChangeNotifier {
-  String name = '';
-  String tag = 'All';
-  String date = '';
-  String nationality = '';
-
-  void setName(String name) {
-    this.name = name;
-    notifyListeners();
-  }
-
-  void setTag(String tag) {
-    this.tag = tag;
-    notifyListeners();
-  }
-
-  void setDate(String date) {
-    this.date = date;
-    notifyListeners();
-  }
-
-  void setNationlity(String nationality) {
-    this.nationality = nationality;
-    notifyListeners();
-  }
-
-  void resetFilter() {
-    name = '';
-    tag = 'All';
-    date = '';
-    nationality = '';
-    notifyListeners();
+  Widget tags() {
+    return Wrap(
+      children: widget.tags
+          .map((tag) => GestureDetector(
+                onTap: () {
+                  setState(() {
+                    this.tag = tag;
+                  });
+                },
+                child: TagFilter(tag, isChecked: this.tag == tag),
+              ))
+          .toList(),
+    );
   }
 }
 
@@ -384,43 +376,6 @@ class Banner extends StatelessWidget {
         height: 2,
         color: Colors.white,
       ),
-    );
-  }
-}
-
-class TagCard extends StatelessWidget {
-  const TagCard({super.key, this.selectedTag = 'All'});
-  final List<String> tags = const [
-    'All',
-    'English for kids',
-    'English for Business',
-    'Conversational',
-    'STARTERS',
-    'MOVERS',
-    'FLYERS',
-    'KET',
-    'PET',
-    'IELTS',
-    'TOEFL',
-    'TOEIC',
-  ];
-
-  final String selectedTag;
-
-  @override
-  Widget build(BuildContext context) {
-    // return list of tags, wrap in a gesture detector
-    // which will change the selected tag and setstate on it
-    // and then the tag will be rebuilt
-    return Wrap(
-      children: tags
-          .map((tag) => GestureDetector(
-                onTap: () {
-                  Provider.of<SearchModel>(context, listen: false).setTag(tag);
-                },
-                child: TagFilter(tag, isChecked: tag == selectedTag),
-              ))
-          .toList(),
     );
   }
 }
