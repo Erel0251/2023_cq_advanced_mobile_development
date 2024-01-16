@@ -33,7 +33,7 @@ class User {
   final List<String>? courses;
   final String? requireNote;
   final String? level;
-  final List<String>? learnTopics;
+  final List<Map<String, dynamic>>? learnTopics;
   final List<String>? testPreparations;
   final bool? isPhoneActivated;
   final int? timezone;
@@ -81,7 +81,7 @@ class User {
       requireNote: json['requireNote'],
       level: json['level'],
       learnTopics: json['learnTopics'] != null
-          ? List<String>.from(json['learnTopics'])
+          ? List<Map<String, dynamic>>.from(json['learnTopics'])
           : null,
       testPreparations: json['testPreparations'] != null
           ? List<String>.from(json['testPreparations'])

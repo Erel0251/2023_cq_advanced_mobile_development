@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:test_route/controllers/login_action.dart';
 import 'package:test_route/views/call_screen.dart';
 import 'package:test_route/views/course_detail_screen.dart';
 import 'package:test_route/views/course_info_screen.dart';
@@ -34,6 +35,7 @@ Login                           95% password hide/show
 
 Future main() async {
   await dotenv.load();
+  await fetchLogin('phhai@ymail.com', '123456');
   runApp(const MaterialApp(
     home: HomeScreen(),
   ));

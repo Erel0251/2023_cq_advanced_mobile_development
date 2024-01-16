@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:test_route/utils/valid_input.dart';
+import 'package:test_route/controllers/login_action.dart';
 
+import 'package:test_route/utils/valid_input.dart';
 import 'package:test_route/views/home_screen.dart';
 import 'package:test_route/widgets/button.dart';
+import 'package:test_route/models/authentication/resonse_login.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -125,19 +127,18 @@ class FormInput extends StatelessWidget {
             color: const Color.fromRGBO(40, 106, 210, 1)),
         // Widget login button with logic check logic and exist email and password
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             // Logic check input valid email and password
             if (validEmail(_usernameController.text) &&
-                validPassword(_passwordController.text) &&
-                _usernameController.text == 'student@lettutor.com' &&
-                _passwordController.text == '123456') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => type == 'log in'
-                        ? const HomeScreen()
-                        : const LoginScreen()),
-              );
+                validPassword(_passwordController.text)) {
+              try {
+                // Get response from server
+                final User user = await fetchLogin(
+                    _usernameController.text, _passwordController.text);
+                // Navigate to home screen
+              } catch (e) {
+                // Show error message
+              }
             }
           },
           child: Text(

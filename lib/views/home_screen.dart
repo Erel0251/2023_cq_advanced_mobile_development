@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:test_route/models/tutor/account_info.dart';
-import 'package:test_route/models/tutor/response.dart';
+import 'package:test_route/models/tutor/response_tutors.dart';
 
 import 'package:test_route/utils/format_tags_card.dart';
 import 'package:test_route/views/tutor_screen.dart';
