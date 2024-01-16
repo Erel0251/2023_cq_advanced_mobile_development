@@ -1,110 +1,5 @@
-class ResponseTutors {
-  final Tutors tutors;
-  final List<dynamic>? favoriteTutors;
-
-  const ResponseTutors({
-    required this.tutors,
-    this.favoriteTutors,
-  });
-
-  factory ResponseTutors.fromJson(Map<String, dynamic> json) {
-    return ResponseTutors(
-      tutors: Tutors.fromJson(json['tutors']),
-      favoriteTutors:
-          json['favoriteTutor']?.map((e) => FavoriteTutor.fromJson(e)).toList(),
-    );
-  }
-}
-
-class Tutors {
-  final int count;
-  final List<dynamic> row;
-
-  const Tutors({
-    required this.count,
-    required this.row,
-  });
-
-  factory Tutors.fromJson(Map<String, dynamic> json) {
-    return Tutors(
-      count: json['count'],
-      row: json['rows'] != null
-          ? json['rows'].map((e) => AccountInfo.fromJson(e)).toList()
-          : [],
-    );
-  }
-}
-
-class FavoriteTutor {
-  final String id;
-  final String firstId;
-  final String secondId;
-  final String createdAt;
-  final String updatedAt;
-  final AccountInfo? secondInfo;
-
-  const FavoriteTutor({
-    required this.id,
-    required this.firstId,
-    required this.secondId,
-    required this.createdAt,
-    required this.updatedAt,
-    this.secondInfo,
-  });
-
-  factory FavoriteTutor.fromJson(Map<String, dynamic> json) {
-    return FavoriteTutor(
-      id: json['id'],
-      firstId: json['firstId'],
-      secondId: json['secondId'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      secondInfo: json['secondInfo'] != null
-          ? AccountInfo.fromJson(json['secondInfo'])
-          : null,
-    );
-  }
-}
-
-class Feedback {
-  final String id;
-  final String? bookingId;
-  final String? firstId;
-  final String? secondId;
-  final int? rating;
-  final String? content;
-  final String? createdAt;
-  final String? updatedAt;
-  final AccountInfo? firstInfo;
-
-  const Feedback({
-    required this.id,
-    this.bookingId,
-    this.firstId,
-    this.secondId,
-    this.rating,
-    this.content,
-    this.createdAt,
-    this.updatedAt,
-    this.firstInfo,
-  });
-
-  factory Feedback.fromJson(Map<String, dynamic> json) {
-    return Feedback(
-      id: json['id'],
-      bookingId: json['bookingId'],
-      firstId: json['firstId'],
-      secondId: json['secondId'],
-      rating: json['rating'],
-      content: json['content'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      firstInfo: json['firstInfo'] != null
-          ? AccountInfo.fromJson(json['firstInfo'])
-          : null,
-    );
-  }
-}
+import 'package:test_route/models/tutor/course.dart';
+import 'package:test_route/models/tutor/feedback.dart';
 
 class AccountInfo {
   final String? id;
@@ -161,6 +56,7 @@ class AccountInfo {
   final int? totalFeedbacks;
   final AccountInfo? tutorInfo;
   final AccountInfo? user;
+  final List<dynamic>? courses;
 
   // connection
   final String? email;
@@ -218,6 +114,7 @@ class AccountInfo {
     this.apple,
     this.tutorInfo,
     this.user,
+    this.courses,
   });
 
   // json with format camelCase
@@ -265,8 +162,11 @@ class AccountInfo {
       isOnline: json['isOnline'],
       studentGroupId: json['studentGroupId'],
       totalFeedbacks: json['totalFeedback'],
+      courses: json['courses'] != null
+          ? json['courses'].map((e) => Course.fromJson(e)).toList()
+          : [],
       feedbacks: json['feedbacks'] != null
-          ? json['feedbacks'].map((e) => Feedback.fromJson(e)).toList()
+          ? json['feedbacks'].map((e) => FeedbackTutor.fromJson(e)).toList()
           : [],
       email: json['email'],
       google: json['google'],
@@ -276,51 +176,6 @@ class AccountInfo {
           ? AccountInfo.fromJson(json['tutorInfo'])
           : null,
       user: json['User'] != null ? AccountInfo.fromJson(json['User']) : null,
-    );
-  }
-}
-
-class Course {
-  final String id;
-  final String name;
-  final TutorCourse? tutorCourse;
-
-  const Course({
-    required this.id,
-    required this.name,
-    this.tutorCourse,
-  });
-
-  factory Course.fromJson(Map<String, dynamic> json) {
-    return Course(
-      id: json['id'],
-      name: json['name'],
-      tutorCourse: json['TutorCourse'] != null
-          ? TutorCourse.fromJson(json['TutorCourse'])
-          : null,
-    );
-  }
-}
-
-class TutorCourse {
-  final String userId;
-  final String courseId;
-  final String createdAt;
-  final String updatedAt;
-
-  const TutorCourse({
-    required this.userId,
-    required this.courseId,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory TutorCourse.fromJson(Map<String, dynamic> json) {
-    return TutorCourse(
-      userId: json['UserId'],
-      courseId: json['CourseId'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
     );
   }
 }

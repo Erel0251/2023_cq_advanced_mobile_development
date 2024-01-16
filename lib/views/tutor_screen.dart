@@ -1,33 +1,90 @@
+import 'dart:convert';
+
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:test_route/utils/get_name.dart';
+import 'package:video_player/video_player.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:test_route/models/meeting.dart';
+import 'package:test_route/models/tutor/account_info.dart';
+import 'package:test_route/models/tutor/feedback.dart';
 import 'package:test_route/utils/format_date_range.dart';
-import 'package:test_route/utils/validInput.dart';
+import 'package:test_route/utils/format_tags_card.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
-import 'package:video_player/video_player.dart';
 
 class TutorScreen extends StatelessWidget {
-  const TutorScreen({super.key});
+  const TutorScreen(this.tutorId, {this.feedbacks, super.key});
+  final String tutorId;
+  final List<dynamic>? feedbacks;
 
   @override
   Widget build(BuildContext context) {
-    return const MainBody(Body());
+    return MainBody(Body(tutorId, feedbacks: feedbacks));
   }
 }
 
 class Body extends StatefulWidget {
-  const Body({super.key});
+  const Body(this.tutorId, {this.feedbacks, super.key});
+  final String tutorId;
+  final List<dynamic>? feedbacks;
 
   @override
   State<Body> createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
+  late Future<AccountInfo> futureTutorsInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    futureTutorsInfo = fetchTutorById(widget.tutorId);
+  }
+
+  Future<AccountInfo> fetchTutorById(String id) async {
+    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+
+    final response = await http.get(
+      Uri.parse('${baseUrl}tutor/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final AccountInfo responseTutors = AccountInfo.fromJson(
+          jsonDecode(response.body) as Map<String, dynamic>);
+      return responseTutors;
+    } else {
+      throw Exception('Failed to load tutor information');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: futureTutorsInfo,
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          return _hasData(snapshot.data);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }),
+    );
+  }
+
+  Widget _hasData(tutor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 35),
       color: Colors.white,
@@ -35,20 +92,11 @@ class _BodyState extends State<Body> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Detail About Tutor
-          const Detail(
-            'Keegan',
-            avatar: 'assets/images/avatar01.jpg',
-            point: 5,
-            count: 128,
-            bio:
-                'I am passionate about running and fitness, I often compete in trail/mountain running events and I love pushing myself. I am training to one day take part in ultra-endurance events. I also enjoy watching rugby on the weekends, reading and watching podcasts on Youtube. My most memorable life experience would be living in and traveling around Southeast Asia.',
-            code: 'TN',
-            country: ' Tunisia',
-          ),
-          const VideoPlayerScreen(),
+          Detail(tutor),
+          VideoPlayerScreen(tutor.video),
           // Detail Description
-          ..._categories(),
-          ..._templateReview(),
+          ..._categories(tutor),
+          ..._templateReview(widget.feedbacks!),
           // weekly schedule
           _calendar(),
         ],
@@ -241,30 +289,9 @@ class _BodyState extends State<Body> {
 }
 
 class Detail extends StatelessWidget {
-  const Detail(this.name,
-      {this.avatar,
-      this.tags,
-      this.bio,
-      this.code,
-      this.country,
-      this.point = 0,
-      this.count = 0,
-      this.isLiked = false,
-      super.key});
+  const Detail(this.tutor, {super.key});
 
-  final String name;
-  final String? avatar;
-  final List<String>? tags;
-  final String? bio;
-  final String? code;
-  final String? country;
-  final int point;
-  final int count;
-  final bool isLiked;
-
-  String getName() {
-    return name.split(' ').map((e) => e[0]).join();
-  }
+  final AccountInfo tutor;
 
   @override
   Widget build(BuildContext context) {
@@ -289,10 +316,34 @@ class Detail extends StatelessWidget {
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
-          child: Image.asset(
-            avatar!,
-            fit: BoxFit.cover,
-          ),
+          child: (tutor.user!.avatar != null)
+              ? Image.network(
+                  tutor.user!.avatar!,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    }
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.error);
+                  },
+                )
+              : Center(
+                  child: Text(
+                    getName(tutor.user!.name!),
+                    style: const TextStyle(color: Colors.white, fontSize: 40),
+                  ),
+                ),
         ),
         // Information of tutor
         SizedBox(
@@ -303,33 +354,38 @@ class Detail extends StatelessWidget {
             children: [
               // Tutor name
               Text(
-                name,
+                tutor.user!.name!,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               // Review score
-              Row(
-                children: [
-                  for (int i = 1; i <= point; i++)
-                    const Icon(
-                      Icons.star,
-                      color: Colors.yellow,
-                      size: 16,
+              (tutor.rating != null)
+                  ? Row(
+                      children: [
+                        for (int i = 1; i <= tutor.rating!.toInt(); i++)
+                          const Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                            size: 16,
+                          ),
+                        Text(' (${tutor.totalFeedbacks!})'),
+                      ],
+                    )
+                  : const Text(
+                      'No reviews yet',
+                      style: TextStyle(fontStyle: FontStyle.italic),
                     ),
-                  Text(' ($count)'),
-                ],
-              ),
               // Country Flag
               Row(
                 children: [
                   Flag.fromString(
-                    code!,
+                    tutor.user!.country!,
                     height: 22,
                     width: 22,
                   ),
-                  Text(country!),
+                  Text(tutor.user!.language!),
                 ],
               )
             ],
@@ -341,7 +397,7 @@ class Detail extends StatelessWidget {
 
   Widget _bioTutor() {
     return Text(
-      bio!,
+      tutor.bio!,
       softWrap: true,
       style: const TextStyle(height: 1.5),
     );
@@ -352,7 +408,7 @@ class Detail extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         const FavoriteButton(),
-        ReportButton(name),
+        ReportButton(tutor.user!.name!),
       ],
     );
   }
@@ -518,7 +574,8 @@ class _CheckBoxReasonReportState extends State<CheckBoxReasonReport> {
 }
 
 class VideoPlayerScreen extends StatefulWidget {
-  const VideoPlayerScreen({super.key});
+  const VideoPlayerScreen(this.url, {super.key});
+  final String? url;
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -537,11 +594,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // or the internet.
     _controller = VideoPlayerController.networkUrl(
       Uri.parse(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+        widget.url!,
       ),
     );
 
-    _controller = VideoPlayerController.asset('assets/videos/video-tutor.mp4');
+    //_controller = VideoPlayerController.asset('assets/videos/video-tutor.mp4');
 
     // Initialize the controller and store the Future for later use.
     _initializeVideoPlayerFuture = _controller.initialize();
@@ -661,28 +718,9 @@ class Part extends StatelessWidget {
 }
 
 class Review extends StatelessWidget {
-  const Review(
-    this.name, {
-    required this.avatar,
-    required this.time,
-    required this.point,
-    this.review,
-    super.key,
-  });
+  const Review(this.feedback, {super.key});
 
-  final String avatar;
-  final String name;
-  final String time;
-  final int point;
-  final String? review;
-
-  Color getStarColor(int i) {
-    if (i > point) {
-      return Colors.grey;
-    } else {
-      return Colors.yellow;
-    }
-  }
+  final FeedbackTutor feedback;
 
   @override
   Widget build(BuildContext context) {
@@ -699,24 +737,48 @@ class Review extends StatelessWidget {
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
-            child: Image.asset(
-              avatar,
-              fit: BoxFit.cover,
-            ),
+            child: (feedback.firstInfo!.avatar != null)
+                ? Image.network(
+                    feedback.firstInfo!.avatar!,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.error);
+                    },
+                  )
+                : Center(
+                    child: Text(
+                      getName(feedback.firstInfo!.name!),
+                      style: const TextStyle(color: Colors.white, fontSize: 40),
+                    ),
+                  ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               RichText(
                 text: TextSpan(
-                  text: name,
+                  text: feedback.firstInfo!.name!,
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color.fromRGBO(0, 0, 0, 0.45),
                   ),
                   children: [
                     TextSpan(
-                      text: time,
+                      text: feedback.updatedAt!,
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color.fromRGBO(204, 204, 204, 1),
@@ -733,20 +795,21 @@ class Review extends StatelessWidget {
                   for (int i = 1; i <= 5; i++)
                     Icon(
                       Icons.star,
-                      color: getStarColor(i),
+                      color: i <= feedback.rating!.toInt()
+                          ? Colors.yellow
+                          : Colors.grey,
                       size: 16,
                     ),
                 ],
               ),
-              if (review != null)
-                const SizedBox(
-                  height: 5,
-                ),
-              if (review != null)
-                Text(
-                  review!,
-                  style: const TextStyle(fontSize: 14, color: Colors.black),
-                ),
+              (feedback.content == null)
+                  ? const SizedBox(
+                      height: 5,
+                    )
+                  : Text(
+                      feedback.content!,
+                      style: const TextStyle(fontSize: 14, color: Colors.black),
+                    ),
             ],
           )
         ],
@@ -755,55 +818,40 @@ class Review extends StatelessWidget {
   }
 }
 
-List<Widget> _categories() {
+List<Widget> _categories(AccountInfo tutor) {
   return [
     Part(
       'Education',
-      description: 'BA',
+      description: tutor.education,
     ),
     Part(
       'Languages',
-      tags: ['English'],
+      tags: tutor.languages!.split(', '),
     ),
     Part(
       'Specialties',
-      tags: [
-        'English for Business',
-        'Conversational',
-        'English for kids',
-        'IELTS',
-        'STARTERS',
-        'MOVERS',
-        'FLYTERS',
-        'KET',
-        'PET',
-        'TOEFL',
-        'TOEIC'
-      ],
+      tags: formatTagsCard(tutor.specialties!),
     ),
     Part(
       'Suggested courses',
-      contents: [
-        'Basic Conversation Topics',
-        'Life in the Internet Age',
-      ],
+      contents: (tutor.user!.courses != null)
+          ? tutor.user!.courses!.map((e) => e.name).toList().cast<String>()
+          : null,
     ),
     Part(
       'Interests',
-      description:
-          'I loved the weather, the scenery and the laid-back lifestyle of the locals.',
+      description: tutor.interests,
     ),
     Part(
       'Teaching experience',
-      description: 'I have more than 10 years of teaching english experience',
+      description: tutor.experience,
     ),
   ];
 }
 
-List<Widget> _templateReview() {
+List<Widget> _templateReview(List<dynamic> reviews) {
   return [
-    // Reviews
-    Text(
+    const Text(
       'Other review',
       style: TextStyle(
         fontWeight: FontWeight.bold,
@@ -811,53 +859,9 @@ List<Widget> _templateReview() {
         height: 2.5,
       ),
     ),
-    Review(
-      'Phhai123',
-      avatar: 'assets/images/avatar03.jpeg',
-      time: '4 days ago',
-      point: 1,
-      review: 'DD',
+    ...reviews.map(
+      (e) => Review(e),
     ),
-    Review(
-      'Phhai',
-      avatar: 'assets/images/avatar04.png',
-      time: '8 days ago',
-      point: 1,
-      review: 'asdfasdf',
-    ),
-    Review(
-      'Phhai',
-      avatar: 'assets/images/avatar04.png',
-      time: '8 days ago',
-      point: 5,
-      review: 'asdf',
-    ),
-    Review(
-      'Phhai',
-      avatar: 'assets/images/avatar04.png',
-      time: '8 days ago',
-      point: 3,
-      review: 'asdfasdf',
-    ),
-    Review(
-      'Phhai123',
-      avatar: 'assets/images/avatar03.jpeg',
-      time: '8 days ago',
-      point: 5,
-    ),
-    Review(
-      'Phhai123',
-      avatar: 'assets/images/avatar03.jpeg',
-      time: '8 days ago',
-      point: 5,
-    ),
-    Review(
-      'Minh Duc Le',
-      avatar: 'assets/images/avatar05.jpg',
-      time: '5 months ago',
-      point: 5,
-      review: 'great jd đ',
-    ),
-    Pagination(1)
+    const Pagination(1),
   ];
 }

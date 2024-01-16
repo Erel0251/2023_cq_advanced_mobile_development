@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:test_route/utils/validInput.dart';
+import 'package:test_route/utils/valid_input.dart';
 
 import 'package:test_route/views/home_screen.dart';
 import 'package:test_route/widgets/button.dart';

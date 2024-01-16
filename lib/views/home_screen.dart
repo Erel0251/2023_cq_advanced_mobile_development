@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:test_route/models/tutor/account_info.dart';
+import 'package:test_route/models/tutor/response.dart';
 
-import 'package:test_route/models/tutor.dart';
 import 'package:test_route/utils/format_tags_card.dart';
 import 'package:test_route/views/tutor_screen.dart';
 import 'package:test_route/widgets/button.dart';
@@ -32,7 +32,7 @@ class Body extends StatefulWidget {
   final List<String> tags = const [
     'All',
     'English for kids',
-    'English for Business',
+    'Business English',
     'Conversational',
     'STARTERS',
     'MOVERS',
@@ -59,6 +59,11 @@ class _BodyState extends State<Body> {
   void initState() {
     super.initState();
     futureTutorsInfo = fetchTutorsInfo();
+  }
+
+  String getTagCode(String tag) {
+    // transfer tag name to format lower-case and replace space by dash
+    return tag.toLowerCase().replaceAll(' ', '-');
   }
 
   Future<ResponseTutors> fetchTutorsInfo() async {
@@ -127,25 +132,18 @@ class _BodyState extends State<Body> {
   List<Card> cards(ResponseTutors data) {
     List<Card> original = data.tutors.row
         .map((e) => Card(
-              e.userId!,
-              name: e.name!,
-              avatar: e.avatar,
-              tags: formatTagsCard(e.specialties!),
-              bio: e.bio,
-              point: e.rating != null ? e.rating!.toInt() : 0,
+              e,
               // check data.favoriteTutors if its secondId contains e.userId
               isLiked: data.favoriteTutors!
                   .map((e) => e.secondId)
                   .contains(e.userId),
-              code: e.country,
-              country: e.language,
             ))
         .toList();
 
     original = original
         .where((card) =>
-            card.name.toLowerCase().contains(name.toLowerCase()) &&
-            (card.tags!.contains(tag) || tag == 'All'))
+            card.info.name!.toLowerCase().contains(name.toLowerCase()) &&
+            (card.info.specialties!.contains(getTagCode(tag)) || tag == 'All'))
         .toList();
     return original..sort((a, b) => a.isLiked ? 0 : 1);
   }
@@ -163,44 +161,8 @@ class _BodyState extends State<Body> {
       Wrap(
         spacing: 10,
         children: [
-          SizedBox(
-            width: 165,
-            child: TextField(
-              onSubmitted: (value) {
-                setState(() {
-                  name = value;
-                });
-              },
-              controller: TextEditingController(text: name),
-              style: const TextStyle(fontSize: 14, color: Colors.black),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50))),
-                hintText: 'Search by name',
-                isDense: true, // Added this
-                contentPadding: EdgeInsets.all(8),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 165,
-            child: TextField(
-              onSubmitted: (value) {
-                setState(() {
-                  nationality = value;
-                });
-              },
-              controller: TextEditingController(text: nationality),
-              style: const TextStyle(fontSize: 14, color: Colors.black),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50))),
-                hintText: 'Select tutor nationality',
-                isDense: true, // Added this
-                contentPadding: EdgeInsets.all(8),
-              ),
-            ),
-          ),
+          _filterName(),
+          _filterNationality(),
         ],
       ),
       const Text(
@@ -211,38 +173,11 @@ class _BodyState extends State<Body> {
           height: 2,
         ),
       ),
-      const Wrap(
+      Wrap(
         spacing: 10,
         children: [
-          SizedBox(
-            width: 140,
-            child: TextField(
-              style: TextStyle(fontSize: 14, color: Colors.black),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50))),
-                hintText: 'Select a day',
-                isDense: true, // Added this
-                contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                suffixIcon: Icon(Icons.calendar_month),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 200,
-            child: TextField(
-              style: TextStyle(fontSize: 14, color: Colors.black),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    gapPadding: 0,
-                    borderRadius: BorderRadius.all(Radius.circular(50))),
-                hintText: 'Start time End time',
-                isDense: true, // Added this
-                contentPadding: EdgeInsets.all(8),
-                suffixIcon: Icon(Icons.schedule),
-              ),
-            ),
-          ),
+          _filterFromDate(),
+          _filterToDate(),
         ],
       ),
       tags(),
@@ -255,6 +190,85 @@ class _BodyState extends State<Body> {
         });
       }),
     ];
+  }
+
+  Widget _filterName() {
+    return SizedBox(
+      width: 165,
+      child: TextField(
+        onSubmitted: (value) {
+          setState(() {
+            name = value;
+          });
+        },
+        controller: TextEditingController(text: name),
+        style: const TextStyle(fontSize: 14, color: Colors.black),
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(50))),
+          hintText: 'Search by name',
+          isDense: true, // Added this
+          contentPadding: EdgeInsets.all(8),
+        ),
+      ),
+    );
+  }
+
+  Widget _filterNationality() {
+    return SizedBox(
+      width: 165,
+      child: TextField(
+        onSubmitted: (value) {
+          setState(() {
+            nationality = value;
+          });
+        },
+        controller: TextEditingController(text: nationality),
+        style: const TextStyle(fontSize: 14, color: Colors.black),
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(50))),
+          hintText: 'Select tutor nationality',
+          isDense: true, // Added this
+          contentPadding: EdgeInsets.all(8),
+        ),
+      ),
+    );
+  }
+
+  Widget _filterFromDate() {
+    return const SizedBox(
+      width: 140,
+      child: TextField(
+        style: TextStyle(fontSize: 14, color: Colors.black),
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(50))),
+          hintText: 'Select a day',
+          isDense: true, // Added this
+          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+          suffixIcon: Icon(Icons.calendar_month),
+        ),
+      ),
+    );
+  }
+
+  Widget _filterToDate() {
+    return const SizedBox(
+      width: 200,
+      child: TextField(
+        style: TextStyle(fontSize: 14, color: Colors.black),
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+              gapPadding: 0,
+              borderRadius: BorderRadius.all(Radius.circular(50))),
+          hintText: 'Start time End time',
+          isDense: true, // Added this
+          contentPadding: EdgeInsets.all(8),
+          suffixIcon: Icon(Icons.schedule),
+        ),
+      ),
+    );
   }
 
   Widget tags() {
@@ -382,30 +396,16 @@ class Banner extends StatelessWidget {
 
 class Card extends StatelessWidget {
   const Card(
-    this.id, {
-    required this.name,
-    this.avatar,
-    this.tags,
-    this.bio,
-    this.code,
-    this.country,
-    this.point = 0,
+    this.info, {
     this.isLiked = false,
     super.key,
   });
 
-  final String id;
-  final String name;
-  final String? avatar;
-  final List<String>? tags;
-  final String? bio;
-  final String? code;
-  final String? country;
-  final int point;
+  final AccountInfo info;
   final bool isLiked;
 
   String getName() {
-    return name.split(' ').map((e) => e[0]).join();
+    return info.name!.split(' ').map((e) => e[0]).join();
   }
 
   @override
@@ -414,7 +414,9 @@ class Card extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const TutorScreen()),
+          MaterialPageRoute(
+              builder: (context) =>
+                  TutorScreen(info.userId!, feedbacks: info.feedbacks)),
         );
       },
       child: Container(
@@ -452,10 +454,30 @@ class Card extends StatelessWidget {
                         color: Color.fromRGBO(0, 133, 240, 1),
                         shape: BoxShape.circle,
                       ),
-                      child: (avatar != null)
+                      child: (info.avatar != null)
                           ? Image.network(
-                              avatar!,
+                              info.avatar!,
                               fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.error);
+                              },
                             )
                           : Center(
                               child: Text(
@@ -469,28 +491,30 @@ class Card extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          name,
+                          info.name!,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        (country != null)
+                        (info.language != null)
                             ? Row(
                                 children: [
                                   Flag.fromString(
-                                    code!,
+                                    info.country!,
                                     height: 22,
                                     width: 22,
                                   ),
-                                  Text(country!),
+                                  Text(info.language!),
                                 ],
                               )
                             : const Icon(Icons.image_not_supported),
-                        (point != 0)
+                        (info.rating != null)
                             ? Row(
                                 children: [
-                                  for (int i = 1; i <= point; i++)
+                                  for (int i = 1;
+                                      i <= info.rating!.toInt();
+                                      i++)
                                     const Icon(
                                       Icons.star,
                                       color: Colors.yellow,
@@ -521,11 +545,12 @@ class Card extends StatelessWidget {
             ),
             Wrap(
               children: [
-                for (String tag in tags!) TagFilter(tag, isChecked: true),
+                for (String tag in formatTagsCard(info.specialties!))
+                  TagFilter(tag, isChecked: true),
               ],
             ),
             Text(
-              bio!,
+              info.bio!,
               softWrap: true,
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
