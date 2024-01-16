@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:test_route/views/call_screen.dart';
 import 'package:test_route/widgets/avatar.dart';
 import 'package:test_route/views/course_info_screen.dart';
+import 'package:test_route/widgets/network_image.dart';
 
 class CourseCard extends StatelessWidget {
   const CourseCard(
@@ -48,7 +49,7 @@ class CourseCard extends StatelessWidget {
             border: Border.all(color: Colors.black12),
             borderRadius: const BorderRadius.all(Radius.circular(12))),
         child: Column(children: [
-          Image.asset(image),
+          ImageNetwork(image),
           Container(
             height: 160,
             width: double.maxFinite,

@@ -19,6 +19,7 @@ import 'package:test_route/utils/format_tags_card.dart';
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
+import 'package:test_route/widgets/network_image.dart';
 
 class TutorScreen extends StatelessWidget {
   const TutorScreen(this.tutorId, {this.feedbacks, super.key});
@@ -299,27 +300,7 @@ class Detail extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: (tutor.user!.avatar != null)
-              ? Image.network(
-                  tutor.user!.avatar!,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    }
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.error);
-                  },
-                )
+              ? ImageNetwork(tutor.user!.avatar)
               : Center(
                   child: Text(
                     getName(tutor.user!.name!),
@@ -751,27 +732,7 @@ class Review extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: (feedback.firstInfo!.avatar != null)
-                ? Image.network(
-                    feedback.firstInfo!.avatar!,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error);
-                    },
-                  )
+                ? ImageNetwork(feedback.firstInfo!.avatar)
                 : Center(
                     child: Text(
                       getName(feedback.firstInfo!.name!),
