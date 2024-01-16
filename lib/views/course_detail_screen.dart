@@ -1,17 +1,46 @@
 import 'package:flutter/material.dart';
+
+import 'package:test_route/models/course/course_detail.dart';
+import 'package:test_route/models/course/topic.dart';
+
 import 'package:test_route/widgets/body.dart';
+import 'package:test_route/widgets/network_image.dart';
 
 class CourseDetailScreen extends StatelessWidget {
-  const CourseDetailScreen({super.key});
+  const CourseDetailScreen(
+    this.course, {
+    this.order = 0,
+    super.key,
+  });
+
+  final CourseDetailData course;
+  final int order;
 
   @override
   Widget build(BuildContext context) {
-    return const MainBody(Body());
+    return MainBody(Body(course, order: order));
   }
 }
 
-class Body extends StatelessWidget {
-  const Body({super.key});
+class Body extends StatefulWidget {
+  const Body(this.course, {this.order = 0, super.key});
+  final CourseDetailData course;
+  final int order;
+
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  int picked = 0;
+  String? pdfUrl = '';
+
+  @override
+  void initState() {
+    super.initState();
+    picked = widget.order;
+    pdfUrl = widget.course.topics![picked].nameFile;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,32 +55,33 @@ class Body extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ..._banner(),
-          ..._listTopics(),
+          ..._banner(widget.course),
+          ..._listTopics(widget.course.topics),
+          //SfPdfViewer.network(pdfUrl!),
         ],
       ),
     );
   }
 
-  List<Widget> _banner() {
+  List<Widget> _banner(CourseDetailData course) {
     return [
-      Image.asset('assets/images/banner07.png'),
+      ImageNetwork(course.imageUrl),
       Container(
         padding: const EdgeInsets.all(24),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Basic Conversation Topics',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              course.name,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             Text(
-              "   Gain confidence speaking about familiar topics",
+              course.description,
               softWrap: true,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -59,7 +89,7 @@ class Body extends StatelessWidget {
     ];
   }
 
-  List<Widget> _listTopics() {
+  List<Widget> _listTopics(List<Topic>? topics) {
     return [
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
@@ -68,52 +98,49 @@ class Body extends StatelessWidget {
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
       ),
-      DetailTopic('Foods You Love', index: 1, isPicked: true),
-      DetailTopic('Your Job', index: 2),
-      DetailTopic('Playing and Watching Sports', index: 3),
-      DetailTopic('The Best Pet', index: 4),
-      DetailTopic('Having Fun in Your Free Time', index: 5),
-      DetailTopic('Your Daily Rountine', index: 6),
-      DetailTopic('Childhood Memories', index: 7),
-      DetailTopic('Your Family Members', index: 8),
-      DetailTopic('Your Hometown', index: 9),
-      DetailTopic('Shopping Habits', index: 10),
+      topics != null
+          ? Column(
+              children: topics.map((e) => _topicName(e)).toList(),
+            )
+          : const SizedBox(),
     ];
   }
-}
 
-class DetailTopic extends StatelessWidget {
-  const DetailTopic(this.title, {this.index, this.isPicked = false, super.key});
-
-  final String title;
-  final int? index;
-  final bool isPicked;
-
-  Color checkPicked() {
-    return (isPicked) ? const Color.fromRGBO(0, 0, 0, 0.08) : Colors.white;
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _topicName(Topic topic) {
     return Container(
       width: double.maxFinite,
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-          color: checkPicked(), borderRadius: BorderRadius.circular(10)),
-      child: Row(
-        children: [
-          if (index != null)
+        color: topic.orderCourse == picked
+            ? const Color.fromRGBO(0, 0, 0, 0.08)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: GestureDetector(
+        onTap: () => _pickTopic(topic),
+        child: Row(
+          children: [
+            if (topic.orderCourse != null)
+              Text(
+                '${topic.orderCourse}.  ',
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             Text(
-              '$index.  ',
+              topic.name!,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  void _pickTopic(Topic topic) {
+    setState(() {
+      picked = topic.orderCourse!;
+      pdfUrl = topic.nameFile;
+    });
   }
 }

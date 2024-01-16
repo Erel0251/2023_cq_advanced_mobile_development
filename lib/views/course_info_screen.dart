@@ -58,7 +58,7 @@ class _BodyState extends State<Body> {
         _overview(data.reason, data.purpose),
         _experienceLevel(data),
         _numberOfTopics(data.topics!.length),
-        _listTopics(data.topics),
+        _listTopics(data),
         _suggestTutors(),
       ],
     );
@@ -145,10 +145,10 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Widget _listTopics(List<Topic>? topics) {
+  Widget _listTopics(CourseDetailData course) {
     return Part('List Topics',
-        children: topics!.map((topic) {
-          return TopicInfo(topic.name!, index: topic.orderCourse);
+        children: course.topics!.asMap().entries.map((e) {
+          return TopicInfo(course, order: e.key);
         }).toList());
   }
 
@@ -237,21 +237,14 @@ class Content extends StatelessWidget {
 }
 
 class TopicInfo extends StatelessWidget {
-  const TopicInfo(this.title, {this.index, super.key});
+  const TopicInfo(this.course, {required this.order, super.key});
 
-  final String title;
-  final int? index;
+  final CourseDetailData course;
+  final int order;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CourseDetailScreen()),
-        );
-      },
-      child: Container(
+    return Container(
         width: double.maxFinite,
         height: 130,
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -259,22 +252,33 @@ class TopicInfo extends StatelessWidget {
         decoration: BoxDecoration(
             border: Border.all(color: Colors.black12),
             borderRadius: BorderRadius.circular(8)),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (index != null)
-                Text(
-                  '$index.',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ]),
-      ),
-    );
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      CourseDetailScreen(course, order: order)),
+            );
+          },
+          child: _topicCard(course.topics![order]),
+        ));
+  }
+
+  Widget _topicCard(topic) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (topic.orderCourse != null)
+            Text(
+              '${topic.orderCourse!}.',
+              style: const TextStyle(fontSize: 16),
+            ),
+          Text(
+            topic.name!,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ]);
   }
 }

@@ -15,7 +15,7 @@ Future<ListCourses> fetchCourses({
   final String token = dotenv.env['AUTH_TOKEN'] ?? '';
 
   final response = await http.get(
-    Uri.parse('$baseUrl$type?page=$page&size=$size}'),
+    Uri.parse('$baseUrl$type?page=$page&size=$size'),
     headers: <String, String>{
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
