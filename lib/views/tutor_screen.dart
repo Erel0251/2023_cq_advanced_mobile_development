@@ -8,6 +8,9 @@ import 'package:test_route/controllers/tutor_action.dart';
 import 'package:test_route/models/meeting.dart';
 import 'package:test_route/models/tutor/account_info.dart';
 import 'package:test_route/models/tutor/feedback.dart';
+import 'package:test_route/models/tutor/course.dart';
+
+import 'package:test_route/views/course_info_screen.dart';
 
 import 'package:test_route/utils/get_name.dart';
 import 'package:test_route/utils/format_date_range.dart';
@@ -625,6 +628,7 @@ class Part extends StatelessWidget {
     this.description,
     this.tags,
     this.contents,
+    this.courses,
     super.key,
   });
 
@@ -632,6 +636,7 @@ class Part extends StatelessWidget {
   final String? description;
   final List<String>? tags;
   final List<String>? contents;
+  final List<Course>? courses;
 
   @override
   Widget build(BuildContext context) {
@@ -688,7 +693,36 @@ class Part extends StatelessWidget {
                       ),
                   ],
                 ),
+              if (courses != null)
+                Column(
+                  children: (courses!.isNotEmpty)
+                      ? courses!.map((e) => _courseLink(context, e)).toList()
+                      : [const Text('No courses')],
+                ),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _courseLink(BuildContext context, Course course) {
+    return Row(
+      children: [
+        Text(course.name),
+        GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CourseInfoScreen(course.id),
+            ),
+          ),
+          child: const Text(
+            'Link',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.blue,
+            ),
           ),
         ),
       ],
@@ -813,9 +847,7 @@ List<Widget> _categories(AccountInfo tutor) {
     ),
     Part(
       'Suggested courses',
-      contents: (tutor.user!.courses != null)
-          ? tutor.user!.courses!.map((e) => e.name).toList().cast<String>()
-          : null,
+      courses: (tutor.courses as List<Course>?),
     ),
     Part(
       'Interests',
