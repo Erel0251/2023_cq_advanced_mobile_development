@@ -1,18 +1,18 @@
-import 'dart:convert';
-
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:test_route/utils/get_name.dart';
 import 'package:video_player/video_player.dart';
-import 'package:http/http.dart' as http;
+
+import 'package:test_route/controllers/tutor_action.dart';
 
 import 'package:test_route/models/meeting.dart';
 import 'package:test_route/models/tutor/account_info.dart';
 import 'package:test_route/models/tutor/feedback.dart';
+
+import 'package:test_route/utils/get_name.dart';
 import 'package:test_route/utils/format_date_range.dart';
 import 'package:test_route/utils/format_tags_card.dart';
+
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
@@ -44,27 +44,6 @@ class _BodyState extends State<Body> {
   void initState() {
     super.initState();
     futureTutorsInfo = fetchTutorById(widget.tutorId);
-  }
-
-  Future<AccountInfo> fetchTutorById(String id) async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String token = dotenv.env['AUTH_TOKEN'] ?? '';
-
-    final response = await http.get(
-      Uri.parse('${baseUrl}tutor/$id'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final AccountInfo responseTutors = AccountInfo.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
-      return responseTutors;
-    } else {
-      throw Exception('Failed to load tutor information');
-    }
   }
 
   @override

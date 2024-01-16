@@ -5,14 +5,18 @@ import 'package:test_route/widgets/avatar.dart';
 import 'package:test_route/views/course_info_screen.dart';
 
 class CourseCard extends StatelessWidget {
-  const CourseCard(this.title,
-      {required this.image,
-      required this.description,
-      this.level,
-      this.totalLesson,
-      this.child,
-      super.key});
+  const CourseCard(
+    this.id, {
+    required this.title,
+    required this.image,
+    required this.description,
+    this.level,
+    this.totalLesson,
+    this.child,
+    super.key,
+  });
 
+  final String id;
   final String image;
   final String title;
   final String description;
@@ -26,7 +30,7 @@ class CourseCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CourseInfoScreen()),
+          MaterialPageRoute(builder: (context) => CourseInfoScreen(id)),
         );
       },
       child: Container(

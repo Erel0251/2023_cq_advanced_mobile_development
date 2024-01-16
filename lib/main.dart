@@ -37,6 +37,6 @@ Future main() async {
   await dotenv.load();
   await fetchLogin('phhai@ymail.com', '123456');
   runApp(const MaterialApp(
-    home: HomeScreen(),
+    home: CoursesScreen(),
   ));
 }

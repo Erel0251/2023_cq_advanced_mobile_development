@@ -1,14 +1,15 @@
-import 'dart:convert';
-
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+
+import 'package:test_route/controllers/tutor_action.dart';
+
 import 'package:test_route/models/tutor/account_info.dart';
 import 'package:test_route/models/tutor/response_tutors.dart';
 
 import 'package:test_route/utils/format_tags_card.dart';
+
 import 'package:test_route/views/tutor_screen.dart';
+
 import 'package:test_route/widgets/button.dart';
 import 'package:test_route/widgets/body.dart';
 import 'package:test_route/widgets/pagination.dart';
@@ -64,27 +65,6 @@ class _BodyState extends State<Body> {
   String getTagCode(String tag) {
     // transfer tag name to format lower-case and replace space by dash
     return tag.toLowerCase().replaceAll(' ', '-');
-  }
-
-  Future<ResponseTutors> fetchTutorsInfo() async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String token = dotenv.env['AUTH_TOKEN'] ?? '';
-
-    final response = await http.get(
-      Uri.parse('${baseUrl}tutor/more?perPage=9&page=1'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final ResponseTutors responseTutors = ResponseTutors.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
-      return responseTutors;
-    } else {
-      throw Exception('Failed to load tutors');
-    }
   }
 
   @override

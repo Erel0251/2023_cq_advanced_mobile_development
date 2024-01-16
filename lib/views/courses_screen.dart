@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:test_route/controllers/course_action.dart';
+import 'package:test_route/models/course/course_detail.dart';
+import 'package:test_route/models/course/response_courses.dart';
 import 'package:test_route/widgets/card.dart';
 import 'package:test_route/widgets/header.dart';
 import 'package:test_route/widgets/body.dart';
@@ -8,21 +11,54 @@ class CoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(length: 3, child: MainBody(Body()));
+    return DefaultTabController(length: 3, child: MainBody(Body()));
   }
 }
 
-class Body extends StatelessWidget {
-  const Body({super.key});
+class Body extends StatefulWidget {
+  Body({super.key});
+
+  final List<String> coursesLevel = [
+    'Any Level',
+    'Beginner',
+    'Intermediate',
+    'Advanced',
+  ];
+
+  final List<String> coursesCategory = [
+    'For Studying Abroad',
+    'English For Traveling',
+    'Conversational ENglish',
+    'English For Beginners',
+    'Business English'
+  ];
+
+  final List<String> coursesSort = [
+    'Level decreasing',
+    'Level ascending',
+  ];
+
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  late Future<ListCourses> futureCourses;
+
+  @override
+  void initState() {
+    super.initState();
+    futureCourses = fetchCourses();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DiscoverCoursesHeader(
+          const DiscoverCoursesHeader(
             'Discover Courses',
             description:
                 "LiveTutor has built the most quality, methodical and scientific courses in the fields of life for those who are in need of improving their knowledge of the fields.",
@@ -31,34 +67,38 @@ class Body extends StatelessWidget {
           Wrap(
             children: [
               FilterCourses(
-                ['Any Level', 'Beginner', 'Intermediate', 'Advanced'],
+                widget.coursesLevel,
                 hint: 'Select level',
               ),
               FilterCourses(
-                [
-                  'For Studying Abroad',
-                  'English For Traveling',
-                  'Conversational ENglish',
-                  'English For Beginners',
-                  'Business English'
-                ],
+                widget.coursesCategory,
                 hint: 'Select category',
               ),
               FilterCourses(
-                [
-                  'Level decreasing',
-                  'Level ascending',
-                ],
+                widget.coursesSort,
                 hint: 'Sort by level',
               ),
             ],
           ),
-          NavigationBar(),
+          const NavigationBar(),
           SizedBox(
             height: double.maxFinite,
             child: TabBarView(
               children: [
-                CourseTab(),
+                FutureBuilder(
+                  future: futureCourses,
+                  builder: (((context, snapshot) {
+                    if (snapshot.hasData) {
+                      return CourseTab(mapCoursesByCategory(
+                          (snapshot.data as ListCourses).rows));
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  })),
+                ),
                 EbookTab(),
                 InteractiveEbookTab(),
               ],
@@ -154,144 +194,41 @@ class _FilterCoursesState extends State<FilterCourses> {
 }
 
 class CourseTab extends StatelessWidget {
-  const CourseTab({super.key});
+  const CourseTab(this.listCourses, {super.key});
+
+  final Map<String, List<CourseDetailData>> listCourses;
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        Text(
-          'English For Traveling',
-          style:
-              TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 2),
-        ),
-        Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          children: [
-            CourseCard(
-              'Life in the Internet Age',
-              image: 'assets/images/banner01.png',
-              description:
-                  "Let's discuss how technology is changing the way we live",
-              level: 'Intermediate',
-              totalLesson: 9,
-            ),
-            CourseCard(
-              'Caring for Our Planet',
-              image: 'assets/images/banner02.png',
-              description:
-                  "Let's discuss our relationship as humans with our planet, Earth",
-              level: 'Intermediate',
-              totalLesson: 6,
-            ),
-            CourseCard(
-              'Healthy Mind, Healthy Body',
-              image: 'assets/images/banner03.png',
-              description:
-                  "Let's discuss the many aspects of living a long, happy life",
-              level: 'Intermediate',
-              totalLesson: 6,
-            ),
-          ],
-        ),
-        Text(
-          'English For Traveling',
-          style:
-              TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 2),
-        ),
-        Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          children: [
-            CourseCard(
-              'Basic Conversation Topics',
-              image: 'assets/images/banner07.png',
-              description: "Gain confidence speaking about familiar topics",
-              level: 'Beginner',
-              totalLesson: 10,
-            ),
-            CourseCard(
-              'Intermediate Conversation Topics',
-              image: 'assets/images/banner08.png',
-              description: "Express your ideas and opinions",
-              level: 'Intermediate',
-              totalLesson: 10,
-            ),
-            CourseCard(
-              'Advanced Conversation Topics',
-              image: 'assets/images/banner09.png',
-              description: "Explore complex topics relevant to modern life",
-              level: 'Advanced',
-              totalLesson: 10,
-            ),
-          ],
-        ),
-        Text(
-          'Business English',
-          style:
-              TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 2),
-        ),
-        Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          children: [
-            CourseCard(
-              'Business English',
-              image: 'assets/images/banner10.png',
-              description: "The English you need for your work and career",
-              level: 'Intermediate',
-              totalLesson: 10,
-            ),
-            CourseCard(
-              'Advanced Business English',
-              image: 'assets/images/banner11.png',
-              description: "Advanced English for your work and career",
-              level: 'Advanced',
-              totalLesson: 14,
-            ),
-            CourseCard(
-              'Workshop: Practicing Presentations',
-              image: 'assets/images/banner12.png',
-              description: "Practice an upcoming presentation or speech ",
-              level: 'Any Level',
-              totalLesson: 4,
-            ),
-          ],
-        ),
-        Text(
-          'English For Kid',
-          style:
-              TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 2),
-        ),
-        Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          children: [
-            CourseCard(
-              'IELTS Speaking Part 1',
-              image: 'assets/images/banner13.png',
-              description:
-                  "Practice answering Part 1 questions from past years' IELTS exams",
-              level: 'Any Level',
-              totalLesson: 8,
-            ),
-            CourseCard(
-              'IELTS Speaking Part 2',
-              image: 'assets/images/banner14.png',
-              description:
-                  "Practice answering Part 2 questions from past years' IELTS exams",
-              level: 'Any Level',
-              totalLesson: 8,
-            ),
-            CourseCard(
-              'IELTS Speaking Part 3',
-              image: 'assets/images/banner15.png',
-              description:
-                  "Practice answering Part 3 questions from past years' IELTS exams",
-              level: 'Any Level',
-              totalLesson: 8,
-            ),
-          ],
-        ),
-      ],
+    return Column(
+      children: listCourses.keys.map((category) {
+        return Column(
+          children: courseByCategory(category),
+        );
+      }).toList(),
     );
+  }
+
+  List<Widget> courseByCategory(String category) {
+    return [
+      Text(
+        category,
+        style: const TextStyle(
+            fontSize: 26, fontWeight: FontWeight.bold, height: 2),
+      ),
+      Wrap(
+          alignment: WrapAlignment.spaceEvenly,
+          children: listCourses[category]!.map((course) {
+            return CourseCard(
+              course.id,
+              title: course.name,
+              image: course.imageUrl!,
+              description: course.description,
+              level: course.level,
+              totalLesson: course.topics!.length,
+            );
+          }).toList())
+    ];
   }
 }
 

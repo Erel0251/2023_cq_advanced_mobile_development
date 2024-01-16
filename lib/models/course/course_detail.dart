@@ -4,6 +4,23 @@ import 'package:test_route/models/course/category.dart';
 import 'package:test_route/models/course/topic.dart';
 import 'package:test_route/models/tutor/account_info.dart';
 
+class ResponseCourse {
+  final String messsage;
+  final CourseDetailData data;
+
+  const ResponseCourse({
+    required this.messsage,
+    required this.data,
+  });
+
+  factory ResponseCourse.fromJson(Map<String, dynamic> json) {
+    return ResponseCourse(
+      messsage: json['message'],
+      data: CourseDetailData.fromJson(json['data']),
+    );
+  }
+}
+
 class CourseDetailData {
   final String id;
   final String name;
@@ -67,7 +84,7 @@ class CourseDetailData {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       topics: json['topics'] != null
-          ? List<Topic>.from(json['topic'].map((x) => Topic.fromJson(x)))
+          ? List<Topic>.from(json['topics'].map((x) => Topic.fromJson(x)))
           : null,
       users: json['users'] != null
           ? List<AccountInfo>.from(
