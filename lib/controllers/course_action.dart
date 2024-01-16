@@ -6,12 +6,16 @@ import 'package:test_route/models/course/course_detail.dart';
 
 import 'package:test_route/models/course/response_courses.dart';
 
-Future<ListCourses> fetchCourses({int page = 1, int size = 10}) async {
+Future<ListCourses> fetchCourses({
+  int page = 1,
+  int size = 10,
+  String type = 'course',
+}) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   final String token = dotenv.env['AUTH_TOKEN'] ?? '';
 
   final response = await http.get(
-    Uri.parse('${baseUrl}course?page=$page&size=$size}'),
+    Uri.parse('$baseUrl$type?page=$page&size=$size}'),
     headers: <String, String>{
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

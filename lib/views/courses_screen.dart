@@ -45,6 +45,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   late Future<ListCourses> futureCourses;
 
+  String type = 'course';
+
   @override
   void initState() {
     super.initState();
@@ -85,27 +87,62 @@ class _BodyState extends State<Body> {
             height: double.maxFinite,
             child: TabBarView(
               children: [
-                FutureBuilder(
-                  future: futureCourses,
-                  builder: (((context, snapshot) {
-                    if (snapshot.hasData) {
-                      return CourseTab(mapCoursesByCategory(
-                          (snapshot.data as ListCourses).rows));
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    }
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  })),
+                GestureDetector(
+                  onTap: () {
+                    type == 'course'
+                        ? null
+                        : setState(() {
+                            type = 'course';
+                            futureCourses = fetchCourses();
+                          });
+                  },
+                  child: _coursesInfo(),
                 ),
-                EbookTab(),
-                InteractiveEbookTab(),
+                GestureDetector(
+                  onTap: () {
+                    type == 'e-book'
+                        ? null
+                        : setState(() {
+                            type = 'e-book';
+                            futureCourses = fetchCourses(type: 'e-book');
+                          });
+                  },
+                  child: _coursesInfo(),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    type == 'interactive-e-book'
+                        ? null
+                        : setState(() {
+                            type = 'e-book';
+                            futureCourses =
+                                fetchCourses(type: 'interactive-e-book');
+                          });
+                  },
+                  child: _coursesInfo(),
+                ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _coursesInfo() {
+    return FutureBuilder(
+      future: futureCourses,
+      builder: (((context, snapshot) {
+        if (snapshot.hasData) {
+          return CourseTab(
+              mapCoursesByCategory((snapshot.data as ListCourses).rows));
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      })),
     );
   }
 }
@@ -229,23 +266,5 @@ class CourseTab extends StatelessWidget {
             );
           }).toList())
     ];
-  }
-}
-
-class EbookTab extends StatelessWidget {
-  const EbookTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class InteractiveEbookTab extends StatelessWidget {
-  const InteractiveEbookTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
