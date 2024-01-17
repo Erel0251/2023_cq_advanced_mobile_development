@@ -178,8 +178,12 @@ class _BodyState extends State<Body> {
       future: futureCourses,
       builder: (((context, snapshot) {
         if (snapshot.hasData) {
-          return CourseTab(
-              mapCoursesByCategory((snapshot.data as ListCourses).rows));
+          return ((snapshot.data as ListCourses).count > 0)
+              ? CourseTab(
+                  mapCoursesByCategory((snapshot.data as ListCourses).rows))
+              : const Center(
+                  child: Text('No data'),
+                );
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         }
@@ -258,6 +262,7 @@ class CourseTab extends StatelessWidget {
               image: course.imageUrl!,
               description: course.description,
               level: course.level,
+              filelUrl: course.fileUrl,
               totalLesson: course.topics != null ? course.topics!.length : 0,
             );
           }).toList())

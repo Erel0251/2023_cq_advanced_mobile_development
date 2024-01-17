@@ -26,6 +26,7 @@ class CourseDetailData {
   final String name;
   final String description;
   final String? imageUrl;
+  final String? fileUrl;
   final String? level;
   final String? reason;
   final String? purpose;
@@ -47,6 +48,7 @@ class CourseDetailData {
     required this.name,
     required this.description,
     this.imageUrl,
+    this.fileUrl,
     this.level,
     this.reason,
     this.purpose,
@@ -71,6 +73,7 @@ class CourseDetailData {
       name: json['name'],
       description: json['description'],
       imageUrl: json['imageUrl'],
+      fileUrl: json['fileUrl'],
       level: json['level'],
       reason: json['reason'],
       purpose: json['purpose'],

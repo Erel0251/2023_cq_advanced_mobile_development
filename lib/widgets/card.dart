@@ -14,6 +14,7 @@ class CourseCard extends StatelessWidget {
     this.level,
     this.totalLesson,
     this.child,
+    this.filelUrl,
     super.key,
   });
 
@@ -24,15 +25,18 @@ class CourseCard extends StatelessWidget {
   final String? level;
   final int? totalLesson;
   final Widget? child;
+  final String? filelUrl;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CourseInfoScreen(id)),
-        );
+        if (filelUrl == null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CourseInfoScreen(id)),
+          );
+        }
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 16),
