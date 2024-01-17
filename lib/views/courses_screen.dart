@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:let_tutor_app/controllers/course_action.dart';
+import 'package:let_tutor_app/controllers/course_controller.dart';
 import 'package:let_tutor_app/models/course/course_detail.dart';
 import 'package:let_tutor_app/models/course/response_courses.dart';
 import 'package:let_tutor_app/widgets/card.dart';
@@ -30,7 +30,16 @@ class Body extends StatefulWidget {
     'English For Traveling',
     'Conversational ENglish',
     'English For Beginners',
-    'Business English'
+    'Business English',
+    'English for kid',
+    'STARTERS',
+    'PET',
+    'KET',
+    'MOVERS',
+    'FLYERS',
+    'IELTS',
+    'TOEIC',
+    'TOEFL',
   ];
 
   final List<String> coursesSort = [
@@ -87,32 +96,9 @@ class _BodyState extends State<Body> {
             height: double.maxFinite,
             child: TabBarView(
               children: [
-                GestureDetector(
-                  child: _coursesInfo(),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    type == 'e-book'
-                        ? null
-                        : setState(() {
-                            type = 'e-book';
-                            futureCourses = fetchCourses(type: 'e-book');
-                          });
-                  },
-                  child: _coursesInfo(),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    type == 'interactive-e-book'
-                        ? null
-                        : setState(() {
-                            type = 'e-book';
-                            futureCourses =
-                                fetchCourses(type: 'interactive-e-book');
-                          });
-                  },
-                  child: _coursesInfo(),
-                ),
+                _coursesInfo(),
+                _coursesInfo(),
+                _coursesInfo(),
               ],
             ),
           ),

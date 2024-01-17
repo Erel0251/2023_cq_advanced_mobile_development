@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:let_tutor_app/controllers/login_action.dart';
+import 'package:let_tutor_app/controllers/login_controller.dart';
 
 import 'package:let_tutor_app/utils/valid_input.dart';
 import 'package:let_tutor_app/widgets/button.dart';

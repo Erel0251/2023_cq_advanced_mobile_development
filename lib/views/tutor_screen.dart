@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:let_tutor_app/controllers/tutor_action.dart';
+import 'package:let_tutor_app/controllers/tutor_controller.dart';
 
 import 'package:let_tutor_app/models/meeting.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';

@@ -1,7 +1,7 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 
-import 'package:let_tutor_app/controllers/tutor_action.dart';
+import 'package:let_tutor_app/controllers/tutor_controller.dart';
 
 import 'package:let_tutor_app/models/tutor/account_info.dart';
 import 'package:let_tutor_app/models/tutor/response_tutors.dart';

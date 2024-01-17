@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:let_tutor_app/controllers/course_action.dart';
+import 'package:let_tutor_app/controllers/course_controller.dart';
 import 'package:let_tutor_app/models/course/course_detail.dart';
 import 'package:let_tutor_app/models/course/topic.dart';
 import 'package:let_tutor_app/views/course_detail_screen.dart';
