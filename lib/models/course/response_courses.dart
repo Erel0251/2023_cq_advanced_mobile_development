@@ -18,7 +18,7 @@ class ResponseCourses {
 }
 
 class ListCourses {
-  final String count;
+  final int count;
   final List<CourseDetailData> rows;
 
   const ListCourses({

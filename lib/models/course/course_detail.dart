@@ -30,8 +30,8 @@ class CourseDetailData {
   final String? reason;
   final String? purpose;
   final String? otherDetails;
-  final Float? defaultPrice;
-  final Float? coursePrice;
+  final int? defaultPrice;
+  final int? coursePrice;
   final String? courseType;
   final String? sectionType;
   final bool? visible;

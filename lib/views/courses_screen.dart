@@ -82,20 +82,12 @@ class _BodyState extends State<Body> {
               ),
             ],
           ),
-          const NavigationBar(),
+          _navigationBar(),
           SizedBox(
             height: double.maxFinite,
             child: TabBarView(
               children: [
                 GestureDetector(
-                  onTap: () {
-                    type == 'course'
-                        ? null
-                        : setState(() {
-                            type = 'course';
-                            futureCourses = fetchCourses();
-                          });
-                  },
                   child: _coursesInfo(),
                 ),
                 GestureDetector(
@@ -129,6 +121,58 @@ class _BodyState extends State<Body> {
     );
   }
 
+  Widget _navigationBar() {
+    return Container(
+      width: double.maxFinite,
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.black12)),
+      ),
+      child: TabBar(
+        isScrollable: true,
+        tabs: [
+          Tab(
+            child: GestureDetector(
+              onTap: () => fetchCoursesByType('course'),
+              child: _buttonTabBar('Courses'),
+            ),
+          ),
+          Tab(
+            child: GestureDetector(
+              onTap: () => fetchCoursesByType('e-book'),
+              child: _buttonTabBar('E-Book'),
+            ),
+          ),
+          Tab(
+            child: GestureDetector(
+              onTap: () => fetchCoursesByType('interactive-e-book'),
+              child: _buttonTabBar('Interactive E-book'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void fetchCoursesByType(String tabType) {
+    type == tabType
+        ? null
+        : setState(() {
+            type = tabType;
+            futureCourses = fetchCourses(type: tabType);
+          });
+  }
+
+  Widget _buttonTabBar(String tabName) {
+    return Container(
+      margin: const EdgeInsets.only(right: 15),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      //decoration: const BoxDecoration(
+      //  border: Border(bottom: BorderSide(color: Colors.blue)),
+      //),
+      child: Text(tabName, style: TextStyle(color: Colors.black)),
+    );
+  }
+
   Widget _coursesInfo() {
     return FutureBuilder(
       future: futureCourses,
@@ -143,54 +187,6 @@ class _BodyState extends State<Body> {
           child: CircularProgressIndicator(),
         );
       })),
-    );
-  }
-}
-
-class NavigationBar extends StatelessWidget {
-  const NavigationBar({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.maxFinite,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.black12)),
-      ),
-      child: TabBar(
-        isScrollable: true,
-        tabs: [
-          Tab(
-            child: Container(
-              margin: const EdgeInsets.only(right: 15),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              //decoration: const BoxDecoration(
-              //  border: Border(bottom: BorderSide(color: Colors.blue)),
-              //),
-              child:
-                  const Text('Course', style: TextStyle(color: Colors.black)),
-            ),
-          ),
-          Tab(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 15),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child:
-                  const Text('E-Book', style: TextStyle(color: Colors.black)),
-            ),
-          ),
-          Tab(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 15),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: const Text('Interactive E-book',
-                  style: TextStyle(color: Colors.black)),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -262,7 +258,7 @@ class CourseTab extends StatelessWidget {
               image: course.imageUrl!,
               description: course.description,
               level: course.level,
-              totalLesson: course.topics!.length,
+              totalLesson: course.topics != null ? course.topics!.length : 0,
             );
           }).toList())
     ];
