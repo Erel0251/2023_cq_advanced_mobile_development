@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:test_route/views/home_screen.dart';
-import 'package:test_route/widgets/button.dart';
-import 'package:test_route/widgets/drawer.dart';
-import 'package:test_route/widgets/footer.dart';
+import 'package:let_tutor_app/views/home_screen.dart';
+import 'package:let_tutor_app/widgets/button.dart';
+import 'package:let_tutor_app/widgets/drawer.dart';
+import 'package:let_tutor_app/widgets/footer.dart';
 
 class MainBody extends StatelessWidget {
   const MainBody(this.child, {super.key, this.containFooter = true});

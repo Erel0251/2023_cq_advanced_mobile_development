@@ -1,8 +1,8 @@
 import 'dart:ffi';
 
-import 'package:test_route/models/course/category.dart';
-import 'package:test_route/models/course/topic.dart';
-import 'package:test_route/models/tutor/account_info.dart';
+import 'package:let_tutor_app/models/course/category.dart';
+import 'package:let_tutor_app/models/course/topic.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
 
 class ResponseCourse {
   final String messsage;

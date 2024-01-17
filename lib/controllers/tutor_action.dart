@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:test_route/models/tutor/account_info.dart';
-import 'package:test_route/models/tutor/response_tutors.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
+import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
 Future<AccountInfo> fetchTutorById(String id) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';

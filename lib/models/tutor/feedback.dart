@@ -1,4 +1,4 @@
-import 'package:test_route/models/tutor/account_info.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
 
 class FeedbackTutor {
   final String id;

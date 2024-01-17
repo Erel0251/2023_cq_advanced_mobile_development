@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_route/widgets/button.dart';
+import 'package:let_tutor_app/widgets/button.dart';
 
 class Pagination extends StatelessWidget {
   const Pagination(this.total, {this.current = 1, super.key});

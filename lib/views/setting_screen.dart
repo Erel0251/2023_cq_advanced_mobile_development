@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_route/widgets/body.dart';
+import 'package:let_tutor_app/widgets/body.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});

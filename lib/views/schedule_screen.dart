@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:test_route/widgets/card.dart';
-import 'package:test_route/widgets/header.dart';
-import 'package:test_route/widgets/body.dart';
+import 'package:let_tutor_app/widgets/card.dart';
+import 'package:let_tutor_app/widgets/header.dart';
+import 'package:let_tutor_app/widgets/body.dart';
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});

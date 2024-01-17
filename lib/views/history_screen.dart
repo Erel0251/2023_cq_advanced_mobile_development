@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:test_route/widgets/card.dart';
-import 'package:test_route/widgets/header.dart';
-import 'package:test_route/widgets/body.dart';
-import 'package:test_route/widgets/pagination.dart';
+import 'package:let_tutor_app/widgets/card.dart';
+import 'package:let_tutor_app/widgets/header.dart';
+import 'package:let_tutor_app/widgets/body.dart';
+import 'package:let_tutor_app/widgets/pagination.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});

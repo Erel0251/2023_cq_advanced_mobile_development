@@ -1,5 +1,5 @@
-import 'package:test_route/models/authentication/tokens.dart';
-import 'package:test_route/models/authentication/wallet_info.dart';
+import 'package:let_tutor_app/models/authentication/tokens.dart';
+import 'package:let_tutor_app/models/authentication/wallet_info.dart';
 
 class ResponseLogin {
   final User user;

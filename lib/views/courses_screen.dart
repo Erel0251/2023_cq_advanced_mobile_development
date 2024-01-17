@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:test_route/controllers/course_action.dart';
-import 'package:test_route/models/course/course_detail.dart';
-import 'package:test_route/models/course/response_courses.dart';
-import 'package:test_route/widgets/card.dart';
-import 'package:test_route/widgets/header.dart';
-import 'package:test_route/widgets/body.dart';
+import 'package:let_tutor_app/controllers/course_action.dart';
+import 'package:let_tutor_app/models/course/course_detail.dart';
+import 'package:let_tutor_app/models/course/response_courses.dart';
+import 'package:let_tutor_app/widgets/card.dart';
+import 'package:let_tutor_app/widgets/header.dart';
+import 'package:let_tutor_app/widgets/body.dart';
 
 class CoursesScreen extends StatelessWidget {
   const CoursesScreen({super.key});

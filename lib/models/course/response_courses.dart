@@ -1,4 +1,4 @@
-import 'package:test_route/models/course/course_detail.dart';
+import 'package:let_tutor_app/models/course/course_detail.dart';
 
 class ResponseCourses {
   final String message;

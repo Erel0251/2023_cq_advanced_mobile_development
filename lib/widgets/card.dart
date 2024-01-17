@@ -1,9 +1,9 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
-import 'package:test_route/views/call_screen.dart';
-import 'package:test_route/widgets/avatar.dart';
-import 'package:test_route/views/course_info_screen.dart';
-import 'package:test_route/widgets/network_image.dart';
+import 'package:let_tutor_app/views/call_screen.dart';
+import 'package:let_tutor_app/widgets/avatar.dart';
+import 'package:let_tutor_app/views/course_info_screen.dart';
+import 'package:let_tutor_app/widgets/network_image.dart';
 
 class CourseCard extends StatelessWidget {
   const CourseCard(

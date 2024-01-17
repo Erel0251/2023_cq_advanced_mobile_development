@@ -1,5 +1,5 @@
-import 'package:test_route/models/tutor/favorite_tutor.dart';
-import 'package:test_route/models/tutor/tutor.dart';
+import 'package:let_tutor_app/models/tutor/favorite_tutor.dart';
+import 'package:let_tutor_app/models/tutor/tutor.dart';
 
 class ResponseTutors {
   final Tutors tutors;

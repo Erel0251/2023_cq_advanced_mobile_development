@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:test_route/controllers/tutor_action.dart';
+import 'package:let_tutor_app/controllers/tutor_action.dart';
 
-import 'package:test_route/models/meeting.dart';
-import 'package:test_route/models/tutor/account_info.dart';
-import 'package:test_route/models/tutor/feedback.dart';
-import 'package:test_route/models/tutor/course.dart';
+import 'package:let_tutor_app/models/meeting.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
+import 'package:let_tutor_app/models/tutor/feedback.dart';
+import 'package:let_tutor_app/models/tutor/course.dart';
 
-import 'package:test_route/views/course_info_screen.dart';
+import 'package:let_tutor_app/views/course_info_screen.dart';
 
-import 'package:test_route/utils/get_name.dart';
-import 'package:test_route/utils/format_date_range.dart';
-import 'package:test_route/utils/format_tags_card.dart';
+import 'package:let_tutor_app/utils/get_name.dart';
+import 'package:let_tutor_app/utils/format_date_range.dart';
+import 'package:let_tutor_app/utils/format_tags_card.dart';
 
-import 'package:test_route/widgets/button.dart';
-import 'package:test_route/widgets/body.dart';
-import 'package:test_route/widgets/pagination.dart';
-import 'package:test_route/widgets/network_image.dart';
+import 'package:let_tutor_app/widgets/button.dart';
+import 'package:let_tutor_app/widgets/body.dart';
+import 'package:let_tutor_app/widgets/pagination.dart';
+import 'package:let_tutor_app/widgets/network_image.dart';
 
 class TutorScreen extends StatelessWidget {
   const TutorScreen(this.tutorId, {this.feedbacks, super.key});

@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:test_route/models/course/course_detail.dart';
+import 'package:let_tutor_app/models/course/course_detail.dart';
 
-import 'package:test_route/models/course/response_courses.dart';
+import 'package:let_tutor_app/models/course/response_courses.dart';
 
 Future<ListCourses> fetchCourses({
   int page = 1,

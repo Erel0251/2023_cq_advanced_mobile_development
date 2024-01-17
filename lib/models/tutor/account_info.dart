@@ -1,5 +1,5 @@
-import 'package:test_route/models/tutor/course.dart';
-import 'package:test_route/models/tutor/feedback.dart';
+import 'package:let_tutor_app/models/tutor/course.dart';
+import 'package:let_tutor_app/models/tutor/feedback.dart';
 
 class AccountInfo {
   final String? id;

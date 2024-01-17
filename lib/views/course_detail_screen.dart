@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:test_route/models/course/course_detail.dart';
-import 'package:test_route/models/course/topic.dart';
+import 'package:let_tutor_app/models/course/course_detail.dart';
+import 'package:let_tutor_app/models/course/topic.dart';
 
-import 'package:test_route/widgets/body.dart';
-import 'package:test_route/widgets/network_image.dart';
+import 'package:let_tutor_app/widgets/body.dart';
+import 'package:let_tutor_app/widgets/network_image.dart';
 
 class CourseDetailScreen extends StatelessWidget {
   const CourseDetailScreen(

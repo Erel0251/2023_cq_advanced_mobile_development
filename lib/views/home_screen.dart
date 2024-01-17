@@ -1,19 +1,19 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 
-import 'package:test_route/controllers/tutor_action.dart';
+import 'package:let_tutor_app/controllers/tutor_action.dart';
 
-import 'package:test_route/models/tutor/account_info.dart';
-import 'package:test_route/models/tutor/response_tutors.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
+import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
-import 'package:test_route/utils/format_tags_card.dart';
+import 'package:let_tutor_app/utils/format_tags_card.dart';
 
-import 'package:test_route/views/tutor_screen.dart';
+import 'package:let_tutor_app/views/tutor_screen.dart';
 
-import 'package:test_route/widgets/button.dart';
-import 'package:test_route/widgets/body.dart';
-import 'package:test_route/widgets/network_image.dart';
-import 'package:test_route/widgets/pagination.dart';
+import 'package:let_tutor_app/widgets/button.dart';
+import 'package:let_tutor_app/widgets/body.dart';
+import 'package:let_tutor_app/widgets/network_image.dart';
+import 'package:let_tutor_app/widgets/pagination.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:test_route/controllers/login_action.dart';
-import 'package:test_route/views/call_screen.dart';
-import 'package:test_route/views/course_detail_screen.dart';
-import 'package:test_route/views/course_info_screen.dart';
-import 'package:test_route/views/courses_screen.dart';
-import 'package:test_route/views/history_screen.dart';
-import 'package:test_route/views/home_screen.dart';
-import 'package:test_route/views/schedule_screen.dart';
-import 'package:test_route/views/setting_screen.dart';
-import 'package:test_route/views/tutor_screen.dart';
+import 'package:let_tutor_app/controllers/login_action.dart';
+import 'package:let_tutor_app/views/call_screen.dart';
+import 'package:let_tutor_app/views/course_detail_screen.dart';
+import 'package:let_tutor_app/views/course_info_screen.dart';
+import 'package:let_tutor_app/views/courses_screen.dart';
+import 'package:let_tutor_app/views/history_screen.dart';
+import 'package:let_tutor_app/views/home_screen.dart';
+import 'package:let_tutor_app/views/schedule_screen.dart';
+import 'package:let_tutor_app/views/setting_screen.dart';
+import 'package:let_tutor_app/views/tutor_screen.dart';
 import 'views/login_screen.dart'; //            1
 //import 'views/home_screen.dart'; //           2
 //import 'views/tutor_screen.dart'; //          3
