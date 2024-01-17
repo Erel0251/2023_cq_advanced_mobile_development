@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:let_tutor_app/views/schedule_screen.dart';
-import 'package:let_tutor_app/views/courses_screen.dart';
+import 'package:let_tutor_app/views/courses/courses_screen.dart';
 import 'package:let_tutor_app/views/history_screen.dart';
 
 class DrawerOnly extends StatelessWidget {

@@ -8,7 +8,7 @@ import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
 import 'package:let_tutor_app/utils/format_tags_card.dart';
 
-import 'package:let_tutor_app/views/tutor_screen.dart';
+import 'package:let_tutor_app/views/tutor/tutor_screen.dart';
 
 import 'package:let_tutor_app/widgets/button.dart';
 import 'package:let_tutor_app/widgets/body.dart';
@@ -382,7 +382,7 @@ class Card extends StatelessWidget {
     super.key,
   });
 
-  final AccountInfo info;
+  final TutorInfo info;
   final bool isLiked;
 
   String getName() {

@@ -10,7 +10,7 @@ import 'package:let_tutor_app/models/tutor/account_info.dart';
 import 'package:let_tutor_app/models/tutor/feedback.dart';
 import 'package:let_tutor_app/models/tutor/course.dart';
 
-import 'package:let_tutor_app/views/course_info_screen.dart';
+import 'package:let_tutor_app/views/courses/course_info_screen.dart';
 
 import 'package:let_tutor_app/utils/get_name.dart';
 import 'package:let_tutor_app/utils/format_date_range.dart';
@@ -42,7 +42,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  late Future<AccountInfo> futureTutorsInfo;
+  late Future<TutorInfo> futureTutorsInfo;
 
   @override
   void initState() {
@@ -274,7 +274,7 @@ class _BodyState extends State<Body> {
 class Detail extends StatelessWidget {
   const Detail(this.tutor, {super.key});
 
-  final AccountInfo tutor;
+  final TutorInfo tutor;
 
   @override
   Widget build(BuildContext context) {
@@ -792,7 +792,7 @@ class Review extends StatelessWidget {
   }
 }
 
-List<Widget> _categories(AccountInfo tutor) {
+List<Widget> _categories(TutorInfo tutor) {
   return [
     Part(
       'Education',

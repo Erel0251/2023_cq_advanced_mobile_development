@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:let_tutor_app/views/home_screen.dart';
+import 'package:let_tutor_app/views/tutor/home_screen.dart';
 import 'package:let_tutor_app/widgets/button.dart';
 import 'package:let_tutor_app/widgets/drawer.dart';
 import 'package:let_tutor_app/widgets/footer.dart';
