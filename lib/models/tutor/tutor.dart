@@ -13,7 +13,7 @@ class Tutors {
     return Tutors(
       count: json['count'],
       row: json['rows'] != null
-          ? json['rows'].map((e) => AccountInfo.fromJson(e)).toList()
+          ? json['rows'].map((e) => TutorInfo.fromJson(e)).toList()
           : [],
     );
   }

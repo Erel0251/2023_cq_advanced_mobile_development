@@ -9,7 +9,7 @@ class FeedbackTutor {
   final String? content;
   final String? createdAt;
   final String? updatedAt;
-  final AccountInfo? firstInfo;
+  final TutorInfo? firstInfo;
 
   const FeedbackTutor({
     required this.id,
@@ -34,7 +34,7 @@ class FeedbackTutor {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       firstInfo: json['firstInfo'] != null
-          ? AccountInfo.fromJson(json['firstInfo'])
+          ? TutorInfo.fromJson(json['firstInfo'])
           : null,
     );
   }

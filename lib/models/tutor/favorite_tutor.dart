@@ -6,7 +6,7 @@ class FavoriteTutor {
   final String secondId;
   final String createdAt;
   final String updatedAt;
-  final AccountInfo? secondInfo;
+  final TutorInfo? secondInfo;
 
   const FavoriteTutor({
     required this.id,
@@ -25,7 +25,7 @@ class FavoriteTutor {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       secondInfo: json['secondInfo'] != null
-          ? AccountInfo.fromJson(json['secondInfo'])
+          ? TutorInfo.fromJson(json['secondInfo'])
           : null,
     );
   }

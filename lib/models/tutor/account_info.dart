@@ -1,7 +1,7 @@
 import 'package:let_tutor_app/models/tutor/course.dart';
 import 'package:let_tutor_app/models/tutor/feedback.dart';
 
-class AccountInfo {
+class TutorInfo {
   final String? id;
   final String? userId;
 
@@ -54,8 +54,8 @@ class AccountInfo {
   final String? studentGroupId;
   final List<dynamic>? feedbacks;
   final int? totalFeedbacks;
-  final AccountInfo? tutorInfo;
-  final AccountInfo? user;
+  final TutorInfo? tutorInfo;
+  final TutorInfo? user;
   final List<dynamic>? courses;
 
   // connection
@@ -64,7 +64,7 @@ class AccountInfo {
   final String? facebook;
   final String? apple;
 
-  const AccountInfo({
+  const TutorInfo({
     this.id,
     this.userId,
     this.name,
@@ -118,8 +118,8 @@ class AccountInfo {
   });
 
   // json with format camelCase
-  factory AccountInfo.fromJson(Map<String, dynamic> json) {
-    return AccountInfo(
+  factory TutorInfo.fromJson(Map<String, dynamic> json) {
+    return TutorInfo(
       id: json['id'],
       userId: json['userId'],
       name: json['name'],
@@ -173,9 +173,9 @@ class AccountInfo {
       facebook: json['facebook'],
       apple: json['apple'],
       tutorInfo: json['tutorInfo'] != null
-          ? AccountInfo.fromJson(json['tutorInfo'])
+          ? TutorInfo.fromJson(json['tutorInfo'])
           : null,
-      user: json['User'] != null ? AccountInfo.fromJson(json['User']) : null,
+      user: json['User'] != null ? TutorInfo.fromJson(json['User']) : null,
     );
   }
 }

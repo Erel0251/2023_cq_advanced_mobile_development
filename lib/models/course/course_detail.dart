@@ -40,7 +40,7 @@ class CourseDetailData {
   final String? createdAt;
   final String? updatedAt;
   final List<Topic>? topics;
-  final List<AccountInfo>? users;
+  final List<TutorInfo>? users;
   final List<Category>? categories;
 
   const CourseDetailData({
@@ -90,8 +90,8 @@ class CourseDetailData {
           ? List<Topic>.from(json['topics'].map((x) => Topic.fromJson(x)))
           : null,
       users: json['users'] != null
-          ? List<AccountInfo>.from(
-              json['users'].map((x) => AccountInfo.fromJson(x)))
+          ? List<TutorInfo>.from(
+              json['users'].map((x) => TutorInfo.fromJson(x)))
           : null,
       categories: json['categories'] != null
           ? List<Category>.from(

@@ -6,7 +6,7 @@ import 'package:let_tutor_app/models/course/feedback.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';
 import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
-Future<AccountInfo> fetchTutorById(String id) async {
+Future<TutorInfo> fetchTutorById(String id) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   final String token = dotenv.env['AUTH_TOKEN'] ?? '';
 
@@ -19,8 +19,8 @@ Future<AccountInfo> fetchTutorById(String id) async {
   );
 
   if (response.statusCode == 200) {
-    final AccountInfo responseTutors =
-        AccountInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final TutorInfo responseTutors =
+        TutorInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
     return responseTutors;
   } else {
     throw Exception('Failed to load tutor information');
