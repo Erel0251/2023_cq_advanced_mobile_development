@@ -14,178 +14,104 @@ class DrawerOnly extends StatelessWidget {
         width: double.maxFinite,
         child: ListView(
           children: [
-            ListTile(
-              leading: Container(
-                width: 38,
-                height: 38,
-                clipBehavior: Clip.hardEdge,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: Image.asset(
-                  'assets/images/avatar03.jpeg',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              title: const Text(
-                "Phhai",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
+            _head(context),
+            _listTile(
+              "Recurring Lesson Schedule",
+              Icons.calendar_today_outlined,
+              () => Navigator.pop(context),
             ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.calendar_today_outlined,
-                  color: Colors.blue,
-                ),
-              ),
-              title: const Text(
-                "Recurring Lesson Schedule",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
+            _listTile(
+              "Tutor",
+              Icons.contacts_outlined,
+              () => Navigator.pop(context),
             ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.contacts_outlined,
-                  color: Colors.blue,
-                ),
+            _listTile(
+              "Schedule",
+              Icons.calendar_month,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ScheduleScreen()),
               ),
-              title: const Text(
-                "Tutor",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
             ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.calendar_month,
-                  color: Colors.blue,
-                ),
+            _listTile(
+              "History",
+              Icons.history,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
               ),
-              title: const Text(
-                "Schedule",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ScheduleScreen()),
-                );
-              },
             ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.history,
-                  color: Colors.blue,
-                ),
+            _listTile(
+              "Courses",
+              Icons.school_outlined,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CoursesScreen()),
               ),
-              title: const Text(
-                "History",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HistoryScreen()),
-                );
-              },
             ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.school_outlined,
-                  color: Colors.blue,
-                ),
-              ),
-              title: const Text(
-                "Courses",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CoursesScreen()),
-                );
-              },
+            _listTile(
+              "My Course",
+              Icons.menu_book_outlined,
+              () => Navigator.pop(context),
             ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.menu_book_outlined,
-                  color: Colors.blue,
-                ),
-              ),
-              title: const Text(
-                "My Course",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
+            _listTile(
+              "Become a tutor",
+              Icons.image_not_supported_outlined,
+              () => Navigator.pop(context),
             ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.image_not_supported_outlined,
-                  color: Colors.blue,
-                ),
-              ),
-              title: const Text(
-                "Become a tutor",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const SizedBox(
-                width: 38,
-                height: 38,
-                child: Icon(
-                  Icons.logout_outlined,
-                  color: Colors.blue,
-                ),
-              ),
-              title: const Text(
-                "Logout",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
+            _listTile(
+              "Logout",
+              Icons.logout_outlined,
+              () => Navigator.of(context).popUntil((route) => route.isFirst),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _head(BuildContext context) {
+    return ListTile(
+      leading: Container(
+        width: 38,
+        height: 38,
+        clipBehavior: Clip.hardEdge,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        child: Image.asset(
+          'assets/images/avatar03.jpeg',
+          fit: BoxFit.cover,
+        ),
+      ),
+      title: const Text(
+        "Phhai",
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      ),
+      onTap: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget _listTile(
+    String title,
+    IconData icon,
+    Function onTap,
+  ) {
+    return ListTile(
+      leading: SizedBox(
+          width: 38,
+          height: 38,
+          child: Icon(
+            icon,
+            color: Colors.blue,
+          )),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      ),
+      onTap: onTap(),
     );
   }
 }

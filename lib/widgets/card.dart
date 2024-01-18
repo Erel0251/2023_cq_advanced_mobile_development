@@ -130,7 +130,7 @@ class DetailCard extends StatelessWidget {
   const DetailCard({
     required this.child,
     this.margin = const EdgeInsets.symmetric(vertical: 1),
-    this.height,
+    this.height = 100,
     super.key,
   });
 
@@ -182,20 +182,10 @@ class LessonCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            date,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            time,
-            style: const TextStyle(fontSize: 14),
-          ),
+          _date(),
+          _time(),
           const SizedBox(height: 10),
           DetailCard(
-            height: 100,
             margin: const EdgeInsets.symmetric(vertical: 10),
             child: Avatar(
               'Keegan',
@@ -355,6 +345,23 @@ class LessonCard extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+
+  Widget _date() {
+    return Text(
+      date,
+      style: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _time() {
+    return Text(
+      time,
+      style: const TextStyle(fontSize: 14),
     );
   }
 }

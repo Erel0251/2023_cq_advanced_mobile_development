@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:let_tutor_app/controllers/login_controller.dart';
+import 'package:let_tutor_app/controllers/authentication_controller.dart';
 
 import 'package:let_tutor_app/utils/valid_input.dart';
 import 'package:let_tutor_app/widgets/button.dart';
@@ -132,7 +132,7 @@ class FormInput extends StatelessWidget {
                 validPassword(_passwordController.text)) {
               try {
                 // Get response from server
-                final User user = await fetchLogin(
+                final User user = await loginWithEmail(
                     _usernameController.text, _passwordController.text);
                 // Navigate to home screen
               } catch (e) {

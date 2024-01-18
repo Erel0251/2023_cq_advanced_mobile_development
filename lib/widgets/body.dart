@@ -20,7 +20,7 @@ class MainBody extends StatelessWidget {
       body: ListView(
         children: [
           child,
-          if (containFooter) const Footer(),
+          if (containFooter) Footer(),
         ],
       ),
       floatingActionButton: const FloatButtons(),

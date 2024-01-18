@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:let_tutor_app/controllers/login_controller.dart';
+import 'package:let_tutor_app/controllers/authentication_controller.dart';
 import 'package:let_tutor_app/views/call_screen.dart';
 import 'package:let_tutor_app/views/courses/course_detail_screen.dart';
 import 'package:let_tutor_app/views/courses/course_info_screen.dart';
@@ -10,16 +10,7 @@ import 'package:let_tutor_app/views/tutor/home_screen.dart';
 import 'package:let_tutor_app/views/schedule_screen.dart';
 import 'package:let_tutor_app/views/user/setting_screen.dart';
 import 'package:let_tutor_app/views/tutor/tutor_screen.dart';
-import 'views/authentication/login_screen.dart'; //            1
-//import 'views/home_screen.dart'; //           2
-//import 'views/tutor_screen.dart'; //          3
-//import 'views/schedule_screen.dart'; //       4
-//import 'views/history_screen.dart'; //        5
-//import 'views/courses_screen.dart'; //        6
-//import 'views/course_info_screen.dart'; //    7
-//import 'views/course_detail_screen.dart'; //  8
-//import 'views/call_screen.dart'; //           9
-//import 'package:go_router/go_router.dart';
+import 'views/authentication/login_screen.dart';
 
 /*
 Login                           95% password hide/show
@@ -35,7 +26,7 @@ Login                           95% password hide/show
 
 Future main() async {
   await dotenv.load();
-  await fetchLogin('phhai@ymail.com', '123456');
+  await loginWithEmail('phhai@ymail.com', '123456');
   runApp(const MaterialApp(
     home: CoursesScreen(),
   ));
