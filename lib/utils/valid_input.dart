@@ -11,3 +11,8 @@ bool validPassword(String password) {
   return password.length >= 6;
   // && RegExp(r"^(?=.*?[A-Z])").hasMatch(password);
 }
+
+// check valid phone string
+bool validPhone(String phone) {
+  return RegExp(r"^[0-9]{10}$").hasMatch(phone);
+}

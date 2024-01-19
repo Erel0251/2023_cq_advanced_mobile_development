@@ -1,7 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
 import 'package:let_tutor_app/models/course/course_detail.dart';
 
 import 'package:let_tutor_app/models/course/response_courses.dart';
@@ -12,7 +13,8 @@ Future<ListCourses> fetchCourses({
   String type = 'course',
 }) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
 
   final response = await http.get(
     Uri.parse('$baseUrl$type?page=$page&size=$size'),
@@ -33,7 +35,8 @@ Future<ListCourses> fetchCourses({
 
 Future<CourseDetailData> fetchCourseById(String id) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
 
   final response = await http.get(
     Uri.parse('${baseUrl}course/$id'),

@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
 import 'package:let_tutor_app/controllers/authentication_controller.dart';
-
-import 'package:let_tutor_app/utils/valid_input.dart';
+import 'package:let_tutor_app/views/tutor/home_screen.dart';
 import 'package:let_tutor_app/widgets/button.dart';
-import 'package:let_tutor_app/models/authentication/resonse_login.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final String title1 = 'Say hello to your English tutors';
+
   final String title2 =
       'Become fluent faster through one on one video chat lessons tailored to your goals.';
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
       body: ListView(
+        controller: _scrollController,
         padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 30),
         children: [
           Image.asset('assets/images/login.8d01124a.png'),
           ...buildBanner(),
-          FormInput(),
-          _signUp(context),
+          AuthenFormInput(_scrollController),
         ],
       ),
     );
@@ -66,49 +73,67 @@ class LoginScreen extends StatelessWidget {
       ),
     ];
   }
-
-  Widget _signUp(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Not a member yet? ',
-          style: TextStyle(
-            height: 3,
-            fontSize: 14,
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-              (Route<dynamic> route) => false,
-            );
-          },
-          child: const Text(
-            'Sign up',
-            style: TextStyle(
-              height: 3,
-              fontSize: 14,
-              color: Color.fromRGBO(40, 106, 210, 1),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
-class FormInput extends StatelessWidget {
+class AuthenFormInput extends StatefulWidget {
   // constructor with 1 optional parameter as login or signup
-  FormInput({super.key, this.type = 'log in'});
+  const AuthenFormInput(this.scrollController, {super.key});
 
-  final String type;
+  final ScrollController scrollController;
+
+  @override
+  State<AuthenFormInput> createState() => _AuthenFormInputState();
+}
+
+class _AuthenFormInputState extends State<AuthenFormInput> {
+  // type of form
+  bool isUsingEmail = true;
+  String type = 'log in';
+
   // valid input email
-  final TextEditingController _usernameController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+
   // valid input password
-  final TextEditingController _passwordController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  Future<void> handleAuthentication(BuildContext context) async {
+    try {
+      // depend on type and input, call function login or signup for email or phone
+      Future<void> Function(String, String) handle = type == 'log in'
+          ? (isUsingEmail ? loginWithEmail : loginWithPhone)
+          : (isUsingEmail ? registerWithEmail : registerWithPhone);
+
+      await handle(
+        usernameController.text,
+        passwordController.text,
+      );
+
+      // Navigate to home screen when authenticate success
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: $e')),
+        );
+      }
+      // reload page
+      setState(() {
+        usernameController.text = '';
+        passwordController.text = '';
+        widget.scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,82 +146,13 @@ class FormInput extends StatelessWidget {
         // Password fields
         ...passwordSection(),
         // Forgot password
-        textTitle(
-            title: 'Forgot password?',
-            color: const Color.fromRGBO(40, 106, 210, 1)),
+        isUsingEmail ? _forgotPassword(context) : const SizedBox(height: 38),
         // Widget login button with logic check logic and exist email and password
-        ElevatedButton(
-          onPressed: () async {
-            // Logic check input valid email and password
-            if (validEmail(_usernameController.text) &&
-                validPassword(_passwordController.text)) {
-              try {
-                // Get response from server
-                final User user = await loginWithEmail(
-                    _usernameController.text, _passwordController.text);
-                // Navigate to home screen
-              } catch (e) {
-                // Show error message
-              }
-            }
-          },
-          child: Text(
-            type.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        const Text(
-          'Or continue with',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            height: 2,
-            fontSize: 16,
-          ),
-        ),
+        buttonAuthen(),
+        textNavigate('or continue with'),
         // Social login
         countinueWith(),
-      ],
-    );
-  }
-
-  // Widgets signin with socials or android
-  Widget countinueWith() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        // Facebook login
-        IconButton(
-          onPressed: () {},
-          iconSize: 50.0,
-          icon: SvgPicture.asset(
-            'assets/images/facebook-logo.3bac8064.svg',
-            allowDrawingOutsideViewBox: true,
-          ),
-        ),
-        // Google login
-        IconButton(
-          onPressed: () {},
-          iconSize: 50.0,
-          icon: SvgPicture.asset('assets/images/google-logo.5f53496e.svg'),
-        ),
-        // Android login
-        Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(60)),
-            border: Border.all(
-              color: Colors.blue,
-            ),
-          ),
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.ad_units_rounded),
-          ),
-        ),
+        _changeType(context),
       ],
     );
   }
@@ -204,17 +160,22 @@ class FormInput extends StatelessWidget {
   // Login title and field
   List<Widget> loginSection() {
     return [
-      textTitle(title: 'Login'),
+      textTitle(title: type == 'log in' ? 'Log in' : 'Sign up'),
       // Login text form with logic check input valid Email
       TextFormField(
-        controller: _usernameController,
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: "email",
+        controller: usernameController,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: isUsingEmail ? "email" : "phone",
+          hintStyle: const TextStyle(
+            color: Color.fromRGBO(164, 176, 190, 1),
+          ),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter your email';
+            return isUsingEmail
+                ? 'Please enter your email'
+                : 'Please enter your phone';
           }
           return null;
         },
@@ -228,11 +189,14 @@ class FormInput extends StatelessWidget {
       textTitle(title: 'Password'),
       // Password input field with hide characters and logic check input valid password
       TextFormField(
-        controller: _passwordController,
+        controller: passwordController,
         obscureText: true,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
           hintText: "password",
+          hintStyle: TextStyle(
+            color: Color.fromRGBO(164, 176, 190, 1),
+          ),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -242,6 +206,34 @@ class FormInput extends StatelessWidget {
         },
       ),
     ];
+  }
+
+  Widget _forgotPassword(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ForgotPasswordScreen(),
+        ),
+      ),
+      child: textTitle(
+          title: 'Forgot password?',
+          color: const Color.fromRGBO(40, 106, 210, 1)),
+    );
+  }
+
+  // Logic button login or signup
+  Widget buttonAuthen() {
+    return ElevatedButton(
+      onPressed: () => handleAuthentication(context),
+      child: Text(
+        type.toUpperCase(),
+        style: const TextStyle(
+          fontSize: 20,
+          //color: Colors.white,
+        ),
+      ),
+    );
   }
 
   // text title and color, avoid duplicate code
@@ -257,28 +249,156 @@ class FormInput extends StatelessWidget {
       ),
     );
   }
+
+  Widget textNavigate(String text) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        height: 2,
+        fontSize: 16,
+      ),
+    );
+  }
+
+  // Widgets signin with socials or android
+  Widget countinueWith() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        // Facebook login
+        _facebookIcon(),
+        // Google login
+        _googleIcon(),
+        isUsingEmail ? _androidIcon() : _emailIcon(),
+      ],
+    );
+  }
+
+  Widget _facebookIcon() {
+    return IconButton(
+      onPressed: () {},
+      iconSize: 50.0,
+      icon: SvgPicture.asset(
+        'assets/images/facebook-logo.3bac8064.svg',
+        allowDrawingOutsideViewBox: true,
+      ),
+    );
+  }
+
+  Widget _googleIcon() {
+    return IconButton(
+      onPressed: () {},
+      iconSize: 50.0,
+      icon: SvgPicture.asset('assets/images/google-logo.5f53496e.svg'),
+    );
+  }
+
+  Widget _androidIcon() {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(60)),
+        border: Border.all(
+          color: Colors.blue,
+        ),
+      ),
+      child: IconButton(
+        onPressed: () {
+          setState(() {
+            isUsingEmail = false;
+            type = 'log in';
+            widget.scrollController.animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          });
+        },
+        icon: const Icon(Icons.ad_units_rounded),
+      ),
+    );
+  }
+
+  Widget _emailIcon() {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(60)),
+        border: Border.all(
+          color: Colors.blue,
+        ),
+      ),
+      child: IconButton(
+        onPressed: () {
+          setState(() {
+            isUsingEmail = true;
+            type = 'log in';
+
+            widget.scrollController.animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          });
+        },
+        icon: const Icon(Icons.email_outlined),
+      ),
+    );
+  }
+
+  Widget _changeType(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        type == 'log in'
+            ? _text('Not a member yet? ')
+            : _text('Already have an account? '),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              type = type == 'log in' ? 'sign up' : 'log in';
+
+              widget.scrollController.animateTo(
+                0.0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            });
+          },
+          child: _text(
+            type == 'log in' ? 'Sign up' : 'Log in',
+            color: const Color.fromRGBO(40, 106, 210, 1),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _text(String text, {Color color = Colors.black}) {
+    return Text(
+      text,
+      style: TextStyle(
+        height: 3,
+        fontSize: 14,
+        color: color,
+      ),
+    );
+  }
 }
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+class ForgotPasswordScreen extends StatelessWidget {
+  ForgotPasswordScreen({super.key});
 
-  final String title1 = 'Say hello to your English tutors';
-  final String title2 =
-      'Become fluent faster through one on one video chat lessons tailored to your goals.';
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 30),
-        children: [
-          Image.asset('assets/images/login.8d01124a.png'),
-          ...buildBanner(),
-          FormInput(type: 'sign up'),
-          _login(context),
-        ],
-      ),
+      body: _formForgotPassword(),
     );
   }
 
@@ -296,60 +416,58 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  // Banner widget
-  List<Widget> buildBanner() {
-    return <Widget>[
-      Text(
-        title1,
+  Widget _formForgotPassword() {
+    return Center(
+      heightFactor: double.maxFinite,
+      widthFactor: double.maxFinite,
+      child: Column(
+        children: [
+          _header(),
+          _instruction(),
+          ...emailField(),
+        ],
+      ),
+    );
+  }
+
+  Widget _header() {
+    return const Center(
+      child: Text(
+        'Reset Password',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _instruction() {
+    return const Center(
+      child: Text(
+        'Please enter your email address to search for your account.',
         textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Color.fromRGBO(0, 113, 240, 1),
-          fontSize: 28,
-          overflow: TextOverflow.clip,
+        style: TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 16,
         ),
       ),
-      Text(
-        title2,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Color.fromRGBO(42, 52, 83, 1),
-          fontSize: 16,
-          overflow: TextOverflow.clip,
+    );
+  }
+
+  List<Widget> emailField() {
+    return [
+      const Text(
+        'Email',
+        style: TextStyle(
+          height: 3,
+          fontSize: 13,
+        ),
+      ),
+      // Login text form with logic check input valid Email
+      TextFormField(
+        controller: emailController,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
         ),
       ),
     ];
-  }
-
-  Widget _login(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Already have an account? ',
-          style: TextStyle(
-            height: 3,
-            fontSize: 14,
-          ),
-        ),
-        // link navigate to login screen
-        GestureDetector(
-          onTap: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-              (Route<dynamic> route) => false,
-            );
-          },
-          child: const Text(
-            'Log in',
-            style: TextStyle(
-              height: 3,
-              fontSize: 14,
-              color: Color.fromRGBO(40, 106, 210, 1),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }

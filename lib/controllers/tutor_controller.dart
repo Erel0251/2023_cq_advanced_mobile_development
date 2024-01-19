@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:let_tutor_app/models/course/feedback.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';
@@ -8,7 +9,8 @@ import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
 Future<TutorInfo> fetchTutorById(String id) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
 
   final response = await http.get(
     Uri.parse('${baseUrl}tutor/$id'),
@@ -29,7 +31,8 @@ Future<TutorInfo> fetchTutorById(String id) async {
 
 Future<ResponseTutors> fetchTutorsInfo() async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
 
   final response = await http.get(
     Uri.parse('${baseUrl}tutor/more?perPage=9&page=1'),
@@ -50,7 +53,8 @@ Future<ResponseTutors> fetchTutorsInfo() async {
 
 Future<void> addTutorToFavorite(String id) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
 
   final response = await http.post(
     Uri.parse('${baseUrl}user/manageFavoriteTutor'),
@@ -72,7 +76,8 @@ Future<void> addTutorToFavorite(String id) async {
 
 Future<void> addFeedback(ContentFeedback feedback) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String token = dotenv.env['AUTH_TOKEN'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
 
   final response = await http.post(
     Uri.parse('${baseUrl}user/feedback'),

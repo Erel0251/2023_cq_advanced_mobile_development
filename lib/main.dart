@@ -10,6 +10,7 @@ import 'package:let_tutor_app/views/tutor/home_screen.dart';
 import 'package:let_tutor_app/views/schedule_screen.dart';
 import 'package:let_tutor_app/views/user/setting_screen.dart';
 import 'package:let_tutor_app/views/tutor/tutor_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'views/authentication/login_screen.dart';
 
 /*
@@ -27,7 +28,7 @@ Login                           95% password hide/show
 Future main() async {
   await dotenv.load();
   await loginWithEmail('phhai@ymail.com', '123456');
-  runApp(const MaterialApp(
-    home: CoursesScreen(),
+  runApp(MaterialApp(
+    home: LoginScreen(),
   ));
 }
