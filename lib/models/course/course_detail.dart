@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:let_tutor_app/models/course/category.dart';
 import 'package:let_tutor_app/models/course/topic.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';

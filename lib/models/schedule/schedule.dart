@@ -1,4 +1,5 @@
 import 'package:let_tutor_app/models/schedule/schedule_detail.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
 
 class Schedule {
   final String id;
@@ -8,8 +9,11 @@ class Schedule {
   final int startTimeStamp;
   final int endTimeStamp;
   final String createdAt;
-  final bool isBooked;
+  final bool? isBooked;
   final List<ScheduleDetail>? scheduleDetails;
+  final TutorInfo? tutorInfo;
+  final String? date;
+  final bool? isDeleted;
 
   const Schedule({
     required this.id,
@@ -19,8 +23,11 @@ class Schedule {
     required this.startTimeStamp,
     required this.endTimeStamp,
     required this.createdAt,
-    required this.isBooked,
+    this.isBooked,
+    this.isDeleted,
     this.scheduleDetails,
+    this.tutorInfo,
+    this.date,
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
@@ -40,6 +47,10 @@ class Schedule {
               ),
             )
           : null,
+      tutorInfo: json['tutorInfo'] != null
+          ? TutorInfo.fromJson(json['tutorInfo'])
+          : null,
+      date: json['date'],
     );
   }
 }

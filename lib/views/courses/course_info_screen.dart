@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:let_tutor_app/controllers/course_controller.dart';
 import 'package:let_tutor_app/models/course/course_detail.dart';
-import 'package:let_tutor_app/models/course/topic.dart';
 import 'package:let_tutor_app/views/courses/course_detail_screen.dart';
 import 'package:let_tutor_app/widgets/card.dart';
 import 'package:let_tutor_app/widgets/body.dart';

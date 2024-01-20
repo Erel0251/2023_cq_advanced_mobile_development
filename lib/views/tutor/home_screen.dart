@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import 'package:let_tutor_app/controllers/schedule_controller.dart';
 
 import 'package:let_tutor_app/controllers/tutor_controller.dart';
 
+import 'package:let_tutor_app/models/schedule/booking_info.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';
 import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
@@ -52,20 +58,37 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   late Future<ResponseTutors> futureTutorsInfo;
+  late Future<List<BookingInfo>> futureBookedClass;
   String name = '';
   String tag = 'All';
   String date = '';
   String nationality = '';
+  int totalLesson = 0;
+  BookingInfo? upcomingLesson;
 
   @override
   void initState() {
     super.initState();
     futureTutorsInfo = fetchTutorsInfo();
+    futureBookedClass = getBookedClass();
   }
 
   String getTagCode(String tag) {
     // transfer tag name to format lower-case and replace space by dash
     return tag.toLowerCase().replaceAll(' ', '-');
+  }
+
+  String getTotalLesson(List<BookingInfo> bookedClass) {
+    int total = 0;
+    // compare time to now, if it is in the past, then add to total
+    for (BookingInfo booking in bookedClass) {
+      if (booking.scheduleDetail!.startPeriodTimestamp <
+          DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+        total += booking.scheduleDetail!.endPeriodTimestamp -
+            booking.scheduleDetail!.startPeriodTimestamp;
+      }
+    }
+    return total.toString();
   }
 
   @override
@@ -75,7 +98,12 @@ class _BodyState extends State<Body> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Banner(),
+          FutureBuilder(
+            future: futureBookedClass,
+            builder: ((context, snapshot) => (snapshot.hasData)
+                ? Banner(snapshot.data!)
+                : const Banner(null)),
+          ),
           // Search section
           ...searchSection(),
           const Divider(
@@ -110,23 +138,27 @@ class _BodyState extends State<Body> {
     );
   }
 
-  List<Card> cards(ResponseTutors data) {
-    List<Card> original = data.tutors.row
-        .map((e) => Card(
-              e,
-              // check data.favoriteTutors if its secondId contains e.userId
-              isLiked: data.favoriteTutors!
-                  .map((e) => e.secondId)
-                  .contains(e.userId),
-            ))
-        .toList();
+  List<Widget> cards(ResponseTutors data) {
+    List<Card> original = data.tutors.row.map((e) => Card(e)).toList();
 
     original = original
         .where((card) =>
             card.info.name!.toLowerCase().contains(name.toLowerCase()) &&
             (card.info.specialties!.contains(getTagCode(tag)) || tag == 'All'))
-        .toList();
-    return original..sort((a, b) => a.isLiked ? 0 : 1);
+        .toList()
+      ..sort((a, b) => a.info.isFavorite! ? -1 : 1);
+
+    return original.isNotEmpty
+        ? original
+        : [
+            const SizedBox(
+              width: double.maxFinite,
+              height: 300,
+              child: Center(
+                  child:
+                      Text("Sorry we can't find any tutor with this keywords")),
+            )
+          ];
   }
 
   List<Widget> searchSection() {
@@ -268,41 +300,120 @@ class _BodyState extends State<Body> {
   }
 }
 
-class Banner extends StatelessWidget {
-  const Banner({super.key});
+class Banner extends StatefulWidget {
+  const Banner(this.bookedClass, {super.key});
+
+  final List<BookingInfo>? bookedClass;
+
+  @override
+  State<Banner> createState() => _BannerState();
+}
+
+class _BannerState extends State<Banner> {
+  late Timer _timer;
+  int now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String getLessonTime(int startedTime, int endTime) {
+    DateTime started = DateTime.fromMillisecondsSinceEpoch(startedTime * 1000);
+    DateTime end = DateTime.fromMillisecondsSinceEpoch(endTime * 1000);
+    int endHour = end.hour;
+    int endMinute = end.minute;
+    String startTime = DateFormat("EEE, dd MMM yy kk:mm").format(started);
+    return '$startTime - $endHour:$endMinute';
+  }
+
+  String getTimeLeft(int startedTime) {
+    int timeLeft = startedTime - now;
+    int hour = timeLeft ~/ 3600;
+    int minute = (timeLeft % 3600) ~/ 60;
+    int second = timeLeft % 60;
+    return '$hour:$minute:$second';
+  }
+
+  String getTotalLessonTime() {
+    int total = 0;
+    // compare time to now, if it is in the past, then add to total
+    for (BookingInfo booking in widget.bookedClass!) {
+      if (booking.scheduleDetail!.startPeriodTimestamp <
+          DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+        total += booking.scheduleDetail!.endPeriodTimestamp -
+            booking.scheduleDetail!.startPeriodTimestamp;
+      }
+    }
+    String hour = (total ~/ 3600).toString();
+    String minute = ((total % 3600) ~/ 60).toString();
+    return 'Total time is $hour hours $minute minutes';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 230,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 20),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 12, 61, 223),
-            Color.fromARGB(255, 5, 23, 157)
-          ],
-        ),
-      ),
-      height: 230,
+      decoration: decoration(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          textTitle(),
-          textTimeLesson(),
-          buttonEnterLessonRoom(),
-          textTotalLessonTime(),
+        children: _buildBanner(),
+      ),
+    );
+  }
+
+  Decoration decoration() {
+    return const BoxDecoration(
+      borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
+      gradient: LinearGradient(
+        colors: [
+          Color.fromARGB(255, 12, 61, 223),
+          Color.fromARGB(255, 5, 23, 157)
         ],
       ),
     );
   }
 
+  List<Widget> _buildBanner() {
+    if (widget.bookedClass == null || widget.bookedClass!.isEmpty) {
+      return [
+        textTitle('No upcoming lesson'),
+      ];
+    } else {
+      if (widget.bookedClass![0].scheduleDetail!.startPeriodTimestamp > now) {
+        return [
+          textTitle('Upcoming lesson'),
+          textTimeLesson(widget.bookedClass![0]),
+          buttonEnterLessonRoom(),
+          textTotalLessonTime(),
+        ];
+      } else {
+        return [
+          textTitle('No upcoming lesson'),
+          textTotalLessonTime(),
+        ];
+      }
+    }
+  }
+
   // Widget text title
-  Widget textTitle() {
-    return const Text(
-      'Upcoming lesson',
-      style: TextStyle(
+  Widget textTitle(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
         fontSize: 30,
         color: Colors.white,
       ),
@@ -310,20 +421,24 @@ class Banner extends StatelessWidget {
   }
 
   // Widget text time lesson
-  Widget textTimeLesson() {
+  Widget textTimeLesson(BookingInfo booked) {
     return Wrap(
       children: [
         RichText(
-          text: const TextSpan(
-            text: 'Sun, 29 Oct 23 01:30 - 01:55 ',
-            style: TextStyle(
+          text: TextSpan(
+            text: getLessonTime(
+              booked.scheduleDetail!.startPeriodTimestamp,
+              booked.scheduleDetail!.endPeriodTimestamp,
+            ),
+            style: const TextStyle(
               fontSize: 20,
               color: Colors.white,
             ),
             children: [
               TextSpan(
-                text: '(starts in 01:40:04)',
-                style: TextStyle(
+                text:
+                    '(starts in ${getTimeLeft(booked.scheduleDetail!.startPeriodTimestamp)})',
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.yellow,
                 ),
@@ -337,36 +452,39 @@ class Banner extends StatelessWidget {
 
   // Widget button enter lesson room
   Widget buttonEnterLessonRoom() {
-    return Container(
-      width: 180,
-      padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Icon(
-            Icons.play_arrow_sharp,
-            color: Color.fromARGB(255, 12, 61, 223),
-          ),
-          Text(
-            'Enter lesson room',
-            style: TextStyle(
-              height: 2,
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: 180,
+        padding: const EdgeInsets.all(8),
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(
+              Icons.play_arrow_sharp,
               color: Color.fromARGB(255, 12, 61, 223),
             ),
-          ),
-        ],
+            Text(
+              'Enter lesson room',
+              style: TextStyle(
+                height: 2,
+                color: Color.fromARGB(255, 12, 61, 223),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // Widget text total lesson time
   Widget textTotalLessonTime() {
-    return const Text(
-      'Total lesson time is 512 hours 55 minutes',
-      style: TextStyle(
+    return Text(
+      getTotalLessonTime(),
+      style: const TextStyle(
         fontSize: 16,
         height: 2,
         color: Colors.white,
@@ -375,18 +493,18 @@ class Banner extends StatelessWidget {
   }
 }
 
-class Card extends StatelessWidget {
-  const Card(
-    this.info, {
-    this.isLiked = false,
-    super.key,
-  });
+class Card extends StatefulWidget {
+  const Card(this.info, {super.key});
 
   final TutorInfo info;
-  final bool isLiked;
 
+  @override
+  State<Card> createState() => _CardState();
+}
+
+class _CardState extends State<Card> {
   String getName() {
-    return info.name!.split(' ').map((e) => e[0]).join();
+    return widget.info.name!.split(' ').map((e) => e[0]).join();
   }
 
   @override
@@ -396,8 +514,8 @@ class Card extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  TutorScreen(info.userId!, feedbacks: info.feedbacks)),
+              builder: (context) => TutorScreen(widget.info.userId!,
+                  feedbacks: widget.info.feedbacks)),
         );
       },
       child: Container(
@@ -426,89 +544,21 @@ class Card extends StatelessWidget {
               children: [
                 Wrap(
                   children: [
-                    Container(
-                      width: 70,
-                      height: 70,
-                      margin: const EdgeInsets.only(right: 20),
-                      clipBehavior: Clip.hardEdge,
-                      decoration: const BoxDecoration(
-                        color: Color.fromRGBO(0, 133, 240, 1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: (info.avatar != null)
-                          ? ImageNetwork(info.avatar)
-                          : Center(
-                              child: Text(
-                                getName(),
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 40),
-                              ),
-                            ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          info.name!,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        (info.language != null)
-                            ? Row(
-                                children: [
-                                  Flag.fromString(
-                                    info.country!,
-                                    height: 22,
-                                    width: 22,
-                                  ),
-                                  Text(info.language!),
-                                ],
-                              )
-                            : const Icon(Icons.image_not_supported),
-                        (info.rating != null)
-                            ? Row(
-                                children: [
-                                  for (int i = 1;
-                                      i <= info.rating!.toInt();
-                                      i++)
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.yellow,
-                                      size: 16,
-                                    ),
-                                ],
-                              )
-                            : const Text(
-                                'No reviews yet',
-                                style: TextStyle(fontStyle: FontStyle.italic),
-                              ),
-                      ],
-                    ),
+                    _avatar(),
+                    _info(),
                   ],
                 ),
-                (isLiked)
-                    ? const Icon(
-                        Icons.favorite,
-                        color: Colors.pink,
-                        size: 32,
-                      )
-                    : const Icon(
-                        Icons.favorite_border,
-                        color: Color.fromRGBO(0, 133, 240, 1),
-                        size: 32,
-                      ),
+                _favoriteButton(),
               ],
             ),
             Wrap(
               children: [
-                for (String tag in formatTagsCard(info.specialties!))
+                for (String tag in formatTagsCard(widget.info.specialties!))
                   TagFilter(tag, isChecked: true),
               ],
             ),
             Text(
-              info.bio!,
+              widget.info.bio!,
               softWrap: true,
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
@@ -548,6 +598,98 @@ class Card extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _avatar() {
+    return Container(
+      width: 70,
+      height: 70,
+      margin: const EdgeInsets.only(right: 20),
+      clipBehavior: Clip.hardEdge,
+      decoration: const BoxDecoration(
+        color: Color.fromRGBO(0, 133, 240, 1),
+        shape: BoxShape.circle,
+      ),
+      child: (widget.info.avatar != null)
+          ? ImageNetwork(widget.info.avatar)
+          : Center(
+              child: Text(
+                getName(),
+                style: const TextStyle(color: Colors.white, fontSize: 40),
+              ),
+            ),
+    );
+  }
+
+  Widget _info() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.info.name!,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        (widget.info.language != null)
+            ? Row(
+                children: [
+                  Flag.fromString(
+                    widget.info.country!,
+                    height: 22,
+                    width: 22,
+                  ),
+                  Text(widget.info.language!),
+                ],
+              )
+            : const Icon(Icons.image_not_supported),
+        (widget.info.rating != null)
+            ? Row(
+                children: [
+                  for (int i = 1; i <= widget.info.rating!.toInt(); i++)
+                    const Icon(
+                      Icons.star,
+                      color: Colors.yellow,
+                      size: 16,
+                    ),
+                ],
+              )
+            : const Text(
+                'No reviews yet',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+      ],
+    );
+  }
+
+  Widget _favoriteButton() {
+    return GestureDetector(
+      onTap: () {
+        setState(() async {
+          try {
+            await addTutorToFavorite(widget.info.userId!);
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('An error occurred: $e')),
+              );
+            }
+          }
+        });
+      },
+      child: (widget.info.isFavorite != null && widget.info.isFavorite!)
+          ? const Icon(
+              Icons.favorite,
+              color: Colors.pink,
+              size: 32,
+            )
+          : const Icon(
+              Icons.favorite_border,
+              color: Color.fromRGBO(0, 133, 240, 1),
+              size: 32,
+            ),
     );
   }
 }

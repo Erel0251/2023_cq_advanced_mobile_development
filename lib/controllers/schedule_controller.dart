@@ -4,6 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:let_tutor_app/models/schedule/response_schedule.dart';
+import 'package:let_tutor_app/models/schedule/booking_info.dart';
+import 'package:let_tutor_app/models/schedule/response_booked.dart';
 
 Future<ResponseSchedule> getSchedule() async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
@@ -51,5 +53,27 @@ Future<ResponseSchedule> getScheduleByTutorId(String id) async {
     return responseSchedule;
   } else {
     throw Exception('Failed to load schedule information');
+  }
+}
+
+Future<List<BookingInfo>> getBookedClass() async {
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
+
+  final response = await http.get(
+    Uri.parse('${baseUrl}booking/list/student?orderBy=meeting&sortBy=desc'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final ResponseBooked responseBooked =
+        ResponseBooked.fromJson(jsonDecode(response.body));
+    return responseBooked.data.rows;
+  } else {
+    throw Exception('Failed to load booked class information');
   }
 }

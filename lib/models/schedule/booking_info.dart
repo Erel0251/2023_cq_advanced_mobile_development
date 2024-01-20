@@ -1,3 +1,6 @@
+import 'package:let_tutor_app/models/course/feedback.dart';
+import 'package:let_tutor_app/models/schedule/schedule_detail.dart';
+
 class BookingInfo {
   final int createdAtTimeStamp;
   final int updatedAtTimeStamp;
@@ -19,7 +22,11 @@ class BookingInfo {
   final String? calendarId;
   final bool? isDeleted;
   final bool? isTrial;
-  final int convertedLesson;
+  final int? convertedLesson;
+  final ScheduleDetail? scheduleDetail;
+  final String? classReview;
+  final List<ContentFeedback>? feedbacks;
+  final bool? showRecordUrl;
 
   const BookingInfo({
     required this.createdAtTimeStamp,
@@ -42,7 +49,11 @@ class BookingInfo {
     this.calendarId,
     this.isDeleted,
     this.isTrial,
-    required this.convertedLesson,
+    this.scheduleDetail,
+    this.convertedLesson,
+    this.classReview,
+    this.feedbacks,
+    this.showRecordUrl,
   });
 
   factory BookingInfo.fromJson(Map<String, dynamic> json) {
@@ -68,6 +79,16 @@ class BookingInfo {
       isDeleted: json['isDeleted'],
       isTrial: json['isTrial'],
       convertedLesson: json['convertedLesson'],
+      scheduleDetail: json['scheduleDetail'] != null
+          ? ScheduleDetail.fromJson(json['scheduleDetail'])
+          : null,
+      classReview: json['classReview'],
+      feedbacks: json['feedbacks'] != null
+          ? (json['feedbacks'] as List)
+              .map((e) => ContentFeedback.fromJson(e))
+              .toList()
+          : null,
+      showRecordUrl: json['showRecordUrl'],
     );
   }
 }
