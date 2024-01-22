@@ -18,9 +18,17 @@ class Pagination extends StatelessWidget {
   final int current;
   final int itemPerPage;
 
-  Color isBlocked(int i, int blockValue) {
-    if (i == blockValue) {
+  Color isBlocked(int i) {
+    if (i == current) {
       return Colors.black38;
+    } else {
+      return Colors.black;
+    }
+  }
+
+  Color isChosen(int i) {
+    if (i == current) {
+      return Colors.blueAccent;
     } else {
       return Colors.black;
     }
@@ -43,12 +51,12 @@ class Pagination extends StatelessWidget {
 
   Widget _buttonPage(int i) {
     return SquareButton(
-      color: isBlocked(i, current),
+      color: isChosen(i),
       child: Text(
-        i.toString(),
+        (i + 1).toString(),
         style: TextStyle(
           fontSize: 16,
-          color: isBlocked(i, current),
+          color: isChosen(i),
         ),
       ),
     );
@@ -56,10 +64,10 @@ class Pagination extends StatelessWidget {
 
   Widget _buttonBackward() {
     return SquareButton(
-      color: isBlocked(1, current),
+      color: isBlocked(1),
       child: Icon(
         Icons.arrow_back_ios_new_rounded,
-        color: isBlocked(1, current),
+        color: isBlocked(1),
         size: 16,
       ),
     );
@@ -67,10 +75,10 @@ class Pagination extends StatelessWidget {
 
   Widget _buttonForward() {
     return SquareButton(
-      color: isBlocked((total ~/ 10).ceil(), current),
+      color: isBlocked((total ~/ 10).ceil()),
       child: Icon(
         Icons.arrow_forward_ios_rounded,
-        color: isBlocked((total ~/ 10).ceil(), current),
+        color: isBlocked((total ~/ 10).ceil()),
         size: 16,
       ),
     );

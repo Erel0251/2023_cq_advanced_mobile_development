@@ -9,6 +9,7 @@ import 'package:let_tutor_app/controllers/schedule_controller.dart';
 import 'package:let_tutor_app/controllers/tutor_controller.dart';
 
 import 'package:let_tutor_app/models/schedule/booking_info.dart';
+import 'package:let_tutor_app/models/schedule/response_booked.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';
 import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
@@ -58,7 +59,7 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   late Future<ResponseTutors> futureTutorsInfo;
-  late Future<List<BookingInfo>> futureBookedClass;
+  late Future<ListBooked> futureBookedClass;
   String name = '';
   String tag = 'All';
   String date = '';
@@ -70,7 +71,7 @@ class _BodyState extends State<Body> {
   void initState() {
     super.initState();
     futureTutorsInfo = fetchTutorsInfo();
-    futureBookedClass = getBookedClass();
+    futureBookedClass = getFutureBookedClass();
   }
 
   String getTagCode(String tag) {
@@ -102,7 +103,7 @@ class _BodyState extends State<Body> {
               future: futureBookedClass,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return Banner(snapshot.data!);
+                  return Banner(snapshot.data!.rows);
                 } else if (snapshot.hasError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

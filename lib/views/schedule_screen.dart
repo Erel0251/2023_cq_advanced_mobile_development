@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:let_tutor_app/controllers/schedule_controller.dart';
+import 'package:let_tutor_app/models/schedule/booking_info.dart';
+import 'package:let_tutor_app/models/schedule/response_booked.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
 import 'package:let_tutor_app/widgets/card.dart';
 import 'package:let_tutor_app/widgets/header.dart';
 import 'package:let_tutor_app/widgets/body.dart';
+import 'package:let_tutor_app/widgets/pagination.dart';
 
-// TODO: fetch data current schedule from API
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
 
@@ -13,8 +17,21 @@ class ScheduleScreen extends StatelessWidget {
   }
 }
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   const Body({super.key});
+
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  late Future<ListBooked> futureBookedClass;
+
+  @override
+  void initState() {
+    super.initState();
+    futureBookedClass = getFutureBookedClass();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +42,21 @@ class Body extends StatelessWidget {
         children: [
           _header(),
           ..._latestBook(),
-          _lessonCard(),
+          FutureBuilder(
+              future: futureBookedClass,
+              builder: ((context, snapshot) {
+                if (snapshot.hasData) {
+                  return Column(
+                    children: [
+                      ..._lessonCards(data: snapshot.data!.rows),
+                      Pagination(snapshot.data!.count, itemPerPage: 20),
+                    ],
+                  );
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return const CircularProgressIndicator();
+              }))
         ],
       ),
     );
@@ -127,15 +158,24 @@ class Body extends StatelessWidget {
     ];
   }
 
-  Widget _lessonCard() {
-    return const LessonCard(
-      time: '1 lesson',
-      date: 'Sat, 04 Nov 23',
-      courseTime: '18:00 - 18:25',
-      nameTutor: 'Keegan',
-      avatar: 'assets/images/avatar01.jpg',
-      callable: true,
-    );
+  List<Widget> _lessonCards({List<BookingInfo> data = const []}) {
+    return data.map((e) {
+      TutorInfo tutor = e.getTutor();
+      String courseTime =
+          '${e.scheduleDetailInfo!.startPeriod} - ${e.scheduleDetailInfo!.endPeriod}';
+
+      return LessonCard(
+        date: e.scheduleDetailInfo!.getLessonDate(),
+        time: '1 lesson',
+        courseTime: courseTime,
+        nameTutor: tutor.name!,
+        avatar: tutor.avatar!,
+        code: tutor.country,
+        country: tutor.language,
+        studentRequest: e.studentRequest,
+        callable: true,
+      );
+    }).toList();
   }
 }
 

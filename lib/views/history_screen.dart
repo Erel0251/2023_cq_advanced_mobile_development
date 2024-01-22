@@ -40,7 +40,6 @@ class _BodyState extends State<Body> {
       child: Column(
         children: [
           _header(),
-          ..._lessonCards(),
           FutureBuilder(
               future: futureBookedClass,
               builder: ((context, snapshot) {
@@ -75,12 +74,13 @@ class _BodyState extends State<Body> {
   List<Widget> _lessonCards({List<BookingInfo> data = const []}) {
     return data.map((e) {
       TutorInfo tutor = e.getTutor();
+      String courseTime =
+          '${e.scheduleDetailInfo!.startPeriod} - ${e.scheduleDetailInfo!.endPeriod}';
 
       return LessonCard(
         date: e.scheduleDetailInfo!.getLessonDate(),
         time: e.scheduleDetailInfo!.getLessonRangeDate(),
-        courseTime:
-            '${e.scheduleDetailInfo!.startPeriod} - ${e.scheduleDetailInfo!.endPeriod}',
+        courseTime: courseTime,
         nameTutor: tutor.name!,
         avatar: tutor.avatar!,
         code: tutor.country,

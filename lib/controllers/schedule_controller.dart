@@ -78,6 +78,30 @@ Future<List<BookingInfo>> getBookedClass() async {
   }
 }
 
+Future<ListBooked> getFutureBookedClass(
+    {int page = 1, int perPage = 20}) async {
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
+
+  final response = await http.get(
+    Uri.parse(
+        '${baseUrl}booking/list/student?page=$page&perPage=$perPage&inFuture=1&orderBy=meeting&sortBy=asc'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final ResponseBooked responseBooked =
+        ResponseBooked.fromJson(jsonDecode(response.body));
+    return responseBooked.data;
+  } else {
+    throw Exception('Failed to load booked class information');
+  }
+}
+
 Future<ListBooked> getHistoryBookedClass(
     {int page = 1, int perPage = 20}) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';

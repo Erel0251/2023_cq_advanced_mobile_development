@@ -162,6 +162,7 @@ class LessonCard extends StatelessWidget {
       this.rates = const [],
       this.callable = false,
       this.children,
+      this.studentRequest,
       super.key});
 
   final String time;
@@ -174,6 +175,9 @@ class LessonCard extends StatelessWidget {
   final List<int> rates;
   final bool callable;
   final List<Widget>? children;
+  final String? studentRequest;
+  final String defaultRequest =
+      'Currently there are no requests for this class. Please write down any requests for the teacher.';
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +234,7 @@ class LessonCard extends StatelessWidget {
           height: 22,
           width: 22,
         ),
-        Text(country!),
+        Text(' $country'),
       ],
     );
   }
@@ -301,28 +305,7 @@ class LessonCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  courseTime,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.red),
-                    color: Colors.white,
-                  ),
-                  child: const Text(
-                    'Cancel',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                )
-              ],
-            ),
+            _timeSection(),
             Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 width: double.maxFinite,
@@ -349,11 +332,12 @@ class LessonCard extends StatelessWidget {
                       color: Colors.black26,
                     ),
                     Container(
+                      alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.all(8),
-                      child: const Text(
-                        'Currently there are no requests for this class. Please write down any requests for the teacher.',
+                      child: Text(
+                        (studentRequest ?? defaultRequest),
                         softWrap: true,
-                        style: TextStyle(color: Colors.black38),
+                        style: const TextStyle(color: Colors.black38),
                       ),
                     ),
                   ],
@@ -365,6 +349,30 @@ class LessonCard extends StatelessWidget {
       ),
       _joinMeeting(context)
     ];
+  }
+
+  Widget _timeSection() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          courseTime,
+          style: const TextStyle(fontSize: 20),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.red),
+            color: Colors.white,
+          ),
+          child: const Text(
+            'Cancel',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.red),
+          ),
+        )
+      ],
+    );
   }
 
   Widget _joinMeeting(BuildContext context) {
