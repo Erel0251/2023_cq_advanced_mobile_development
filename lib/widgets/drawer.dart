@@ -6,6 +6,35 @@ import 'package:let_tutor_app/views/history_screen.dart';
 class DrawerOnly extends StatelessWidget {
   const DrawerOnly({super.key});
 
+  void _popDrawer(BuildContext context) {
+    Navigator.pop(context);
+  }
+
+  void _pushSchedule(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+    );
+  }
+
+  void _pushHistory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HistoryScreen()),
+    );
+  }
+
+  void _pushCourses(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CoursesScreen()),
+    );
+  }
+
+  void _logout(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -18,51 +47,34 @@ class DrawerOnly extends StatelessWidget {
             _listTile(
               "Recurring Lesson Schedule",
               Icons.calendar_today_outlined,
-              () => Navigator.pop(context),
             ),
             _listTile(
               "Tutor",
               Icons.contacts_outlined,
-              () => Navigator.pop(context),
             ),
             _listTile(
               "Schedule",
               Icons.calendar_month,
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ScheduleScreen()),
-              ),
             ),
             _listTile(
               "History",
               Icons.history,
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HistoryScreen()),
-              ),
             ),
             _listTile(
               "Courses",
               Icons.school_outlined,
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CoursesScreen()),
-              ),
             ),
             _listTile(
               "My Course",
               Icons.menu_book_outlined,
-              () => Navigator.pop(context),
             ),
             _listTile(
               "Become a tutor",
               Icons.image_not_supported_outlined,
-              () => Navigator.pop(context),
             ),
             _listTile(
               "Logout",
               Icons.logout_outlined,
-              () => Navigator.of(context).popUntil((route) => route.isFirst),
             ),
           ],
         ),
@@ -94,11 +106,7 @@ class DrawerOnly extends StatelessWidget {
     );
   }
 
-  Widget _listTile(
-    String title,
-    IconData icon,
-    Function onTap,
-  ) {
+  Widget _listTile(String title, IconData icon) {
     return ListTile(
       leading: SizedBox(
           width: 38,
@@ -111,7 +119,7 @@ class DrawerOnly extends StatelessWidget {
         title,
         style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
-      onTap: onTap(),
+      onTap: () {},
     );
   }
 }

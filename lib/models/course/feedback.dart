@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 class ContentFeedback {
-  final String bookingId;
-  final String userId;
-  final int rating;
-  final String content;
+  final String? bookingId;
+  final String? userId;
+  final int? rating;
+  final String? content;
 
   ContentFeedback({
-    required this.bookingId,
-    required this.userId,
-    required this.rating,
-    required this.content,
+    this.bookingId,
+    this.userId,
+    this.rating,
+    this.content,
   });
 
   String toJson() {
@@ -24,10 +24,10 @@ class ContentFeedback {
 
   factory ContentFeedback.fromJson(Map<String, dynamic> json) {
     return ContentFeedback(
-      bookingId: json['bookingId'] as String,
-      userId: json['userId'] as String,
-      rating: json['rating'] as int,
-      content: json['content'] as String,
+      bookingId: json['bookingId'],
+      userId: json['userId'],
+      rating: json['rating'],
+      content: json['content'],
     );
   }
 }

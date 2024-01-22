@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:let_tutor_app/widgets/network_image.dart';
 
 class Avatar extends StatelessWidget {
   const Avatar(
@@ -35,10 +36,7 @@ class Avatar extends StatelessWidget {
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
-            child: Image.asset(
-              avatar,
-              fit: BoxFit.cover,
-            ),
+            child: ImageNetwork(avatar),
           ),
           Column(
             crossAxisAlignment: alignment,

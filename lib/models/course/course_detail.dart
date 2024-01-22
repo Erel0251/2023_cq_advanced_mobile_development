@@ -1,4 +1,5 @@
 import 'package:let_tutor_app/models/course/category.dart';
+import 'package:let_tutor_app/models/course/summary_course.dart';
 import 'package:let_tutor_app/models/course/topic.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';
 
@@ -40,6 +41,7 @@ class CourseDetailData {
   final List<Topic>? topics;
   final List<TutorInfo>? users;
   final List<Category>? categories;
+  final TutorCourse? tutorCourse;
 
   const CourseDetailData({
     required this.id,
@@ -62,6 +64,7 @@ class CourseDetailData {
     this.topics,
     this.users,
     this.categories,
+    this.tutorCourse,
   });
 
   // this case use snake_case
@@ -94,6 +97,9 @@ class CourseDetailData {
       categories: json['categories'] != null
           ? List<Category>.from(
               json['categories'].map((x) => Category.fromJson(x)))
+          : null,
+      tutorCourse: json['TutorCourse'] != null
+          ? TutorCourse.fromJson(json['TutorCourse'])
           : null,
     );
   }

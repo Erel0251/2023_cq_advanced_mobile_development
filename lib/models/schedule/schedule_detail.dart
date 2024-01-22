@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:let_tutor_app/models/schedule/booking_info.dart';
 import 'package:let_tutor_app/models/schedule/schedule.dart';
 
@@ -9,7 +10,7 @@ class ScheduleDetail {
   final String endPeriod;
   final String createdAt;
   final String updatedAt;
-  final bool isBooked;
+  final bool? isBooked;
   final List<BookingInfo>? bookingInfos;
   final Schedule? scheduleInfo;
 
@@ -21,7 +22,7 @@ class ScheduleDetail {
     required this.endPeriod,
     required this.createdAt,
     required this.updatedAt,
-    this.isBooked = false,
+    this.isBooked,
     this.bookingInfos,
     this.scheduleInfo,
   });
@@ -47,5 +48,26 @@ class ScheduleDetail {
           ? Schedule.fromJson(json['scheduleInfo'])
           : null,
     );
+  }
+
+  String getLessonDate() {
+    return DateFormat('EEE, dd MMM yy').format(
+      DateTime.fromMillisecondsSinceEpoch(
+        startPeriodTimestamp,
+        isUtc: true,
+      ),
+    );
+  }
+
+  String getLessonRangeDate() {
+    int now = DateTime.now().millisecondsSinceEpoch;
+    int timeDiff = now - startPeriodTimestamp;
+    int hourDiff = timeDiff ~/ (1000 * 60 * 60);
+    int dateDiff = hourDiff ~/ 24;
+    if (dateDiff <= 0) {
+      return '$hourDiff hours ago';
+    } else {
+      return '$dateDiff days ago';
+    }
   }
 }

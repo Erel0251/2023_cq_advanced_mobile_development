@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:let_tutor_app/widgets/button.dart';
 
+// TODO: This pagination is not finished yet
+// it need provider package to update the current page
+
 class Pagination extends StatelessWidget {
-  const Pagination(this.total, {this.current = 1, super.key});
+  const Pagination(
+    this.total, {
+    this.current = 1,
+    this.itemPerPage = 10,
+    super.key,
+  });
 
   // total mean total item, current mean current pages
   // default is 10 item per page
   final int total;
   final int current;
+  final int itemPerPage;
 
   Color isBlocked(int i, int blockValue) {
     if (i == blockValue) {
@@ -26,8 +35,7 @@ class Pagination extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         _buttonBackward(),
-        for (int i = 1; i <= ((total as double) / 10).ceil(); i++)
-          _buttonPage(i),
+        for (int i = 0; i <= (total ~/ 10).ceil(); i++) _buttonPage(i),
         _buttonForward(),
       ],
     );
@@ -59,10 +67,10 @@ class Pagination extends StatelessWidget {
 
   Widget _buttonForward() {
     return SquareButton(
-      color: isBlocked(((total as double) / 10).ceil(), current),
+      color: isBlocked((total ~/ 10).ceil(), current),
       child: Icon(
         Icons.arrow_forward_ios_rounded,
-        color: isBlocked(((total as double) / 10).ceil(), current),
+        color: isBlocked((total ~/ 10).ceil(), current),
         size: 16,
       ),
     );

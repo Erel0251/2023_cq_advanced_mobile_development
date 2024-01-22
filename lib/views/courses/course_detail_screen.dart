@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 import 'package:let_tutor_app/models/course/course_detail.dart';
 import 'package:let_tutor_app/models/course/topic.dart';
@@ -6,6 +7,7 @@ import 'package:let_tutor_app/models/course/topic.dart';
 import 'package:let_tutor_app/widgets/body.dart';
 import 'package:let_tutor_app/widgets/network_image.dart';
 
+// TODO: add pdf viewer
 class CourseDetailScreen extends StatelessWidget {
   const CourseDetailScreen(
     this.course, {
@@ -57,7 +59,7 @@ class _BodyState extends State<Body> {
         children: [
           ..._banner(widget.course),
           ..._listTopics(widget.course.topics),
-          //SfPdfViewer.network(pdfUrl!),
+          //SfPdfViewer.network(pdfUrl!),z
         ],
       ),
     );
@@ -104,6 +106,12 @@ class _BodyState extends State<Body> {
             )
           : const SizedBox(),
     ];
+  }
+
+  Widget _pdfView() {
+    return Container(
+      child: PDFView(),
+    );
   }
 
   Widget _topicName(Topic topic) {

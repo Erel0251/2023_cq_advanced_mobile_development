@@ -1,5 +1,6 @@
 import 'package:let_tutor_app/models/course/feedback.dart';
 import 'package:let_tutor_app/models/schedule/schedule_detail.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
 
 class BookingInfo {
   final int createdAtTimeStamp;
@@ -23,8 +24,8 @@ class BookingInfo {
   final bool? isDeleted;
   final bool? isTrial;
   final int? convertedLesson;
-  final ScheduleDetail? scheduleDetail;
-  final String? classReview;
+  final ScheduleDetail? scheduleDetailInfo;
+  final Map<String, dynamic>? classReview;
   final List<ContentFeedback>? feedbacks;
   final bool? showRecordUrl;
 
@@ -49,7 +50,7 @@ class BookingInfo {
     this.calendarId,
     this.isDeleted,
     this.isTrial,
-    this.scheduleDetail,
+    this.scheduleDetailInfo,
     this.convertedLesson,
     this.classReview,
     this.feedbacks,
@@ -79,8 +80,8 @@ class BookingInfo {
       isDeleted: json['isDeleted'],
       isTrial: json['isTrial'],
       convertedLesson: json['convertedLesson'],
-      scheduleDetail: json['scheduleDetail'] != null
-          ? ScheduleDetail.fromJson(json['scheduleDetail'])
+      scheduleDetailInfo: json['scheduleDetailInfo'] != null
+          ? ScheduleDetail.fromJson(json['scheduleDetailInfo'])
           : null,
       classReview: json['classReview'],
       feedbacks: json['feedbacks'] != null
@@ -90,5 +91,9 @@ class BookingInfo {
           : null,
       showRecordUrl: json['showRecordUrl'],
     );
+  }
+
+  TutorInfo getTutor() {
+    return scheduleDetailInfo!.scheduleInfo!.tutorInfo!;
   }
 }

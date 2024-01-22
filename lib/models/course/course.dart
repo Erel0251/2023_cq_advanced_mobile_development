@@ -1,4 +1,4 @@
-import 'package:let_tutor_app/models/tutor/summary_course.dart';
+import 'package:let_tutor_app/models/course/summary_course.dart';
 
 class Course {
   final String id;

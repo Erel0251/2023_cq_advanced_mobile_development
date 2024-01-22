@@ -12,7 +12,7 @@ class ResponseBooked {
   factory ResponseBooked.fromJson(Map<String, dynamic> json) {
     return ResponseBooked(
       message: json['message'],
-      data: json['data'],
+      data: ListBooked.fromJson(json['data']),
     );
   }
 }

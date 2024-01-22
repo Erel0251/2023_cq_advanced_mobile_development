@@ -92,9 +92,9 @@ class CourseCard extends StatelessWidget {
 }
 
 class RatingCard extends StatelessWidget {
-  const RatingCard({this.rate = 0, super.key});
+  const RatingCard({this.rate, super.key});
 
-  final int rate;
+  final int? rate;
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +102,14 @@ class RatingCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (rate == 0)
+          if (rate == null)
             const Text(
               'Add a Rating',
               style: TextStyle(color: Colors.blue),
             )
           else ...[
             Row(
-              children: [const Text('Rating: '), Stars(rate)],
+              children: [const Text('Rating: '), Stars(rate!)],
             ),
             const Text(
               'Edit',
@@ -130,7 +130,7 @@ class DetailCard extends StatelessWidget {
   const DetailCard({
     required this.child,
     this.margin = const EdgeInsets.symmetric(vertical: 1),
-    this.height = 100,
+    this.height,
     super.key,
   });
 
@@ -156,9 +156,10 @@ class LessonCard extends StatelessWidget {
       required this.date,
       required this.courseTime,
       required this.avatar,
+      required this.nameTutor,
       this.code,
       this.country,
-      this.rate = 0,
+      this.rates = const [],
       this.callable = false,
       this.children,
       super.key});
@@ -166,10 +167,11 @@ class LessonCard extends StatelessWidget {
   final String time;
   final String date;
   final String courseTime;
+  final String nameTutor;
   final String avatar;
   final String? code;
   final String? country;
-  final int rate;
+  final List<int> rates;
   final bool callable;
   final List<Widget>? children;
 
@@ -188,161 +190,16 @@ class LessonCard extends StatelessWidget {
           DetailCard(
             margin: const EdgeInsets.symmetric(vertical: 10),
             child: Avatar(
-              'Keegan',
-              avatar: 'assets/images/avatar01.jpg',
+              nameTutor,
+              avatar: avatar,
               edge: 68,
-              alignment: CrossAxisAlignment.start,
-              detailAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                if (code != null)
-                  Row(
-                    children: [
-                      Flag.fromString(
-                        code!,
-                        height: 22,
-                        width: 22,
-                      ),
-                      Text(country!),
-                    ],
-                  ),
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.chat_outlined,
-                      size: 14,
-                      color: Colors.blue,
-                    ),
-                    Text(
-                      ' Direct Message',
-                      style: TextStyle(fontSize: 14, color: Colors.blue),
-                    )
-                  ],
-                )
+                if (code != null) _flag(),
+                _message(),
               ],
             ),
           ),
-          if (!callable) ...[
-            DetailCard(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                children: [
-                  Text(
-                    'Lesson Time: $courseTime',
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ],
-              ),
-            ),
-            const DetailCard(
-              child: Row(
-                children: [
-                  Text(
-                    'No request for lesson',
-                  ),
-                ],
-              ),
-            ),
-            const DetailCard(
-              child: Row(
-                children: [
-                  Text(
-                    "Tutor haven't reviewed yet",
-                  ),
-                ],
-              ),
-            ),
-            DetailCard(
-              child: RatingCard(
-                rate: rate,
-              ),
-            ),
-          ] else ...[
-            DetailCard(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        courseTime,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.red),
-                          color: Colors.white,
-                        ),
-                        child: const Text(
-                          'Cancel',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      )
-                    ],
-                  ),
-                  Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      width: double.maxFinite,
-                      decoration: BoxDecoration(
-                          color: Colors.white10,
-                          border: Border.all(color: Colors.black26)),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            color: Colors.white10,
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Request for lesson'),
-                                Text(
-                                  'Edit Request',
-                                  style: TextStyle(color: Colors.blue),
-                                )
-                              ],
-                            ),
-                          ),
-                          const Divider(
-                            color: Colors.black26,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            child: const Text(
-                              'Currently there are no requests for this class. Please write down any requests for the teacher.',
-                              softWrap: true,
-                              style: TextStyle(color: Colors.black38),
-                            ),
-                          ),
-                        ],
-                      )
-                      //
-                      )
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CallScreen()),
-                );
-              },
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  color: Colors.blue,
-                  child: const Text(
-                    'Go to meeting',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            )
-          ],
+          if (callable) ..._commingClass(context) else ..._historyClass(),
         ],
       ),
     );
@@ -362,6 +219,173 @@ class LessonCard extends StatelessWidget {
     return Text(
       time,
       style: const TextStyle(fontSize: 14),
+    );
+  }
+
+  Widget _flag() {
+    return Row(
+      children: [
+        Flag.fromString(
+          code!,
+          height: 22,
+          width: 22,
+        ),
+        Text(country!),
+      ],
+    );
+  }
+
+  Widget _message() {
+    return const Row(
+      children: [
+        Icon(
+          Icons.chat_outlined,
+          size: 14,
+          color: Colors.blue,
+        ),
+        Text(
+          ' Direct Message',
+          style: TextStyle(fontSize: 14, color: Colors.blue),
+        )
+      ],
+    );
+  }
+
+  List<Widget> _historyClass() {
+    return [
+      DetailCard(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            Text(
+              'Lesson Time: $courseTime',
+              style: const TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+      ),
+      // TODO: add fetch data from api to text below
+      const DetailCard(
+        child: Row(
+          children: [
+            Text(
+              'No request for lesson',
+            ),
+          ],
+        ),
+      ),
+      const DetailCard(
+        child: Row(
+          children: [
+            Text(
+              "Tutor haven't reviewed yet",
+            ),
+          ],
+        ),
+      ),
+      ..._rating(),
+    ];
+  }
+
+  List<Widget> _rating() {
+    if (rates.isNotEmpty) {
+      return rates.map((e) => RatingCard(rate: e)).toList();
+    } else {
+      return [const RatingCard()];
+    }
+  }
+
+  List<Widget> _commingClass(BuildContext context) {
+    return [
+      DetailCard(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  courseTime,
+                  style: const TextStyle(fontSize: 20),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.red),
+                    color: Colors.white,
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                )
+              ],
+            ),
+            Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                    color: Colors.white10,
+                    border: Border.all(color: Colors.black26)),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      color: Colors.white10,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Request for lesson'),
+                          Text(
+                            'Edit Request',
+                            style: TextStyle(color: Colors.blue),
+                          )
+                        ],
+                      ),
+                    ),
+                    const Divider(
+                      color: Colors.black26,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      child: const Text(
+                        'Currently there are no requests for this class. Please write down any requests for the teacher.',
+                        softWrap: true,
+                        style: TextStyle(color: Colors.black38),
+                      ),
+                    ),
+                  ],
+                )
+                //
+                )
+          ],
+        ),
+      ),
+      _joinMeeting(context)
+    ];
+  }
+
+  Widget _joinMeeting(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CallScreen()),
+        );
+      },
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.blue,
+          child: const Text(
+            'Go to meeting',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:let_tutor_app/widgets/body.dart';
 
+// TODO: a lot of thing to do here
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
 
@@ -79,8 +80,8 @@ class Body extends StatelessWidget {
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(5),
             ),
-            child: TextField(
-              decoration: const InputDecoration(
+            child: const TextField(
+              decoration: InputDecoration(
                 border: InputBorder.none,
               ),
             ),

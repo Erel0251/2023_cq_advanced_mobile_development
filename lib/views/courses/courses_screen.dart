@@ -75,6 +75,7 @@ class _BodyState extends State<Body> {
                 "LiveTutor has built the most quality, methodical and scientific courses in the fields of life for those who are in need of improving their knowledge of the fields.",
             image: 'assets/images/course.svg',
           ),
+          // TODO: Filter courses and search courses
           Wrap(
             children: [
               FilterCourses(
@@ -155,7 +156,7 @@ class _BodyState extends State<Body> {
       //decoration: const BoxDecoration(
       //  border: Border(bottom: BorderSide(color: Colors.blue)),
       //),
-      child: Text(tabName, style: TextStyle(color: Colors.black)),
+      child: Text(tabName, style: const TextStyle(color: Colors.black)),
     );
   }
 

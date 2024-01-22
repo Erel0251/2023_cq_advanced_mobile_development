@@ -1,5 +1,7 @@
 import 'package:let_tutor_app/models/authentication/tokens.dart';
 import 'package:let_tutor_app/models/authentication/wallet_info.dart';
+import 'package:let_tutor_app/models/course/course.dart';
+import 'package:let_tutor_app/models/course/course_detail.dart';
 
 class ResponseLogin {
   final User user;
@@ -30,7 +32,7 @@ class User {
   final String? birthday;
   final bool? isActivated;
   final Wallet walletInfo;
-  final List<String>? courses;
+  final List<CourseDetailData>? courses;
   final String? requireNote;
   final String? level;
   final List<Map<String, dynamic>>? learnTopics;
@@ -76,8 +78,11 @@ class User {
       birthday: json['birthday'],
       isActivated: json['isActivated'],
       walletInfo: Wallet.fromJson(json['walletInfo']),
-      courses:
-          json['courses'] != null ? List<String>.from(json['courses']) : null,
+      courses: json['courses'] != null
+          ? List<CourseDetailData>.from(json['courses'].map(
+              (course) => CourseDetailData.fromJson(course),
+            ))
+          : null,
       requireNote: json['requireNote'],
       level: json['level'],
       learnTopics: json['learnTopics'] != null

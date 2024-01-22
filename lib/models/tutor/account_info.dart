@@ -1,4 +1,4 @@
-import 'package:let_tutor_app/models/tutor/course.dart';
+import 'package:let_tutor_app/models/course/course.dart';
 import 'package:let_tutor_app/models/tutor/feedback.dart';
 
 class TutorInfo {

@@ -82,10 +82,10 @@ class _BodyState extends State<Body> {
     int total = 0;
     // compare time to now, if it is in the past, then add to total
     for (BookingInfo booking in bookedClass) {
-      if (booking.scheduleDetail!.startPeriodTimestamp <
-          DateTime.now().millisecondsSinceEpoch ~/ 1000) {
-        total += booking.scheduleDetail!.endPeriodTimestamp -
-            booking.scheduleDetail!.startPeriodTimestamp;
+      if (booking.scheduleDetailInfo!.startPeriodTimestamp <
+          DateTime.now().millisecondsSinceEpoch) {
+        total += booking.scheduleDetailInfo!.endPeriodTimestamp -
+            booking.scheduleDetailInfo!.startPeriodTimestamp;
       }
     }
     return total.toString();
@@ -99,11 +99,19 @@ class _BodyState extends State<Body> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           FutureBuilder(
-            future: futureBookedClass,
-            builder: ((context, snapshot) => (snapshot.hasData)
-                ? Banner(snapshot.data!)
-                : const Banner(null)),
-          ),
+              future: futureBookedClass,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Banner(snapshot.data!);
+                } else if (snapshot.hasError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('An error occurred: $snapshot.error')),
+                  );
+                  return const Banner(null);
+                }
+                return const Banner(null);
+              }),
           // Search section
           ...searchSection(),
           const Divider(
@@ -146,7 +154,8 @@ class _BodyState extends State<Body> {
             card.info.name!.toLowerCase().contains(name.toLowerCase()) &&
             (card.info.specialties!.contains(getTagCode(tag)) || tag == 'All'))
         .toList()
-      ..sort((a, b) => a.info.isFavorite! ? -1 : 1);
+      ..sort(
+          (a, b) => a.info.isFavorite == null || !a.info.isFavorite! ? -1 : 1);
 
     return original.isNotEmpty
         ? original
@@ -311,14 +320,14 @@ class Banner extends StatefulWidget {
 
 class _BannerState extends State<Banner> {
   late Timer _timer;
-  int now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  int now = DateTime.now().millisecondsSinceEpoch;
 
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+        now = DateTime.now().millisecondsSinceEpoch;
       });
     });
   }
@@ -330,8 +339,8 @@ class _BannerState extends State<Banner> {
   }
 
   String getLessonTime(int startedTime, int endTime) {
-    DateTime started = DateTime.fromMillisecondsSinceEpoch(startedTime * 1000);
-    DateTime end = DateTime.fromMillisecondsSinceEpoch(endTime * 1000);
+    DateTime started = DateTime.fromMillisecondsSinceEpoch(startedTime);
+    DateTime end = DateTime.fromMillisecondsSinceEpoch(endTime);
     int endHour = end.hour;
     int endMinute = end.minute;
     String startTime = DateFormat("EEE, dd MMM yy kk:mm").format(started);
@@ -340,30 +349,35 @@ class _BannerState extends State<Banner> {
 
   String getTimeLeft(int startedTime) {
     int timeLeft = startedTime - now;
-    int hour = timeLeft ~/ 3600;
-    int minute = (timeLeft % 3600) ~/ 60;
-    int second = timeLeft % 60;
-    return '$hour:$minute:$second';
+    String time = DateFormat("kk:mm:ss")
+        .format(DateTime.fromMillisecondsSinceEpoch(timeLeft, isUtc: true));
+    return time;
   }
 
   String getTotalLessonTime() {
     int total = 0;
     // compare time to now, if it is in the past, then add to total
     for (BookingInfo booking in widget.bookedClass!) {
-      if (booking.scheduleDetail!.startPeriodTimestamp <
-          DateTime.now().millisecondsSinceEpoch ~/ 1000) {
-        total += booking.scheduleDetail!.endPeriodTimestamp -
-            booking.scheduleDetail!.startPeriodTimestamp;
+      if (booking.scheduleDetailInfo!.startPeriodTimestamp <
+          DateTime.now().millisecondsSinceEpoch) {
+        total += booking.scheduleDetailInfo!.endPeriodTimestamp -
+            booking.scheduleDetailInfo!.startPeriodTimestamp;
       }
     }
-    String hour = (total ~/ 3600).toString();
-    String minute = ((total % 3600) ~/ 60).toString();
-    return 'Total time is $hour hours $minute minutes';
+    if (total == 0) {
+      return 'Welcome to Letutor';
+    } else {
+      // currently total on milliseconds, convert to hours and minutes
+      int hour = total ~/ 3600000;
+      int minute = (total % 3600000) ~/ 60000;
+      return 'Total time is $hour hours $minute minutes';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.maxFinite,
       height: 230,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 20),
@@ -393,10 +407,12 @@ class _BannerState extends State<Banner> {
         textTitle('No upcoming lesson'),
       ];
     } else {
-      if (widget.bookedClass![0].scheduleDetail!.startPeriodTimestamp > now) {
+      if (widget.bookedClass![0].scheduleDetailInfo!.startPeriodTimestamp >
+          now) {
         return [
           textTitle('Upcoming lesson'),
           textTimeLesson(widget.bookedClass![0]),
+          textTimeLeft(widget.bookedClass![0]),
           buttonEnterLessonRoom(),
           textTotalLessonTime(),
         ];
@@ -420,33 +436,27 @@ class _BannerState extends State<Banner> {
     );
   }
 
+  Widget textTimeLeft(BookingInfo booked) {
+    return Text(
+      '(starts in ${getTimeLeft(booked.scheduleDetailInfo!.startPeriodTimestamp)})',
+      style: const TextStyle(
+        fontSize: 16,
+        color: Colors.yellow,
+      ),
+    );
+  }
+
   // Widget text time lesson
   Widget textTimeLesson(BookingInfo booked) {
-    return Wrap(
-      children: [
-        RichText(
-          text: TextSpan(
-            text: getLessonTime(
-              booked.scheduleDetail!.startPeriodTimestamp,
-              booked.scheduleDetail!.endPeriodTimestamp,
-            ),
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-            ),
-            children: [
-              TextSpan(
-                text:
-                    '(starts in ${getTimeLeft(booked.scheduleDetail!.startPeriodTimestamp)})',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.yellow,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return Text(
+      getLessonTime(
+        booked.scheduleDetailInfo!.startPeriodTimestamp,
+        booked.scheduleDetailInfo!.endPeriodTimestamp,
+      ),
+      style: const TextStyle(
+        fontSize: 20,
+        color: Colors.white,
+      ),
     );
   }
 
@@ -666,18 +676,17 @@ class _CardState extends State<Card> {
 
   Widget _favoriteButton() {
     return GestureDetector(
-      onTap: () {
-        setState(() async {
-          try {
-            await addTutorToFavorite(widget.info.userId!);
-          } catch (e) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('An error occurred: $e')),
-              );
-            }
+      onTap: () async {
+        try {
+          await addTutorToFavorite(widget.info.userId!);
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('An error occurred: $e')),
+            );
           }
-        });
+        }
+        setState(() {});
       },
       child: (widget.info.isFavorite != null && widget.info.isFavorite!)
           ? const Icon(

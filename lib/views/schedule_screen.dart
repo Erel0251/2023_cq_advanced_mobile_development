@@ -3,6 +3,7 @@ import 'package:let_tutor_app/widgets/card.dart';
 import 'package:let_tutor_app/widgets/header.dart';
 import 'package:let_tutor_app/widgets/body.dart';
 
+// TODO: fetch data current schedule from API
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
 
@@ -131,6 +132,7 @@ class Body extends StatelessWidget {
       time: '1 lesson',
       date: 'Sat, 04 Nov 23',
       courseTime: '18:00 - 18:25',
+      nameTutor: 'Keegan',
       avatar: 'assets/images/avatar01.jpg',
       callable: true,
     );

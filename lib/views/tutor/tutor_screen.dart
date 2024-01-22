@@ -8,7 +8,7 @@ import 'package:let_tutor_app/controllers/tutor_controller.dart';
 import 'package:let_tutor_app/models/meeting.dart';
 import 'package:let_tutor_app/models/tutor/account_info.dart';
 import 'package:let_tutor_app/models/tutor/feedback.dart';
-import 'package:let_tutor_app/models/tutor/course.dart';
+import 'package:let_tutor_app/models/course/course.dart';
 
 import 'package:let_tutor_app/views/courses/course_info_screen.dart';
 
@@ -21,6 +21,7 @@ import 'package:let_tutor_app/widgets/body.dart';
 import 'package:let_tutor_app/widgets/pagination.dart';
 import 'package:let_tutor_app/widgets/network_image.dart';
 
+// TODO: calendar, booking form, favorite & report button
 class TutorScreen extends StatelessWidget {
   const TutorScreen(this.tutorId, {this.feedbacks, super.key});
   final String tutorId;
@@ -211,13 +212,13 @@ class _BodyState extends State<Body> {
         TableRow(
           children: [
             _titleSection('Balance'),
-            Text('You have n lessons left'),
+            const Text('You have n lessons left'),
           ],
         ),
         TableRow(
           children: [
             _titleSection('Price'),
-            Text('1 lesson'),
+            const Text('1 lesson'),
           ],
         ),
       ],
@@ -538,7 +539,7 @@ class _CheckBoxReasonReportState extends State<CheckBoxReasonReport> {
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen(this.url, {super.key});
-  final String? url;
+  final String url;
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -557,7 +558,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // or the internet.
     _controller = VideoPlayerController.networkUrl(
       Uri.parse(
-        widget.url!,
+        widget.url,
       ),
     );
 
@@ -580,25 +581,119 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // build video screen with center play button show when video is not playing,
+    // and video controller bar show when video is playing
     return FutureBuilder(
-      future: _initializeVideoPlayerFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          // If the VideoPlayerController has finished initialization, use
-          // the data it provides to limit the aspect ratio of the video.
-          return AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            // Use the VideoPlayer widget to display the video.
-            child: VideoPlayer(_controller),
+        future: _initializeVideoPlayerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return _video();
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
+  }
+
+  Widget _video() {
+    return AspectRatio(
+      aspectRatio: _controller.value.aspectRatio,
+      // Use the VideoPlayer widget to display the video.
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            // If the video is playing, pause it.
+            if (_controller.value.isPlaying) {
+              _controller.pause();
+            } else {
+              // If the video is paused, play it.
+              _controller.play();
+            }
+          });
+        },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            VideoPlayer(_controller),
+            _buttonPlay(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buttonPlay() {
+    return _controller.value.isPlaying
+        ? Container()
+        : Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: const Icon(
+              Icons.play_arrow,
+              color: Colors.white,
+              size: 40,
+            ),
           );
-        } else {
-          // If the VideoPlayerController is still initializing, show a
-          // loading spinner.
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+  }
+
+  Widget _tabbar() {
+    return Positioned(
+      bottom: 0,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 40,
+        color: Colors.black.withOpacity(0.5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _controller.seekTo(
+                    const Duration(seconds: 0),
+                  );
+                });
+              },
+              icon: const Icon(
+                Icons.replay_10,
+                color: Colors.white,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _controller.seekTo(
+                    _controller.value.position - const Duration(seconds: 10),
+                  );
+                });
+              },
+              icon: const Icon(
+                Icons.replay_10,
+                color: Colors.white,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  if (_controller.value.isPlaying) {
+                    _controller.pause();
+                  } else {
+                    _controller.play();
+                  }
+                });
+              },
+              icon: Icon(
+                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -617,7 +712,7 @@ class Part extends StatelessWidget {
   final String? description;
   final List<String>? tags;
   final List<String>? contents;
-  final List<Course>? courses;
+  final List<dynamic>? courses;
 
   @override
   Widget build(BuildContext context) {
@@ -808,7 +903,7 @@ List<Widget> _categories(TutorInfo tutor) {
     ),
     Part(
       'Suggested courses',
-      courses: (tutor.courses as List<Course>?),
+      courses: tutor.user!.courses,
     ),
     Part(
       'Interests',
