@@ -141,10 +141,12 @@ class DetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.maxFinite,
       height: height,
       margin: margin,
       padding: const EdgeInsets.all(8),
       color: Colors.white,
+      alignment: Alignment.centerLeft,
       child: child,
     );
   }
@@ -163,6 +165,7 @@ class LessonCard extends StatelessWidget {
       this.callable = false,
       this.children,
       this.studentRequest,
+      this.tutorReview,
       super.key});
 
   final String time;
@@ -176,6 +179,7 @@ class LessonCard extends StatelessWidget {
   final bool callable;
   final List<Widget>? children;
   final String? studentRequest;
+  final String? tutorReview;
   final String defaultRequest =
       'Currently there are no requests for this class. Please write down any requests for the teacher.';
 
@@ -268,27 +272,46 @@ class LessonCard extends StatelessWidget {
           ],
         ),
       ),
-      // TODO: add fetch data from api to text below
-      const DetailCard(
-        child: Row(
-          children: [
-            Text(
-              'No request for lesson',
-            ),
-          ],
-        ),
-      ),
-      const DetailCard(
-        child: Row(
-          children: [
-            Text(
-              "Tutor haven't reviewed yet",
-            ),
-          ],
-        ),
-      ),
+      _studentRequest(),
+      _tutorReview(),
       ..._rating(),
     ];
+  }
+
+  Widget _studentRequest() {
+    if (studentRequest == null) {
+      return const DetailCard(
+        child: Text('No request for lesson'),
+      );
+    } else {
+      return DetailCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Request for lesson'),
+            Text(studentRequest!),
+          ],
+        ),
+      );
+    }
+  }
+
+  Widget _tutorReview() {
+    if (tutorReview == null) {
+      return const DetailCard(
+        child: Text("Tutor haven't reviewed yet"),
+      );
+    } else {
+      return DetailCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Tutor Review'),
+            Text(tutorReview!),
+          ],
+        ),
+      );
+    }
   }
 
   List<Widget> _rating() {

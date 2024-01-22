@@ -85,6 +85,8 @@ class _BodyState extends State<Body> {
         avatar: tutor.avatar!,
         code: tutor.country,
         country: tutor.language,
+        studentRequest: e.studentRequest,
+        tutorReview: e.tutorReview,
         rates: e.feedbacks!.map((e) => e.rating!).toList(),
       );
     }).toList();

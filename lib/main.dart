@@ -27,6 +27,6 @@ Future main() async {
   await dotenv.load();
   await loginWithEmail('student@lettutor.com', '123456');
   runApp(const MaterialApp(
-    home: ScheduleScreen(),
+    home: HistoryScreen(),
   ));
 }
