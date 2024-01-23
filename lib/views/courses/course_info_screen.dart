@@ -70,6 +70,12 @@ class _BodyState extends State<Body> {
       image: data.imageUrl!,
       description: data.description,
       child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CourseDetailScreen(data)),
+          );
+        },
         child: Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.all(10),
@@ -243,25 +249,35 @@ class TopicInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CourseDetailScreen(course, order: order)),
+        );
+      },
+      child: Container(
         width: double.maxFinite,
         height: 130,
         margin: const EdgeInsets.symmetric(vertical: 10),
         padding: const EdgeInsets.all(10),
+        // border decoration with shadow outside
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.black12),
-            borderRadius: BorderRadius.circular(8)),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      CourseDetailScreen(course, order: order)),
-            );
-          },
-          child: _topicCard(course.topics![order]),
-        ));
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.black12),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: _topicCard(course.topics![order]),
+      ),
+    );
   }
 
   Widget _topicCard(topic) {
@@ -271,7 +287,7 @@ class TopicInfo extends StatelessWidget {
         children: [
           if (topic.orderCourse != null)
             Text(
-              '${topic.orderCourse!}.',
+              '${topic.orderCourse! + 1}.',
               style: const TextStyle(fontSize: 16),
             ),
           Text(

@@ -3,6 +3,7 @@ import 'package:let_tutor_app/views/schedule_screen.dart';
 import 'package:let_tutor_app/views/courses/courses_screen.dart';
 import 'package:let_tutor_app/views/history_screen.dart';
 
+// TODO: add navigation to other screens
 class DrawerOnly extends StatelessWidget {
   const DrawerOnly({super.key});
 

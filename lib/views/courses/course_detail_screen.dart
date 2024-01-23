@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import 'package:let_tutor_app/models/course/course_detail.dart';
 import 'package:let_tutor_app/models/course/topic.dart';
@@ -7,7 +7,6 @@ import 'package:let_tutor_app/models/course/topic.dart';
 import 'package:let_tutor_app/widgets/body.dart';
 import 'package:let_tutor_app/widgets/network_image.dart';
 
-// TODO: add pdf viewer
 class CourseDetailScreen extends StatelessWidget {
   const CourseDetailScreen(
     this.course, {
@@ -59,7 +58,7 @@ class _BodyState extends State<Body> {
         children: [
           ..._banner(widget.course),
           ..._listTopics(widget.course.topics),
-          //SfPdfViewer.network(pdfUrl!),z
+          _decoratedPDFView(child: SfPdfViewer.network(pdfUrl!)),
         ],
       ),
     );
@@ -108,9 +107,24 @@ class _BodyState extends State<Body> {
     ];
   }
 
-  Widget _pdfView() {
+  Widget _decoratedPDFView({required Widget child}) {
     return Container(
-      child: PDFView(),
+      margin: const EdgeInsets.all(10),
+      width: double.maxFinite,
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.black12),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 5,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 
@@ -131,7 +145,7 @@ class _BodyState extends State<Body> {
           children: [
             if (topic.orderCourse != null)
               Text(
-                '${topic.orderCourse}.  ',
+                '${topic.orderCourse! + 1}.  ',
                 style:
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),

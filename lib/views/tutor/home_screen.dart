@@ -99,7 +99,7 @@ class _BodyState extends State<Body> {
                 } else if (snapshot.hasError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text('An error occurred: $snapshot.error')),
+                        content: Text('An error occurred: ${snapshot.error}')),
                   );
                   return const Banner(null);
                 }
