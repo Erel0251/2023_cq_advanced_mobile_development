@@ -1,6 +1,5 @@
 import 'package:let_tutor_app/models/authentication/tokens.dart';
 import 'package:let_tutor_app/models/authentication/wallet_info.dart';
-import 'package:let_tutor_app/models/course/course.dart';
 import 'package:let_tutor_app/models/course/course_detail.dart';
 
 class ResponseLogin {

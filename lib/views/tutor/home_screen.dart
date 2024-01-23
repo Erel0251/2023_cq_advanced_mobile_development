@@ -60,6 +60,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   late Future<ResponseTutors> futureTutorsInfo;
   late Future<ListBooked> futureBookedClass;
+  late Future<String> futureTotalLesson;
   String name = '';
   String tag = 'All';
   String date = '';
@@ -71,25 +72,13 @@ class _BodyState extends State<Body> {
   void initState() {
     super.initState();
     futureTutorsInfo = fetchTutorsInfo();
-    futureBookedClass = getFutureBookedClass();
+    futureBookedClass = getFutureBookedClass(perPage: 1);
+    futureTotalLesson = getTotalTimeBooked();
   }
 
   String getTagCode(String tag) {
     // transfer tag name to format lower-case and replace space by dash
     return tag.toLowerCase().replaceAll(' ', '-');
-  }
-
-  String getTotalLesson(List<BookingInfo> bookedClass) {
-    int total = 0;
-    // compare time to now, if it is in the past, then add to total
-    for (BookingInfo booking in bookedClass) {
-      if (booking.scheduleDetailInfo!.startPeriodTimestamp <
-          DateTime.now().millisecondsSinceEpoch) {
-        total += booking.scheduleDetailInfo!.endPeriodTimestamp -
-            booking.scheduleDetailInfo!.startPeriodTimestamp;
-      }
-    }
-    return total.toString();
   }
 
   @override
@@ -100,10 +89,13 @@ class _BodyState extends State<Body> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           FutureBuilder(
-              future: futureBookedClass,
+              future: Future.wait([futureBookedClass, futureTotalLesson]),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return Banner(snapshot.data!.rows);
+                  ListBooked bookedClass = snapshot.data![0] as ListBooked;
+                  String totalLesson = snapshot.data![1] as String;
+
+                  return Banner(bookedClass.rows, totalLesson: totalLesson);
                 } else if (snapshot.hasError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -311,9 +303,10 @@ class _BodyState extends State<Body> {
 }
 
 class Banner extends StatefulWidget {
-  const Banner(this.bookedClass, {super.key});
+  const Banner(this.bookedClass, {this.totalLesson = '', super.key});
 
   final List<BookingInfo>? bookedClass;
+  final String totalLesson;
 
   @override
   State<Banner> createState() => _BannerState();
@@ -355,26 +348,6 @@ class _BannerState extends State<Banner> {
     return time;
   }
 
-  String getTotalLessonTime() {
-    int total = 0;
-    // compare time to now, if it is in the past, then add to total
-    for (BookingInfo booking in widget.bookedClass!) {
-      if (booking.scheduleDetailInfo!.startPeriodTimestamp <
-          DateTime.now().millisecondsSinceEpoch) {
-        total += booking.scheduleDetailInfo!.endPeriodTimestamp -
-            booking.scheduleDetailInfo!.startPeriodTimestamp;
-      }
-    }
-    if (total == 0) {
-      return 'Welcome to Letutor';
-    } else {
-      // currently total on milliseconds, convert to hours and minutes
-      int hour = total ~/ 3600000;
-      int minute = (total % 3600000) ~/ 60000;
-      return 'Total time is $hour hours $minute minutes';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -385,7 +358,10 @@ class _BannerState extends State<Banner> {
       decoration: decoration(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildBanner(),
+        children: [
+          ..._buildBanner(),
+          textTotalLessonTime(),
+        ],
       ),
     );
   }
@@ -404,25 +380,14 @@ class _BannerState extends State<Banner> {
 
   List<Widget> _buildBanner() {
     if (widget.bookedClass == null || widget.bookedClass!.isEmpty) {
-      return [
-        textTitle('No upcoming lesson'),
-      ];
+      return [textTitle('No upcoming lesson')];
     } else {
-      if (widget.bookedClass![0].scheduleDetailInfo!.startPeriodTimestamp >
-          now) {
-        return [
-          textTitle('Upcoming lesson'),
-          textTimeLesson(widget.bookedClass![0]),
-          textTimeLeft(widget.bookedClass![0]),
-          buttonEnterLessonRoom(),
-          textTotalLessonTime(),
-        ];
-      } else {
-        return [
-          textTitle('No upcoming lesson'),
-          textTotalLessonTime(),
-        ];
-      }
+      return [
+        textTitle('Upcoming lesson'),
+        textTimeLesson(widget.bookedClass!.first),
+        textTimeLeft(widget.bookedClass!.first),
+        buttonEnterLessonRoom(),
+      ];
     }
   }
 
@@ -494,7 +459,9 @@ class _BannerState extends State<Banner> {
   // Widget text total lesson time
   Widget textTotalLessonTime() {
     return Text(
-      getTotalLessonTime(),
+      widget.totalLesson.isNotEmpty
+          ? widget.totalLesson
+          : "Welcome to Let's Tutor",
       style: const TextStyle(
         fontSize: 16,
         height: 2,

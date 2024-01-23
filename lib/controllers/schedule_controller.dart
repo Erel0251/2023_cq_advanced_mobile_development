@@ -128,3 +128,31 @@ Future<ListBooked> getHistoryBookedClass(
     throw Exception('Failed to load booked class information');
   }
 }
+
+Future<String> getTotalTimeBooked() async {
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
+
+  final response = await http.get(
+    Uri.parse('${baseUrl}call/total'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final int? totalTimeBooked = jsonDecode(response.body)['total'];
+    if (totalTimeBooked == null) {
+      return '';
+    } else {
+      // the totalTImeBooked is in hours, get the hours and minutes
+      final int hours = totalTimeBooked ~/ 60;
+      final int minutes = totalTimeBooked % 60;
+      return 'Total lesson time is $hours hours $minutes minutes';
+    }
+  } else {
+    throw Exception('Failed to load total time booked');
+  }
+}
