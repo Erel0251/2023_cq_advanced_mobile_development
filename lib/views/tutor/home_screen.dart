@@ -647,6 +647,11 @@ class _CardState extends State<Card> {
       onTap: () async {
         try {
           await addTutorToFavorite(widget.info.userId!);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Added tutor to favorite')),
+            );
+          }
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(

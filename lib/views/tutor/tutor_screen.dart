@@ -371,15 +371,16 @@ class Detail extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        const FavoriteButton(),
-        ReportButton(tutor.user!.name!),
+        FavoriteButton(tutor.userId!),
+        ReportButton(tutor.userId!, tutor.user!.name!),
       ],
     );
   }
 }
 
 class FavoriteButton extends StatefulWidget {
-  const FavoriteButton({super.key});
+  const FavoriteButton(this.tutorId, {super.key});
+  final String tutorId;
 
   @override
   State<FavoriteButton> createState() => _FavoriteButtonState();
@@ -391,7 +392,13 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        await addTutorToFavorite(widget.tutorId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Added tutor to favorite')),
+          );
+        }
         setState(() {
           isLiked = !isLiked;
         });
@@ -413,8 +420,9 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 }
 
 class ReportButton extends StatelessWidget {
-  const ReportButton(this.nameTutor, {super.key});
+  const ReportButton(this.tutorId, this.nameTutor, {super.key});
   final String nameTutor;
+  final String tutorId;
 
   @override
   Widget build(BuildContext context) {
