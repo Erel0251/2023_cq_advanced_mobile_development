@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -26,7 +24,6 @@ import 'package:let_tutor_app/widgets/body.dart';
 import 'package:let_tutor_app/widgets/pagination.dart';
 import 'package:let_tutor_app/widgets/network_image.dart';
 
-// TODO: calendar, booking form, favorite & report button
 class TutorScreen extends StatelessWidget {
   const TutorScreen(this.tutorId, {this.feedbacks, super.key});
   final String tutorId;
@@ -150,16 +147,17 @@ class _BodyState extends State<Body> {
           DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp);
       DateTime endTime = DateTime.fromMillisecondsSinceEpoch(e.endTimeStamp);
 
-      return Meeting(eventName, startTime, endTime, background, false);
+      return Meeting(e.scheduleDetails!.first.id, eventName, startTime, endTime,
+          background, false);
     }).toList();
     return meetings;
   }
 
-  void calendarTapped(CalendarTapDetails calendarTapDetails) {
+  void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     if (calendarTapDetails.targetElement == CalendarElement.appointment ||
         calendarTapDetails.targetElement == CalendarElement.agenda) {
       final Meeting appointmentDetails = calendarTapDetails.appointments![0];
-      showDialog(
+      String result = await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text(appointmentDetails.eventName),
@@ -170,20 +168,63 @@ class _BodyState extends State<Body> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, 'Book'),
+              onPressed: () async {
+                int rs =
+                    await bookLesson(scheduleId: appointmentDetails.scheduleId);
+                if (rs == 200) {
+                  Navigator.pop(context, 'Success');
+                } else {
+                  Navigator.pop(context, 'Failed');
+                }
+              },
               child: const Text('Book'),
             ),
           ],
         ),
       );
+      if (result == 'Book') {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Booking detail'),
+            content: const Text('Booked successfully'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Ok'),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
+      } else if (result == 'Failed') {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Booking detail'),
+            content: const Text('Booked failed'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Ok'),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
   Form _form(Meeting appointmentDetails) {
     return Form(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.max,
+      child: ListView(
         children: [
           // horizontal line
           const Divider(thickness: 0.7),
@@ -240,6 +281,7 @@ class _BodyState extends State<Body> {
 
   Widget _price() {
     return Table(
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder.all(
         color: Colors.black12,
         width: 0.7,
@@ -248,7 +290,7 @@ class _BodyState extends State<Body> {
         TableRow(
           children: [
             _titleSection('Balance'),
-            const Text('You have n lessons left'),
+            const Text('You have 9137 lessons left'),
           ],
         ),
         TableRow(

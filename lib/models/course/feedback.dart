@@ -3,7 +3,7 @@ import 'dart:convert';
 class ContentFeedback {
   final String? bookingId;
   final String? userId;
-  final int? rating;
+  final dynamic rating;
   final String? content;
 
   ContentFeedback({

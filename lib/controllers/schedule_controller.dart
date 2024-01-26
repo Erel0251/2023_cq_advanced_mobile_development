@@ -152,3 +152,46 @@ Future<String> getTotalTimeBooked() async {
     throw Exception('Failed to load total time booked');
   }
 }
+
+Future<int> bookLesson({String note = '', String scheduleId = ''}) async {
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
+
+  final response = await http.post(
+    Uri.parse('${baseUrl}booking'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(
+      <String, dynamic>{
+        'scheduleDetailIds': [scheduleId],
+        'note': note,
+      },
+    ),
+  );
+
+  return response.statusCode;
+}
+
+Future<int> cancelLesson({String bookingId = ''}) async {
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
+
+  final response = await http.delete(
+    Uri.parse('${baseUrl}booking'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(
+      <String, dynamic>{
+        'scheduleDetailIds': [bookingId],
+      },
+    ),
+  );
+
+  return response.statusCode;
+}

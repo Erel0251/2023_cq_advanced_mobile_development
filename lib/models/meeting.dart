@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class Meeting {
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+  Meeting(this.scheduleId, this.eventName, this.from, this.to, this.background,
+      this.isAllDay);
 
+  String scheduleId;
   String eventName;
   DateTime from;
   DateTime to;
