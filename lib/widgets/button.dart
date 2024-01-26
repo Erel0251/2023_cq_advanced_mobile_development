@@ -379,8 +379,7 @@ class ReportButton extends StatelessWidget {
 
   Widget _formReport() {
     return Form(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: ListView(
         children: [
           // horizontal line
           const Divider(thickness: 1),
