@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 
 import 'package:let_tutor_app/controllers/schedule_controller.dart';
-
 import 'package:let_tutor_app/controllers/tutor_controller.dart';
 
 import 'package:let_tutor_app/models/schedule/booking_info.dart';
@@ -22,14 +22,9 @@ import 'package:let_tutor_app/widgets/body.dart';
 import 'package:let_tutor_app/widgets/network_image.dart';
 import 'package:let_tutor_app/widgets/pagination.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return const MainBody(Body());
@@ -61,6 +56,7 @@ class _BodyState extends State<Body> {
   late Future<ResponseTutors> futureTutorsInfo;
   late Future<ListBooked> futureBookedClass;
   late Future<String> futureTotalLesson;
+
   String name = '';
   String tag = 'All';
   String date = '';
@@ -97,10 +93,6 @@ class _BodyState extends State<Body> {
 
                   return Banner(bookedClass.rows, totalLesson: totalLesson);
                 } else if (snapshot.hasError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('An error occurred: ${snapshot.error}')),
-                  );
                   return const Banner(null);
                 }
                 return const Banner(null);
@@ -386,7 +378,8 @@ class _BannerState extends State<Banner> {
         textTitle('Upcoming lesson'),
         textTimeLesson(widget.bookedClass!.first),
         textTimeLeft(widget.bookedClass!.first),
-        buttonEnterLessonRoom(),
+        buttonEnterLessonRoom(
+            widget.bookedClass!.first.studentMeetingLink ?? ''),
       ];
     }
   }
@@ -427,9 +420,31 @@ class _BannerState extends State<Banner> {
   }
 
   // Widget button enter lesson room
-  Widget buttonEnterLessonRoom() {
+  Widget buttonEnterLessonRoom(String path) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        String baseUrl = 'https://sandbox.app.lettutor.com';
+
+        var options = JitsiMeetConferenceOptions(
+          //serverURL: baseUrl + path,
+          room: 'Let tutor meeting',
+          configOverrides: {
+            "startWithAudioMuted": false,
+            "startWithVideoMuted": false,
+            "subject": "Lipitori",
+          },
+          featureFlags: {
+            "unsaferoomwarning.enabled": false,
+            "ios.screensharing.enabled": true
+          },
+          userInfo: JitsiMeetUserInfo(
+              displayName: "Gabi",
+              email: "gabi.borlea.1@gmail.com",
+              avatar:
+                  "https://avatars.githubusercontent.com/u/57035818?s=400&u=02572f10fe61bca6fc20426548f3920d53f79693&v=4"),
+        );
+        JitsiMeet().join(options);
+      },
       child: Container(
         width: 180,
         padding: const EdgeInsets.all(8),

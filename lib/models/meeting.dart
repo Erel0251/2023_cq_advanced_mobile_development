@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class Meeting {
@@ -8,7 +9,7 @@ class Meeting {
   DateTime from;
   DateTime to;
   Color background;
-  bool isAllDay;
+  bool isAllDay = false;
 }
 
 class MeetingDataSource extends CalendarDataSource {

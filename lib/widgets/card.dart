@@ -1,6 +1,6 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
-import 'package:let_tutor_app/views/call_screen.dart';
+import 'package:let_tutor_app/views/lessons/call_screen.dart';
 import 'package:let_tutor_app/widgets/avatar.dart';
 import 'package:let_tutor_app/views/courses/course_info_screen.dart';
 import 'package:let_tutor_app/widgets/network_image.dart';

@@ -20,7 +20,7 @@ class User {
   final String? requireNote;
   final String? level;
   final List<Map<String, dynamic>>? learnTopics;
-  final List<String>? testPreparations;
+  final List<dynamic>? testPreparations;
   final bool? isPhoneActivated;
   final int? timezone;
   final dynamic referralInfo;
@@ -110,7 +110,7 @@ class User {
           ? List<Map<String, dynamic>>.from(json['learnTopics'])
           : null,
       testPreparations: json['testPreparations'] != null
-          ? List<String>.from(json['testPreparations'])
+          ? List<dynamic>.from(json['testPreparations'])
           : null,
       isPhoneActivated: json['isPhoneActivated'],
       timezone: json['timezone'],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:let_tutor_app/views/schedule_screen.dart';
+import 'package:let_tutor_app/views/lessons/schedule_screen.dart';
 import 'package:let_tutor_app/views/courses/courses_screen.dart';
-import 'package:let_tutor_app/views/history_screen.dart';
+import 'package:let_tutor_app/views/lessons/history_screen.dart';
+import 'package:let_tutor_app/views/home_screen.dart';
 
 // TODO: add navigation to other screens
 class DrawerOnly extends StatelessWidget {
@@ -32,6 +33,13 @@ class DrawerOnly extends StatelessWidget {
     );
   }
 
+  void _pushHome(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
   void _logout(BuildContext context) {
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
@@ -46,34 +54,42 @@ class DrawerOnly extends StatelessWidget {
           children: [
             _head(context),
             _listTile(
+              context,
               "Recurring Lesson Schedule",
               Icons.calendar_today_outlined,
             ),
             _listTile(
+              context,
               "Tutor",
               Icons.contacts_outlined,
             ),
             _listTile(
+              context,
               "Schedule",
               Icons.calendar_month,
             ),
             _listTile(
+              context,
               "History",
               Icons.history,
             ),
             _listTile(
+              context,
               "Courses",
               Icons.school_outlined,
             ),
             _listTile(
+              context,
               "My Course",
               Icons.menu_book_outlined,
             ),
             _listTile(
+              context,
               "Become a tutor",
               Icons.image_not_supported_outlined,
             ),
             _listTile(
+              context,
               "Logout",
               Icons.logout_outlined,
             ),
@@ -107,7 +123,29 @@ class DrawerOnly extends StatelessWidget {
     );
   }
 
-  Widget _listTile(String title, IconData icon) {
+  Widget _listTile(BuildContext context, String title, IconData icon) {
+    void _onTap() {
+      switch (title) {
+        case "Tutor":
+          _pushHome(context);
+          break;
+        case "Schedule":
+          _pushSchedule(context);
+          break;
+        case "History":
+          _pushHistory(context);
+          break;
+        case "Courses":
+          _pushCourses(context);
+          break;
+        case "Logout":
+          _logout(context);
+          break;
+        default:
+          break;
+      }
+    }
+
     return ListTile(
       leading: SizedBox(
           width: 38,
@@ -120,7 +158,7 @@ class DrawerOnly extends StatelessWidget {
         title,
         style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
-      onTap: () {},
+      onTap: _onTap,
     );
   }
 }

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:let_tutor_app/controllers/course_controller.dart';
+
 import 'package:let_tutor_app/models/course/course_detail.dart';
 import 'package:let_tutor_app/models/course/response_courses.dart';
+
+import 'package:let_tutor_app/providers/course_provider.dart';
+
 import 'package:let_tutor_app/widgets/card.dart';
 import 'package:let_tutor_app/widgets/header.dart';
 import 'package:let_tutor_app/widgets/body.dart';
@@ -11,21 +17,34 @@ class CoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(length: 3, child: MainBody(Body()));
+    return DefaultTabController(
+      length: 3,
+      child: MainBody(
+        ChangeNotifierProvider(
+          create: (context) => CoursesFilterProvider(),
+          child: Body(),
+        ),
+      ),
+    );
   }
 }
 
-class Body extends StatefulWidget {
+class Body extends StatelessWidget {
   Body({super.key});
 
-  final List<String> coursesLevel = [
+  final List<String> coursesLevel = const [
     'Any Level',
     'Beginner',
+    'Upper-Beginner',
+    'Pre-Intermediate',
     'Intermediate',
+    'Upper-Intermediate',
+    'Pre-Advanced',
     'Advanced',
+    'Very Advanced',
   ];
 
-  final List<String> coursesCategory = [
+  final List<String> coursesCategory = const [
     'For Studying Abroad',
     'English For Traveling',
     'Conversational ENglish',
@@ -42,25 +61,10 @@ class Body extends StatefulWidget {
     'TOEFL',
   ];
 
-  final List<String> coursesSort = [
+  final List<String> coursesSort = const [
     'Level decreasing',
     'Level ascending',
   ];
-
-  @override
-  State<Body> createState() => _BodyState();
-}
-
-class _BodyState extends State<Body> {
-  late Future<ListCourses> futureCourses;
-
-  String type = 'course';
-
-  @override
-  void initState() {
-    super.initState();
-    futureCourses = fetchCourses();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,27 +83,27 @@ class _BodyState extends State<Body> {
           Wrap(
             children: [
               FilterCourses(
-                widget.coursesLevel,
+                coursesLevel,
                 hint: 'Select level',
               ),
               FilterCourses(
-                widget.coursesCategory,
+                coursesCategory,
                 hint: 'Select category',
               ),
               FilterCourses(
-                widget.coursesSort,
+                coursesSort,
                 hint: 'Sort by level',
               ),
             ],
           ),
-          _navigationBar(),
+          _navigationBar(context),
           SizedBox(
             height: double.maxFinite,
             child: TabBarView(
               children: [
-                _coursesInfo(),
-                _coursesInfo(),
-                _coursesInfo(),
+                _coursesInfo(context),
+                _coursesInfo(context),
+                _coursesInfo(context),
               ],
             ),
           ),
@@ -108,7 +112,7 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Widget _navigationBar() {
+  Widget _navigationBar(BuildContext context) {
     return Container(
       width: double.maxFinite,
       decoration: const BoxDecoration(
@@ -119,19 +123,19 @@ class _BodyState extends State<Body> {
         tabs: [
           Tab(
             child: GestureDetector(
-              onTap: () => fetchCoursesByType('course'),
+              onTap: () => fetchCoursesByType(context, 'course'),
               child: _buttonTabBar('Courses'),
             ),
           ),
           Tab(
             child: GestureDetector(
-              onTap: () => fetchCoursesByType('e-book'),
+              onTap: () => fetchCoursesByType(context, 'e-book'),
               child: _buttonTabBar('E-Book'),
             ),
           ),
           Tab(
             child: GestureDetector(
-              onTap: () => fetchCoursesByType('interactive-e-book'),
+              onTap: () => fetchCoursesByType(context, 'interactive-e-book'),
               child: _buttonTabBar('Interactive E-book'),
             ),
           ),
@@ -140,13 +144,10 @@ class _BodyState extends State<Body> {
     );
   }
 
-  void fetchCoursesByType(String tabType) {
-    type == tabType
-        ? null
-        : setState(() {
-            type = tabType;
-            futureCourses = fetchCourses(type: tabType);
-          });
+  void fetchCoursesByType(BuildContext context, String tabType) {
+    if (context.read<CoursesFilterProvider>().type != tabType) {
+      context.read<CoursesFilterProvider>().setType(tabType);
+    }
   }
 
   Widget _buttonTabBar(String tabName) {
@@ -160,9 +161,9 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Widget _coursesInfo() {
+  Widget _coursesInfo(BuildContext context) {
     return FutureBuilder(
-      future: futureCourses,
+      future: context.watch<CoursesFilterProvider>().filterCourses(),
       builder: (((context, snapshot) {
         if (snapshot.hasData) {
           return ((snapshot.data as ListCourses).count > 0)
@@ -207,6 +208,9 @@ class _FilterCoursesState extends State<FilterCourses> {
           setState(() {
             dropdownValue = value!;
           });
+          context
+              .read<CoursesFilterProvider>()
+              .checkTypeFilter(widget.hint, widget.list.indexOf(value!));
         },
         dropdownMenuEntries:
             widget.list.map<DropdownMenuEntry<String>>((String value) {
@@ -248,7 +252,7 @@ class CourseTab extends StatelessWidget {
               title: course.name,
               image: course.imageUrl!,
               description: course.description,
-              level: course.level,
+              level: Body().coursesLevel[int.parse(course.level!)],
               filelUrl: course.fileUrl,
               totalLesson: course.topics != null ? course.topics!.length : 0,
             );

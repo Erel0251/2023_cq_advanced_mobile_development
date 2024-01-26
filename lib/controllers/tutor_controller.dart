@@ -29,13 +29,28 @@ Future<TutorInfo> fetchTutorById(String id) async {
   }
 }
 
-Future<ResponseTutors> fetchTutorsInfo() async {
+Future<ResponseTutors> fetchTutorsInfo({
+  int page = 1,
+  int size = 10,
+  String search = '',
+  List<String> nationality = const [],
+  String specialties = '',
+}) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   final prefs = await SharedPreferences.getInstance();
   final String token = prefs.getString('token') ?? '';
 
+  String queryPage = '&page=$page';
+  String querySize = '&perPage=$size';
+  String querySearch = search.isNotEmpty ? '&q=$search' : '';
+  String queryNationality =
+      nationality.isNotEmpty ? '&nationality=${nationality.join('|')}' : '';
+  String querySpecialties =
+      specialties.isNotEmpty ? '&specialties=$specialties' : '';
+
   final response = await http.get(
-    Uri.parse('${baseUrl}tutor/more?perPage=9&page=1'),
+    Uri.parse(
+        '${baseUrl}tutor/more?$queryPage$querySize$querySearch$queryNationality$querySpecialties'),
     headers: <String, String>{
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

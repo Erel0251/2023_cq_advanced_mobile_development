@@ -11,13 +11,19 @@ Future<ListCourses> fetchCourses({
   int page = 1,
   int size = 10,
   String type = 'course',
+  List<int> levels = const [],
+  String query = '',
 }) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   final prefs = await SharedPreferences.getInstance();
   final String token = prefs.getString('token') ?? '';
 
+  String queryPath = query.isNotEmpty ? '&q=$query' : '';
+  String levelPath =
+      levels.isNotEmpty ? levels.map((e) => '&level[]=$e').join() : '';
+
   final response = await http.get(
-    Uri.parse('$baseUrl$type?page=$page&size=$size'),
+    Uri.parse('$baseUrl$type?page=$page&size=$size$levelPath$queryPath'),
     headers: <String, String>{
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

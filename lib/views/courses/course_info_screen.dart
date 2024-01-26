@@ -19,6 +19,18 @@ class Body extends StatefulWidget {
   const Body(this.idCourse, {super.key});
   final String idCourse;
 
+  final List<String> coursesLevel = const [
+    'Any Level',
+    'Beginner',
+    'Upper-Beginner',
+    'Pre-Intermediate',
+    'Intermediate',
+    'Upper-Intermediate',
+    'Pre-Advanced',
+    'Advanced',
+    'Very Advanced',
+  ];
+
   @override
   State<Body> createState() => _BodyState();
 }
@@ -119,12 +131,12 @@ class _BodyState extends State<Body> {
   }
 
   Widget _experienceLevel(CourseDetailData data) {
-    return const Part(
+    return Part(
       'Experience Level',
       children: [
         Content(
-          'Beginner',
-          icon: Icon(
+          widget.coursesLevel[int.parse(data.level!)],
+          icon: const Icon(
             Icons.group_add_outlined,
             size: 20,
             color: Colors.blue,

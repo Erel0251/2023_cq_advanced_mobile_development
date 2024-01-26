@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flag/flag.dart';
+import 'package:let_tutor_app/controllers/tutor_controller.dart';
 
 class LanguageButton extends StatelessWidget {
   const LanguageButton({super.key});
@@ -219,6 +220,229 @@ class FloatButtons extends StatelessWidget {
             backgroundColor: const Color.fromRGBO(128, 128, 128, 1),
             onPressed: () {},
             child: const Icon(Icons.card_giftcard),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Multiple choice button options dropdown
+class MultipleChoiceButton extends StatefulWidget {
+  const MultipleChoiceButton({
+    required this.options,
+    required this.onChanged,
+    this.active = false,
+    super.key,
+  });
+
+  final List<String> options;
+  final Function(String) onChanged;
+  final bool active;
+
+  @override
+  _MultipleChoiceButtonState createState() => _MultipleChoiceButtonState();
+}
+
+class _MultipleChoiceButtonState extends State<MultipleChoiceButton> {
+  String? _selectedOption;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(30)),
+        color: widget.active
+            ? const Color.fromRGBO(228, 230, 235, 1)
+            : Colors.transparent,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedOption,
+          icon: const Icon(Icons.keyboard_arrow_down),
+          iconSize: 24,
+          elevation: 16,
+          style: const TextStyle(color: Colors.black87),
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedOption = newValue;
+            });
+            widget.onChanged(newValue!);
+          },
+          items: widget.options.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class FavoriteButton extends StatefulWidget {
+  const FavoriteButton(this.tutorId, {super.key});
+  final String tutorId;
+
+  @override
+  State<FavoriteButton> createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<FavoriteButton> {
+  bool isLiked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        await addTutorToFavorite(widget.tutorId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Added tutor to favorite')),
+          );
+        }
+        setState(() {
+          isLiked = !isLiked;
+        });
+      },
+      child: Column(
+        children: [
+          Icon(
+            isLiked ? Icons.favorite : Icons.favorite_outline_rounded,
+            color: isLiked ? Colors.redAccent : Colors.blue,
+          ),
+          Text(
+            'Favorite',
+            style: TextStyle(color: isLiked ? Colors.redAccent : Colors.blue),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ReportButton extends StatelessWidget {
+  const ReportButton(this.tutorId, this.nameTutor, {super.key});
+  final String nameTutor;
+  final String tutorId;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: const Column(
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: Colors.blue,
+          ),
+          Text(
+            'Report',
+            style: TextStyle(color: Colors.blue),
+          ),
+        ],
+      ),
+      // popup report form dialog
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: _titleDialog(),
+            content: _formReport(),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Submit'),
+                child: const Text('Submit'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _titleDialog() {
+    return Text(
+      'Report $nameTutor',
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _formReport() {
+    return Form(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // horizontal line
+          const Divider(thickness: 1),
+          // little header
+          const Text(
+            "Help us understand what's happening",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          // Checkbox button and description about reason report
+          const CheckBoxReasonReport('This tutor is annoying me'),
+          const CheckBoxReasonReport(
+              'This profile is pretending be someone or is fake'),
+          const CheckBoxReasonReport('Inappropriate profile photo'),
+          // Textfield for more detail
+          _textFormField(),
+        ],
+      ),
+    );
+  }
+
+  TextFormField _textFormField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        hintText: 'Please let us know details about your problem',
+        border: OutlineInputBorder(),
+      ),
+      maxLines: 3,
+    );
+  }
+}
+
+class CheckBoxReasonReport extends StatefulWidget {
+  const CheckBoxReasonReport(this.reason, {super.key});
+  final String reason;
+
+  @override
+  State<CheckBoxReasonReport> createState() => _CheckBoxReasonReportState();
+}
+
+class _CheckBoxReasonReportState extends State<CheckBoxReasonReport> {
+  bool isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Checkbox(
+          value: isChecked,
+          onChanged: (value) {
+            setState(() {
+              isChecked = value!;
+            });
+          },
+        ),
+        // wrap text if it's too long
+        Expanded(
+          child: Text(
+            widget.reason,
+            overflow: TextOverflow.visible,
           ),
         ),
       ],

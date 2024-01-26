@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:let_tutor_app/providers/course_provider.dart';
+import 'package:provider/provider.dart';
 
 class Header extends StatelessWidget {
   const Header(this.title,
@@ -132,23 +134,28 @@ class DiscoverCoursesHeader extends StatelessWidget {
   }
 
   Widget _searchField() {
-    return const SizedBox(
-      width: 200,
-      height: 36,
-      child: TextField(
-        decoration: InputDecoration(
-          isDense: true,
-          hintText: "Course",
-          contentPadding: EdgeInsets.symmetric(horizontal: 14),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black12),
+    return Builder(builder: (BuildContext context) {
+      return SizedBox(
+        width: 200,
+        height: 36,
+        child: TextField(
+          onSubmitted: (value) {
+            context.read<CoursesFilterProvider>().setQuery(value);
+          },
+          decoration: const InputDecoration(
+            isDense: true,
+            hintText: "Course",
+            contentPadding: EdgeInsets.symmetric(horizontal: 14),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black12),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blue),
+            ),
+            suffixIcon: Icon(Icons.search),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue),
-          ),
-          suffixIcon: Icon(Icons.search),
         ),
-      ),
-    );
+      );
+    });
   }
 }

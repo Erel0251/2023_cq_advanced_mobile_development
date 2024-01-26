@@ -13,6 +13,7 @@ Future<void> storeData(ResponseLogin response) async {
   await prefs.setString('token', response.token.access.token);
   await prefs.setString('name', response.user.name);
   await prefs.setString('avatar', response.user.avatar ?? '');
+  await prefs.setString('id', response.user.id);
 }
 
 // function login and get response, if success add token to dotenv and return account info

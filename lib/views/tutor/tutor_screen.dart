@@ -1,5 +1,10 @@
+import 'dart:math';
+
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:let_tutor_app/controllers/schedule_controller.dart';
+import 'package:let_tutor_app/models/schedule/schedule.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:video_player/video_player.dart';
 
@@ -44,20 +49,24 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   late Future<TutorInfo> futureTutorsInfo;
+  late Future<List<Schedule>> futureSchedule;
 
   @override
   void initState() {
     super.initState();
     futureTutorsInfo = fetchTutorById(widget.tutorId);
+    futureSchedule = getScheduleByTutorId(widget.tutorId);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: futureTutorsInfo,
+      future: Future.wait([futureTutorsInfo, futureSchedule]),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
-          return _hasData(snapshot.data);
+          TutorInfo tutor = snapshot.data![0] as TutorInfo;
+          List<Schedule> schedules = snapshot.data![1] as List<Schedule>;
+          return _hasData(tutor, schedules);
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         }
@@ -68,7 +77,7 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Widget _hasData(tutor) {
+  Widget _hasData(TutorInfo tutor, List<Schedule> schedules) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 35),
       color: Colors.white,
@@ -77,45 +86,72 @@ class _BodyState extends State<Body> {
         children: [
           // Detail About Tutor
           Detail(tutor),
-          VideoPlayerScreen(tutor.video),
+          VideoPlayerScreen(tutor.video ?? ''),
           // Detail Description
           ..._categories(tutor),
-          ..._templateReview(widget.feedbacks!),
+          ..._templateReview(),
           // weekly schedule
-          _calendar(),
+          _calendar(schedules),
         ],
       ),
     );
   }
 
-  SfCalendar _calendar() {
+  SfCalendar _calendar(List<Schedule> schedules) {
     return SfCalendar(
       view: CalendarView.week,
-      firstDayOfWeek: 1,
+      firstDayOfWeek: DateTime.now().weekday,
       showNavigationArrow: true,
       showDatePickerButton: true,
       showCurrentTimeIndicator: true,
       timeSlotViewSettings: const TimeSlotViewSettings(
-        startHour: 8,
-        endHour: 24,
-        timeIntervalHeight: 50,
-        timeIntervalWidth: 100,
-        timeInterval: Duration(minutes: 60),
-        timeFormat: 'hh:mm a',
+        timeTextStyle: TextStyle(
+          fontSize: 10,
+        ),
+        timeIntervalHeight: 30,
+        timeIntervalWidth: 250,
+        timeInterval: Duration(minutes: 30),
+        timeFormat: 'kk:mm',
       ),
-      dataSource: MeetingDataSource(_getDataSource()),
+      dataSource: MeetingDataSource(_getDataSource(schedules)),
       onTap: calendarTapped,
     );
   }
 
-  List<Meeting> _getDataSource() {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-        DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime = startTime.add(const Duration(hours: 1));
-    meetings.add(
-        Meeting('Book', startTime, endTime, const Color(0xFF0F8644), false));
+  List<Meeting> _getDataSource(List<Schedule> schedules) {
+    final List<Meeting> meetings = schedules.map((e) {
+      String eventName = (e.isBooked!) ? 'Booked' : 'Book';
+
+      String userId = dotenv.env['id'] ?? '';
+
+      if (eventName == 'Booked') {
+        if (e.scheduleDetails != null &&
+            e.scheduleDetails!.any((lesson) =>
+                lesson.bookingInfos != null &&
+                lesson.bookingInfos!
+                    .any((student) => student.userId == userId))) {
+          eventName = 'Reserved';
+        }
+      }
+
+      Color background;
+      switch (eventName) {
+        case 'Booked':
+          background = const Color(0xFF0F8644);
+          break;
+        case 'Reserved':
+          background = Colors.grey;
+          break;
+        default:
+          background = Colors.blue;
+      }
+
+      DateTime startTime =
+          DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp);
+      DateTime endTime = DateTime.fromMillisecondsSinceEpoch(e.endTimeStamp);
+
+      return Meeting(eventName, startTime, endTime, background, false);
+    }).toList();
     return meetings;
   }
 
@@ -270,6 +306,54 @@ class _BodyState extends State<Body> {
       maxLines: 4,
     );
   }
+
+  List<Widget> _categories(TutorInfo tutor) {
+    return [
+      Part(
+        'Education',
+        description: tutor.education,
+      ),
+      Part(
+        'Languages',
+        tags: tutor.languages!.split(', '),
+      ),
+      Part(
+        'Specialties',
+        tags: formatTagsCard(tutor.specialties!),
+      ),
+      Part(
+        'Suggested courses',
+        courses: tutor.user!.courses,
+      ),
+      Part(
+        'Interests',
+        description: tutor.interests,
+      ),
+      Part(
+        'Teaching experience',
+        description: tutor.experience,
+      ),
+    ];
+  }
+
+  List<Widget> _templateReview() {
+    return [
+      const Text(
+        'Other review',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 17,
+          height: 2.5,
+        ),
+      ),
+      ...widget.feedbacks!
+          .map(
+            (e) => Review(e),
+          )
+          .take(20),
+      const Pagination(1),
+    ];
+  }
 }
 
 class Detail extends StatelessWidget {
@@ -371,175 +455,8 @@ class Detail extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        FavoriteButton(tutor.userId!),
-        ReportButton(tutor.userId!, tutor.user!.name!),
-      ],
-    );
-  }
-}
-
-class FavoriteButton extends StatefulWidget {
-  const FavoriteButton(this.tutorId, {super.key});
-  final String tutorId;
-
-  @override
-  State<FavoriteButton> createState() => _FavoriteButtonState();
-}
-
-class _FavoriteButtonState extends State<FavoriteButton> {
-  bool isLiked = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        await addTutorToFavorite(widget.tutorId);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Added tutor to favorite')),
-          );
-        }
-        setState(() {
-          isLiked = !isLiked;
-        });
-      },
-      child: Column(
-        children: [
-          Icon(
-            isLiked ? Icons.favorite : Icons.favorite_outline_rounded,
-            color: isLiked ? Colors.redAccent : Colors.blue,
-          ),
-          Text(
-            'Favorite',
-            style: TextStyle(color: isLiked ? Colors.redAccent : Colors.blue),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ReportButton extends StatelessWidget {
-  const ReportButton(this.tutorId, this.nameTutor, {super.key});
-  final String nameTutor;
-  final String tutorId;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: const Column(
-        children: [
-          Icon(
-            Icons.info_outline_rounded,
-            color: Colors.blue,
-          ),
-          Text(
-            'Report',
-            style: TextStyle(color: Colors.blue),
-          ),
-        ],
-      ),
-      // popup report form dialog
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: _titleDialog(),
-            content: _formReport(),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Submit'),
-                child: const Text('Submit'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _titleDialog() {
-    return Text(
-      'Report $nameTutor',
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _formReport() {
-    return Form(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // horizontal line
-          const Divider(thickness: 1),
-          // little header
-          const Text(
-            "Help us understand what's happening",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          // Checkbox button and description about reason report
-          const CheckBoxReasonReport('This tutor is annoying me'),
-          const CheckBoxReasonReport(
-              'This profile is pretending be someone or is fake'),
-          const CheckBoxReasonReport('Inappropriate profile photo'),
-          // Textfield for more detail
-          _textFormField(),
-        ],
-      ),
-    );
-  }
-
-  TextFormField _textFormField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        hintText: 'Please let us know details about your problem',
-        border: OutlineInputBorder(),
-      ),
-      maxLines: 3,
-    );
-  }
-}
-
-class CheckBoxReasonReport extends StatefulWidget {
-  const CheckBoxReasonReport(this.reason, {super.key});
-  final String reason;
-
-  @override
-  State<CheckBoxReasonReport> createState() => _CheckBoxReasonReportState();
-}
-
-class _CheckBoxReasonReportState extends State<CheckBoxReasonReport> {
-  bool isChecked = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: isChecked,
-          onChanged: (value) {
-            setState(() {
-              isChecked = value!;
-            });
-          },
-        ),
-        // wrap text if it's too long
-        Expanded(
-          child: Text(
-            widget.reason,
-            overflow: TextOverflow.visible,
-          ),
-        ),
+        FavoriteButton(tutor.user!.id!),
+        ReportButton(tutor.user!.id!, tutor.user!.name!),
       ],
     );
   }
@@ -893,50 +810,4 @@ class Review extends StatelessWidget {
       ),
     );
   }
-}
-
-List<Widget> _categories(TutorInfo tutor) {
-  return [
-    Part(
-      'Education',
-      description: tutor.education,
-    ),
-    Part(
-      'Languages',
-      tags: tutor.languages!.split(', '),
-    ),
-    Part(
-      'Specialties',
-      tags: formatTagsCard(tutor.specialties!),
-    ),
-    Part(
-      'Suggested courses',
-      courses: tutor.user!.courses,
-    ),
-    Part(
-      'Interests',
-      description: tutor.interests,
-    ),
-    Part(
-      'Teaching experience',
-      description: tutor.experience,
-    ),
-  ];
-}
-
-List<Widget> _templateReview(List<dynamic> reviews) {
-  return [
-    const Text(
-      'Other review',
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 17,
-        height: 2.5,
-      ),
-    ),
-    ...reviews.map(
-      (e) => Review(e),
-    ),
-    const Pagination(1),
-  ];
 }
