@@ -39,13 +39,51 @@ class Pagination extends StatelessWidget {
   // and the total item is changed
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+    int numsPage = (total / itemPerPage).ceil();
+
+    return ListView(
+      scrollDirection: Axis.horizontal,
       children: [
         _buttonBackward(),
-        for (int i = 0; i <= (total ~/ 10).ceil(); i++) _buttonPage(i),
+        if (numsPage <= 5)
+          ..._normalCase(numsPage)
+        else
+          ..._overflowCase(numsPage),
         _buttonForward(),
       ],
+    );
+  }
+
+  List<Widget> _normalCase(int numsPage) {
+    List<Widget> pages = [];
+    for (int i = 1; i <= numsPage; i++) {
+      pages.add(_buttonPage(i));
+    }
+    return pages;
+  }
+
+  List<Widget> _overflowCase(int numsPage) {
+    List<Widget> pages = [];
+    pages.add(_buttonPage(1));
+    pages.add(_buttonDot());
+    for (int i = current - 1; i <= current + 1; i++) {
+      pages.add(_buttonPage(i));
+    }
+    pages.add(_buttonDot());
+    pages.add(_buttonPage(numsPage));
+    return pages;
+  }
+
+  Widget _buttonDot() {
+    return const SquareButton(
+      color: Colors.black,
+      child: Text(
+        '...',
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 
@@ -53,7 +91,7 @@ class Pagination extends StatelessWidget {
     return SquareButton(
       color: isChosen(i),
       child: Text(
-        (i + 1).toString(),
+        (i).toString(),
         style: TextStyle(
           fontSize: 16,
           color: isChosen(i),
@@ -75,10 +113,10 @@ class Pagination extends StatelessWidget {
 
   Widget _buttonForward() {
     return SquareButton(
-      color: isBlocked((total ~/ 10).ceil()),
+      color: isBlocked((total ~/ itemPerPage).ceil()),
       child: Icon(
         Icons.arrow_forward_ios_rounded,
-        color: isBlocked((total ~/ 10).ceil()),
+        color: isBlocked((total ~/ itemPerPage).ceil()),
         size: 16,
       ),
     );
