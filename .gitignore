@@ -45,3 +45,4 @@ app.*.map.json
 
 # Config file
 .[Ee]nv
+strings.xml

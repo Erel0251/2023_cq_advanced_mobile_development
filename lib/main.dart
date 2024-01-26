@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:let_tutor_app/controllers/authentication_controller.dart';
+import 'package:let_tutor_app/views/authentication/login_screen.dart';
 import 'package:let_tutor_app/views/lessons/call_screen.dart';
 import 'package:let_tutor_app/views/courses/course_detail_screen.dart';
 import 'package:let_tutor_app/views/courses/course_info_screen.dart';

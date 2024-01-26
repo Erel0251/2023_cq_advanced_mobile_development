@@ -28,6 +28,9 @@ Flutter Chat AI is a minor Project to create a mobile app to represent ChatGPT, 
 * Họ và tên: Trần Đức Anh
 * MSSV: 20120251
 
+## Links
+
+- Video Demo: [Youtube](https://youtu.be/Y4cs9W6_PhM)
 
 ## Visuals
 
@@ -49,17 +52,11 @@ flutter pub add
 ## Folder Structure
 
 lib
-    ├── asset                   
-    │   ├── css                 
-    │   ├── js
-    |   └── images              
-    ├── Model                   
-    ├── View                    
-    ├── Control                 
-    ├── license
-    ├── index.php
-    ├── register.php
-    └── README.md               
+  ├── Models
+  ├── Views
+  ├── Controller
+  ├── Provider
+  └── Widgets
 
 ## Usage
 
