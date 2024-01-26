@@ -134,14 +134,17 @@ class DiscoverCoursesHeader extends StatelessWidget {
   }
 
   Widget _searchField() {
+    TextEditingController _searchController = TextEditingController();
+
     return Builder(builder: (BuildContext context) {
       return SizedBox(
         width: 200,
         height: 36,
         child: TextField(
-          onSubmitted: (value) {
-            context.read<CoursesFilterProvider>().setQuery(value);
-          },
+          controller: _searchController,
+          onEditingComplete: () => context
+              .read<CoursesFilterProvider>()
+              .setQuery(_searchController.text),
           decoration: const InputDecoration(
             isDense: true,
             hintText: "Course",
