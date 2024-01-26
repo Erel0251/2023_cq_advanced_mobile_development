@@ -87,7 +87,7 @@ class _BodyState extends State<Body> {
         country: tutor.language,
         studentRequest: e.studentRequest,
         tutorReview: e.tutorReview,
-        rates: e.feedbacks!.map((e) => e.rating!).toList(),
+        rates: e.feedbacks!.map((e) => (e.rating as num).toInt()).toList(),
       );
     }).toList();
   }

@@ -1,5 +1,6 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
+import 'package:let_tutor_app/controllers/schedule_controller.dart';
 import 'package:let_tutor_app/views/lessons/call_screen.dart';
 import 'package:let_tutor_app/widgets/avatar.dart';
 import 'package:let_tutor_app/views/courses/course_info_screen.dart';
@@ -159,6 +160,8 @@ class LessonCard extends StatelessWidget {
       required this.courseTime,
       required this.avatar,
       required this.nameTutor,
+      this.id = '',
+      this.cancelable = false,
       this.code,
       this.country,
       this.rates = const [],
@@ -168,9 +171,11 @@ class LessonCard extends StatelessWidget {
       this.tutorReview,
       super.key});
 
+  final String id;
   final String time;
   final String date;
   final String courseTime;
+  final bool cancelable;
   final String nameTutor;
   final String avatar;
   final String? code;
@@ -328,7 +333,7 @@ class LessonCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           children: [
-            _timeSection(),
+            _timeSection(context),
             Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 width: double.maxFinite,
@@ -374,7 +379,7 @@ class LessonCard extends StatelessWidget {
     ];
   }
 
-  Widget _timeSection() {
+  Widget _timeSection(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -382,18 +387,7 @@ class LessonCard extends StatelessWidget {
           courseTime,
           style: const TextStyle(fontSize: 20),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.red),
-            color: Colors.white,
-          ),
-          child: const Text(
-            'Cancel',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.red),
-          ),
-        )
+        if (cancelable) _cancel(context),
       ],
     );
   }
@@ -416,6 +410,116 @@ class LessonCard extends StatelessWidget {
             style: TextStyle(color: Colors.white),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _cancel(BuildContext context) {
+    return GestureDetector(
+      onTap: () => showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: _cancelTitle(),
+          content: _cancelReport(),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Later'),
+              child: const Text('Later'),
+            ),
+            TextButton(
+              onPressed: () async {
+                int statuscode = await cancelLesson(bookingId: id);
+                if (statuscode == 200) {
+                  Navigator.pop(context, 'Cancel Success');
+                } else {
+                  Navigator.pop(context, 'Cancel Fail');
+                }
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueAccent),
+                  color: Colors.white,
+                ),
+                child: const Text(
+                  'Cancel',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      child: _cancelButton(),
+    );
+  }
+
+  Widget _cancelButton() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.red),
+        color: Colors.white,
+      ),
+      child: const Text(
+        'Cancel',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+  }
+
+  Widget _cancelTitle() {
+    return Column(
+      children: [
+        ImageNetwork(avatar),
+        Text(
+          nameTutor,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const Text('Lesson time'),
+        Text(
+          courseTime,
+          style: const TextStyle(fontSize: 20),
+        ),
+      ],
+    );
+  }
+
+  Widget _cancelReport() {
+    List<String> reasons = [
+      'Reschedule at another time',
+      'Busy at that time',
+      'Asked by the tutor',
+      'Other'
+    ];
+
+    List<DropdownMenuItem> items = reasons
+        .map(
+          (e) => DropdownMenuItem(
+            value: e,
+            child: Text(e),
+          ),
+        )
+        .toList();
+
+    return Form(
+      child: ListView(
+        children: [
+          const Text('Was what the reason cancel this booking?'),
+          // Dropdown
+          DropdownButtonFormField(
+            items: items,
+            onChanged: (value) => {},
+          ),
+          TextFormField(
+            decoration: const InputDecoration(
+              hintText: 'Additional notes',
+            ),
+          ),
+        ],
       ),
     );
   }

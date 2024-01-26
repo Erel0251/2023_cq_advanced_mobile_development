@@ -164,10 +164,16 @@ class _BodyState extends State<Body> {
       String courseTime =
           '${e.scheduleDetailInfo!.startPeriod} - ${e.scheduleDetailInfo!.endPeriod}';
 
+      // uncancelable when time is less than 2 hours
+      // which can be calculated by comparing current time and start lesson time
+      bool cancelable = e.isCancelable();
+
       return LessonCard(
+        id: e.scheduleDetailInfo!.id,
         date: e.scheduleDetailInfo!.getLessonDate(),
         time: '1 lesson',
         courseTime: courseTime,
+        cancelable: cancelable,
         nameTutor: tutor.name!,
         avatar: tutor.avatar!,
         code: tutor.country,

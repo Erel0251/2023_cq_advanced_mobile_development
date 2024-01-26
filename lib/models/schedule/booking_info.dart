@@ -96,4 +96,10 @@ class BookingInfo {
   TutorInfo getTutor() {
     return scheduleDetailInfo!.scheduleInfo!.tutorInfo!;
   }
+
+  bool isCancelable() {
+    return scheduleDetailInfo!.startPeriodTimestamp -
+            DateTime.now().millisecondsSinceEpoch >
+        2 * 60 * 60 * 1000;
+  }
 }
