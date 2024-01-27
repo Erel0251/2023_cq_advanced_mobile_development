@@ -26,7 +26,8 @@ Login                           95% password hide/show
 
 Future main() async {
   await dotenv.load();
+  await loginWithEmail('student@lettutor.com', '123456');
   runApp(const MaterialApp(
-    home: LoginScreen(),
+    home: HomeScreen(),
   ));
 }

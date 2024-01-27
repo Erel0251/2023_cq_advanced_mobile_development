@@ -511,7 +511,8 @@ class LessonCard extends StatelessWidget {
         .toList();
 
     return Form(
-      child: ListView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           const Text('Was what the reason cancel this booking?'),
           // Dropdown
