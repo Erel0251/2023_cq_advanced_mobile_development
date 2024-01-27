@@ -51,6 +51,8 @@ dependencies:
   path_provider: ^2.1.2
   syncfusion_flutter_pdfviewer: ^24.1.46
   jitsi_meet_flutter_sdk: ^0.1.9
+  syncfusion_flutter_datepicker: ^24.1.47
+  choice: ^2.3.0
 
 dev_dependencies:
   flutter_test:

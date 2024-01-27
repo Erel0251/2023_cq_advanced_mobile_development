@@ -27,6 +27,7 @@ class TutorInfo {
   final String? caredByStaffId;
   final String? zaloUserId;
   final bool? isFavorite;
+  final bool? isFavoriteTutor;
 
   // account info
   final String? createdAt;
@@ -83,6 +84,7 @@ class TutorInfo {
     this.canSendMessage,
     this.isPublicRecord,
     this.isFavorite,
+    this.isFavoriteTutor,
     this.caredByStaffId,
     this.zaloUserId,
     this.createdAt,
@@ -139,6 +141,7 @@ class TutorInfo {
       isPublicRecord: json['isPublicRecord'],
       caredByStaffId: json['caredByStaffId'],
       isFavorite: json['isFavorite'],
+      isFavoriteTutor: json['isFavoriteTutor'],
       zaloUserId: json['zaloUserId'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],

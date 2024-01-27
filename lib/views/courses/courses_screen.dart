@@ -22,7 +22,7 @@ class CoursesScreen extends StatelessWidget {
       child: MainBody(
         ChangeNotifierProvider(
           create: (context) => CoursesFilterProvider(),
-          child: Body(),
+          child: const Body(),
         ),
       ),
     );
@@ -30,7 +30,7 @@ class CoursesScreen extends StatelessWidget {
 }
 
 class Body extends StatelessWidget {
-  Body({super.key});
+  const Body({super.key});
 
   final List<String> coursesLevel = const [
     'Any Level',
@@ -79,7 +79,6 @@ class Body extends StatelessWidget {
                 "LiveTutor has built the most quality, methodical and scientific courses in the fields of life for those who are in need of improving their knowledge of the fields.",
             image: 'assets/images/course.svg',
           ),
-          // TODO: Filter courses and search courses
           Wrap(
             children: [
               FilterCourses(
@@ -252,7 +251,7 @@ class CourseTab extends StatelessWidget {
               title: course.name,
               image: course.imageUrl!,
               description: course.description,
-              level: Body().coursesLevel[int.parse(course.level!)],
+              level: const Body().coursesLevel[int.parse(course.level!)],
               filelUrl: course.fileUrl,
               totalLesson: course.topics != null ? course.topics!.length : 0,
             );

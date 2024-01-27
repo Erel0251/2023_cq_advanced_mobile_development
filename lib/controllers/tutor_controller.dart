@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:let_tutor_app/models/tutor/response_search.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:let_tutor_app/models/course/feedback.dart';
@@ -32,9 +33,6 @@ Future<TutorInfo> fetchTutorById(String id) async {
 Future<ResponseTutors> fetchTutorsInfo({
   int page = 1,
   int size = 10,
-  String search = '',
-  List<String> nationality = const [],
-  String specialties = '',
 }) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   final prefs = await SharedPreferences.getInstance();
@@ -42,15 +40,8 @@ Future<ResponseTutors> fetchTutorsInfo({
 
   String queryPage = '&page=$page';
   String querySize = '&perPage=$size';
-  String querySearch = search.isNotEmpty ? '&q=$search' : '';
-  String queryNationality =
-      nationality.isNotEmpty ? '&nationality=${nationality.join('|')}' : '';
-  String querySpecialties =
-      specialties.isNotEmpty ? '&specialties=$specialties' : '';
-
   final response = await http.get(
-    Uri.parse(
-        '${baseUrl}tutor/more?$queryPage$querySize$querySearch$queryNationality$querySpecialties'),
+    Uri.parse('${baseUrl}tutor/more?$queryPage$querySize'),
     headers: <String, String>{
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -59,6 +50,66 @@ Future<ResponseTutors> fetchTutorsInfo({
 
   if (response.statusCode == 200) {
     final ResponseTutors responseTutors = ResponseTutors.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>);
+    return responseTutors;
+  } else {
+    throw Exception('Failed to load tutors');
+  }
+}
+
+Future<ResponseSearchTutor> searchTutorsInfo({
+  int page = 1,
+  int perPage = 10,
+  String search = '',
+  List<String> nationality = const [],
+  String specialties = '',
+}) async {
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token') ?? '';
+
+  bool? isVietnamese;
+  bool? isNative;
+  if (nationality.length < 3 && nationality.isNotEmpty) {
+    if (nationality.contains('Foreign tutor')) {
+      if (nationality.contains('Vietnamese tutor')) {
+        isNative = false;
+      }
+      if (nationality.contains('Native English tutor')) {
+        isVietnamese = false;
+      }
+    } else {
+      if (nationality.contains('Vietnamese tutor')) {
+        isVietnamese = true;
+      }
+      if (nationality.contains('Native English tutor')) {
+        isNative = true;
+      }
+    }
+  }
+
+  RequestBody body = RequestBody(
+    page: page,
+    perPage: perPage,
+    search: search,
+    nationality: Nationality(
+      isNative: isNative,
+      isVietnamese: isVietnamese,
+    ),
+    specialties: [specialties],
+  );
+
+  final response = await http.post(
+    Uri.parse('${baseUrl}tutor/search'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(body.toJson()),
+  );
+
+  if (response.statusCode == 200) {
+    final ResponseSearchTutor responseTutors = ResponseSearchTutor.fromJson(
         jsonDecode(response.body) as Map<String, dynamic>);
     return responseTutors;
   } else {

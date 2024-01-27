@@ -1,6 +1,9 @@
+import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flag/flag.dart';
 import 'package:let_tutor_app/controllers/tutor_controller.dart';
+import 'package:let_tutor_app/providers/tutor_provider.dart';
+import 'package:provider/provider.dart';
 
 class LanguageButton extends StatelessWidget {
   const LanguageButton({super.key});
@@ -227,62 +230,6 @@ class FloatButtons extends StatelessWidget {
   }
 }
 
-// Multiple choice button options dropdown
-class MultipleChoiceButton extends StatefulWidget {
-  const MultipleChoiceButton({
-    required this.options,
-    required this.onChanged,
-    this.active = false,
-    super.key,
-  });
-
-  final List<String> options;
-  final Function(String) onChanged;
-  final bool active;
-
-  @override
-  _MultipleChoiceButtonState createState() => _MultipleChoiceButtonState();
-}
-
-class _MultipleChoiceButtonState extends State<MultipleChoiceButton> {
-  String? _selectedOption;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(30)),
-        color: widget.active
-            ? const Color.fromRGBO(228, 230, 235, 1)
-            : Colors.transparent,
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedOption,
-          icon: const Icon(Icons.keyboard_arrow_down),
-          iconSize: 24,
-          elevation: 16,
-          style: const TextStyle(color: Colors.black87),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedOption = newValue;
-            });
-            widget.onChanged(newValue!);
-          },
-          items: widget.options.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-}
-
 class FavoriteButton extends StatefulWidget {
   const FavoriteButton(this.tutorId, {super.key});
   final String tutorId;
@@ -431,6 +378,7 @@ class _CheckBoxReasonReportState extends State<CheckBoxReasonReport> {
       children: [
         Checkbox(
           value: isChecked,
+          semanticLabel: widget.reason,
           onChanged: (value) {
             setState(() {
               isChecked = value!;
@@ -445,6 +393,75 @@ class _CheckBoxReasonReportState extends State<CheckBoxReasonReport> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class MultiplePrompted extends StatefulWidget {
+  const MultiplePrompted({super.key});
+
+  @override
+  State<MultiplePrompted> createState() => _MultiplePromptedState();
+}
+
+class _MultiplePromptedState extends State<MultiplePrompted> {
+  List<String> choices = [
+    'Foreign tutor',
+    'Vietnamese tutor',
+    'Native English tutor',
+  ];
+
+  List<String> multipleSelected = [];
+
+  void setMultipleSelected(List<String> value) {
+    setState(() => multipleSelected = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+      widthFactor: 1,
+      child: Card(
+        child: Choice<String>.prompt(
+          title: 'Nationality',
+          multiple: true,
+          confirmation: true,
+          value: multipleSelected,
+          onChanged: (List<String> value) {
+            setMultipleSelected(value);
+            context.read<TutorProvider>().setNationality(value);
+          },
+          itemCount: choices.length,
+          itemSkip: (state, i) =>
+              !ChoiceSearch.match(choices[i], state.search?.value),
+          itemBuilder: (state, i) {
+            return CheckboxListTile(
+              value: state.selected(choices[i]),
+              onChanged: state.onSelected(choices[i]),
+              title: ChoiceText(
+                choices[i],
+                highlight: state.search?.value,
+              ),
+            );
+          },
+          modalHeaderBuilder: ChoiceModal.createHeader(
+            automaticallyImplyLeading: false,
+            actionsBuilder: [
+              ChoiceModal.createConfirmButton(),
+              ChoiceModal.createSpacer(width: 10),
+            ],
+          ),
+          modalFooterBuilder: (state) {
+            return CheckboxListTile(
+              value: state.selectedMany(choices),
+              onChanged: state.onSelectedMany(choices),
+              tristate: true,
+              title: const Text('Select All'),
+            );
+          },
+          promptDelegate: ChoicePrompt.delegateBottomSheet(),
+        ),
+      ),
     );
   }
 }

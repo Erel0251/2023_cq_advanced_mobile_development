@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:let_tutor_app/controllers/tutor_controller.dart';
-import 'package:let_tutor_app/models/tutor/response_tutors.dart';
+import 'package:let_tutor_app/models/tutor/response_search.dart';
 
 class TutorProvider extends ChangeNotifier {
   int _page = 1;
@@ -29,12 +29,9 @@ class TutorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setNationality(String value) {
-    if (_nationality.contains(value)) {
-      _nationality.remove(value);
-    } else {
-      _nationality.add(value);
-    }
+  void setNationality(List<String> value) {
+    _nationality.clear();
+    _nationality.addAll(value);
     notifyListeners();
   }
 
@@ -43,10 +40,19 @@ class TutorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<ResponseTutors> filterTutors() {
-    return fetchTutorsInfo(
+  void clear() {
+    _page = 1;
+    _size = 10;
+    _search = '';
+    _nationality.clear();
+    _specialties = '';
+    notifyListeners();
+  }
+
+  Future<ResponseSearchTutor> filterTutors() {
+    return searchTutorsInfo(
       page: _page,
-      size: _size,
+      perPage: _size,
       search: _search,
       nationality: _nationality,
       specialties: _specialties,

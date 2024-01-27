@@ -1,25 +1,21 @@
 import 'dart:async';
 
-import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:let_tutor_app/models/tutor/response_search.dart';
+import 'package:let_tutor_app/widgets/card.dart';
+import 'package:provider/provider.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 
 import 'package:let_tutor_app/controllers/schedule_controller.dart';
-import 'package:let_tutor_app/controllers/tutor_controller.dart';
 
 import 'package:let_tutor_app/models/schedule/booking_info.dart';
 import 'package:let_tutor_app/models/schedule/response_booked.dart';
-import 'package:let_tutor_app/models/tutor/account_info.dart';
-import 'package:let_tutor_app/models/tutor/response_tutors.dart';
 
-import 'package:let_tutor_app/utils/format_tags_card.dart';
-
-import 'package:let_tutor_app/views/tutor/tutor_screen.dart';
+import 'package:let_tutor_app/providers/tutor_provider.dart';
 
 import 'package:let_tutor_app/widgets/button.dart';
 import 'package:let_tutor_app/widgets/body.dart';
-import 'package:let_tutor_app/widgets/network_image.dart';
 import 'package:let_tutor_app/widgets/pagination.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -27,7 +23,12 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MainBody(Body());
+    return MainBody(
+      ChangeNotifierProvider(
+        create: (context) => TutorProvider(),
+        child: const Body(),
+      ),
+    );
   }
 }
 
@@ -53,7 +54,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  late Future<ResponseTutors> futureTutorsInfo;
+  late Future<ResponseSearchTutor> futureTutorsInfo;
   late Future<ListBooked> futureBookedClass;
   late Future<String> futureTotalLesson;
 
@@ -67,7 +68,6 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
-    futureTutorsInfo = fetchTutorsInfo();
     futureBookedClass = getFutureBookedClass(perPage: 1);
     futureTotalLesson = getTotalTimeBooked();
   }
@@ -98,7 +98,7 @@ class _BodyState extends State<Body> {
                 return const Banner(null);
               }),
           // Search section
-          ...searchSection(),
+          ...searchSection(context),
           const Divider(
             color: Colors.black54,
           ),
@@ -112,12 +112,18 @@ class _BodyState extends State<Body> {
             ),
           ),
           // filter by search model then sort by liked
-          FutureBuilder<ResponseTutors>(
-            future: futureTutorsInfo,
+          FutureBuilder<ResponseSearchTutor>(
+            future: context.watch<TutorProvider>().filterTutors(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(
-                  children: cards(snapshot.data!),
+                  children: [
+                    ...cards(snapshot.data!),
+                    Pagination(
+                      snapshot.data!.count,
+                      current: context.read<TutorProvider>().page,
+                    ),
+                  ],
                 );
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
@@ -125,22 +131,15 @@ class _BodyState extends State<Body> {
               return const CircularProgressIndicator();
             },
           ),
-          const Pagination(5),
         ],
       ),
     );
   }
 
-  List<Widget> cards(ResponseTutors data) {
-    List<Card> original = data.tutors.row.map((e) => Card(e)).toList();
-
-    original = original
-        .where((card) =>
-            card.info.name!.toLowerCase().contains(name.toLowerCase()) &&
-            (card.info.specialties!.contains(getTagCode(tag)) || tag == 'All'))
-        .toList()
-      ..sort(
-          (a, b) => a.info.isFavorite == null || !a.info.isFavorite! ? -1 : 1);
+  List<Widget> cards(ResponseSearchTutor data) {
+    List<TutorCard> original = data.rows.map((e) {
+      return TutorCard(e);
+    }).toList();
 
     return original.isNotEmpty
         ? original
@@ -155,7 +154,7 @@ class _BodyState extends State<Body> {
           ];
   }
 
-  List<Widget> searchSection() {
+  List<Widget> searchSection(BuildContext context) {
     return [
       const Text(
         'Find a tutor',
@@ -168,7 +167,7 @@ class _BodyState extends State<Body> {
       Wrap(
         spacing: 10,
         children: [
-          _filterName(),
+          _filterName(context),
           _filterNationality(),
         ],
       ),
@@ -183,11 +182,11 @@ class _BodyState extends State<Body> {
       Wrap(
         spacing: 10,
         children: [
-          _filterFromDate(),
-          _filterToDate(),
+          _filterDate(context),
+          _filterRange(),
         ],
       ),
-      tags(),
+      tags(context),
       ResetFilterButton('Reset Filter', onPressed: () {
         setState(() {
           name = '';
@@ -195,55 +194,39 @@ class _BodyState extends State<Body> {
           date = '';
           nationality = '';
         });
+        context.read<TutorProvider>().clear();
       }),
     ];
   }
 
-  Widget _filterName() {
+  Widget _filterName(BuildContext context) {
+    TextEditingController controller = TextEditingController();
+
     return SizedBox(
-      width: 165,
+      width: double.maxFinite,
       child: TextField(
-        onSubmitted: (value) {
-          setState(() {
-            name = value;
-          });
+        onEditingComplete: () => {
+          name = controller.text,
+          context.read<TutorProvider>().setSearch(name),
         },
-        controller: TextEditingController(text: name),
+        controller: controller,
         style: const TextStyle(fontSize: 14, color: Colors.black),
         decoration: const InputDecoration(
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(50))),
           hintText: 'Search by name',
           isDense: true, // Added this
-          contentPadding: EdgeInsets.all(8),
+          contentPadding: EdgeInsets.all(12),
         ),
       ),
     );
   }
 
   Widget _filterNationality() {
-    return SizedBox(
-      width: 165,
-      child: TextField(
-        onSubmitted: (value) {
-          setState(() {
-            nationality = value;
-          });
-        },
-        controller: TextEditingController(text: nationality),
-        style: const TextStyle(fontSize: 14, color: Colors.black),
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(50))),
-          hintText: 'Select tutor nationality',
-          isDense: true, // Added this
-          contentPadding: EdgeInsets.all(8),
-        ),
-      ),
-    );
+    return const MultiplePrompted();
   }
 
-  Widget _filterFromDate() {
+  Widget _filterDate(BuildContext context) {
     return const SizedBox(
       width: 140,
       child: TextField(
@@ -260,7 +243,7 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Widget _filterToDate() {
+  Widget _filterRange() {
     return const SizedBox(
       width: 200,
       child: TextField(
@@ -278,7 +261,7 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Widget tags() {
+  Widget tags(BuildContext context) {
     return Wrap(
       children: widget.tags
           .map((tag) => GestureDetector(
@@ -286,6 +269,9 @@ class _BodyState extends State<Body> {
                   setState(() {
                     this.tag = tag;
                   });
+                  context.read<TutorProvider>().setSpecialties(tag.contains(' ')
+                      ? tag.replaceAll(' ', '-').toLowerCase()
+                      : tag);
                 },
                 child: TagFilter(tag, isChecked: this.tag == tag),
               ))
@@ -423,7 +409,7 @@ class _BannerState extends State<Banner> {
   Widget buttonEnterLessonRoom(String path) {
     return GestureDetector(
       onTap: () {
-        String baseUrl = 'https://sandbox.app.lettutor.com';
+        //String baseUrl = 'https://sandbox.app.lettutor.com';
 
         var options = JitsiMeetConferenceOptions(
           //serverURL: baseUrl + path,
@@ -482,211 +468,6 @@ class _BannerState extends State<Banner> {
         height: 2,
         color: Colors.white,
       ),
-    );
-  }
-}
-
-class Card extends StatefulWidget {
-  const Card(this.info, {super.key});
-
-  final TutorInfo info;
-
-  @override
-  State<Card> createState() => _CardState();
-}
-
-class _CardState extends State<Card> {
-  String getName() {
-    return widget.info.name!.split(' ').map((e) => e[0]).join();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TutorScreen(widget.info.userId!,
-                  feedbacks: widget.info.feedbacks)),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        padding: const EdgeInsets.all(15),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 5,
-            ),
-          ],
-        ),
-        constraints: const BoxConstraints(
-          minHeight: 300,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  children: [
-                    _avatar(),
-                    _info(),
-                  ],
-                ),
-                _favoriteButton(),
-              ],
-            ),
-            Wrap(
-              children: [
-                for (String tag in formatTagsCard(widget.info.specialties!))
-                  TagFilter(tag, isChecked: true),
-              ],
-            ),
-            Text(
-              widget.info.bio!,
-              softWrap: true,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  width: 100,
-                  margin: const EdgeInsets.all(5),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.blue,
-                      ),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(16))),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.fact_check_rounded,
-                        size: 18,
-                        color: Colors.blue,
-                      ),
-                      Text(
-                        ' Book',
-                        style: TextStyle(fontSize: 14, color: Colors.blue),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _avatar() {
-    return Container(
-      width: 70,
-      height: 70,
-      margin: const EdgeInsets.only(right: 20),
-      clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(0, 133, 240, 1),
-        shape: BoxShape.circle,
-      ),
-      child: (widget.info.avatar != null)
-          ? ImageNetwork(widget.info.avatar)
-          : Center(
-              child: Text(
-                getName(),
-                style: const TextStyle(color: Colors.white, fontSize: 40),
-              ),
-            ),
-    );
-  }
-
-  Widget _info() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.info.name!,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        (widget.info.language != null)
-            ? Row(
-                children: [
-                  Flag.fromString(
-                    widget.info.country!,
-                    height: 22,
-                    width: 22,
-                  ),
-                  Text(widget.info.language!),
-                ],
-              )
-            : const Icon(Icons.image_not_supported),
-        (widget.info.rating != null)
-            ? Row(
-                children: [
-                  for (int i = 1; i <= widget.info.rating!.toInt(); i++)
-                    const Icon(
-                      Icons.star,
-                      color: Colors.yellow,
-                      size: 16,
-                    ),
-                ],
-              )
-            : const Text(
-                'No reviews yet',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-      ],
-    );
-  }
-
-  Widget _favoriteButton() {
-    return GestureDetector(
-      onTap: () async {
-        try {
-          await addTutorToFavorite(widget.info.userId!);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Added tutor to favorite')),
-            );
-          }
-        } catch (e) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('An error occurred: $e')),
-            );
-          }
-        }
-        setState(() {});
-      },
-      child: (widget.info.isFavorite != null && widget.info.isFavorite!)
-          ? const Icon(
-              Icons.favorite,
-              color: Colors.pink,
-              size: 32,
-            )
-          : const Icon(
-              Icons.favorite_border,
-              color: Color.fromRGBO(0, 133, 240, 1),
-              size: 32,
-            ),
     );
   }
 }

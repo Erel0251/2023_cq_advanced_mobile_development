@@ -1,9 +1,14 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:let_tutor_app/controllers/schedule_controller.dart';
+import 'package:let_tutor_app/controllers/tutor_controller.dart';
+import 'package:let_tutor_app/models/tutor/account_info.dart';
+import 'package:let_tutor_app/utils/format_tags_card.dart';
 import 'package:let_tutor_app/views/lessons/call_screen.dart';
+import 'package:let_tutor_app/views/tutor/tutor_screen.dart';
 import 'package:let_tutor_app/widgets/avatar.dart';
 import 'package:let_tutor_app/views/courses/course_info_screen.dart';
+import 'package:let_tutor_app/widgets/button.dart';
 import 'package:let_tutor_app/widgets/network_image.dart';
 
 class CourseCard extends StatelessWidget {
@@ -521,6 +526,221 @@ class LessonCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class TutorCard extends StatefulWidget {
+  const TutorCard(this.info, {super.key});
+
+  final TutorInfo info;
+
+  @override
+  State<TutorCard> createState() => _CardState();
+}
+
+class _CardState extends State<TutorCard> {
+  String getName() {
+    return widget.info.name!.split(' ').map((e) => e[0]).join();
+  }
+
+  bool isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.info.isFavoriteTutor ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TutorScreen(widget.info.userId!,
+                  feedbacks: widget.info.feedbacks)),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(15),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+            ),
+          ],
+        ),
+        constraints: const BoxConstraints(
+          minHeight: 300,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  children: [
+                    _avatar(),
+                    _info(),
+                  ],
+                ),
+                _favoriteButton(),
+              ],
+            ),
+            Wrap(
+              children: [
+                for (String tag in formatTagsCard(widget.info.specialties!))
+                  TagFilter(tag, isChecked: true),
+              ],
+            ),
+            Text(
+              widget.info.bio!,
+              softWrap: true,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  width: 100,
+                  margin: const EdgeInsets.all(5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.blue,
+                      ),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(16))),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.fact_check_rounded,
+                        size: 18,
+                        color: Colors.blue,
+                      ),
+                      Text(
+                        ' Book',
+                        style: TextStyle(fontSize: 14, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _avatar() {
+    return Container(
+      width: 70,
+      height: 70,
+      margin: const EdgeInsets.only(right: 20),
+      clipBehavior: Clip.hardEdge,
+      decoration: const BoxDecoration(
+        color: Color.fromRGBO(0, 133, 240, 1),
+        shape: BoxShape.circle,
+      ),
+      child: (widget.info.avatar != null)
+          ? ImageNetwork(widget.info.avatar)
+          : Center(
+              child: Text(
+                getName(),
+                style: const TextStyle(color: Colors.white, fontSize: 40),
+              ),
+            ),
+    );
+  }
+
+  Widget _info() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.info.name!,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Row(
+          children: [
+            (widget.info.country != null)
+                ? Flag.flagsCode.contains(widget.info.country!.toLowerCase())
+                    ? Flag.fromString(
+                        widget.info.country!,
+                        height: 16,
+                        width: 16,
+                      )
+                    : const Icon(Icons.image_not_supported)
+                : const Icon(Icons.image_not_supported),
+            Text(widget.info.language ?? ''),
+          ],
+        ),
+        (widget.info.rating != null)
+            ? Row(
+                children: [
+                  for (int i = 1; i <= widget.info.rating!.toInt(); i++)
+                    const Icon(
+                      Icons.star,
+                      color: Colors.yellow,
+                      size: 16,
+                    ),
+                ],
+              )
+            : const Text(
+                'No reviews yet',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+      ],
+    );
+  }
+
+  Widget _favoriteButton() {
+    return GestureDetector(
+      onTap: () async {
+        try {
+          await addTutorToFavorite(widget.info.userId!);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Added tutor to favorite')),
+            );
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('An error occurred: $e')),
+            );
+          }
+        }
+        setState(() => isFavorite = !isFavorite);
+      },
+      child: (isFavorite)
+          ? const Icon(
+              Icons.favorite,
+              color: Colors.pink,
+              size: 32,
+            )
+          : const Icon(
+              Icons.favorite_border,
+              color: Color.fromRGBO(0, 133, 240, 1),
+              size: 32,
+            ),
     );
   }
 }

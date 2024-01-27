@@ -475,7 +475,7 @@ class Detail extends StatelessWidget {
                     height: 22,
                     width: 22,
                   ),
-                  Text(tutor.user!.language!),
+                  Text(tutor.user!.language ?? ''),
                 ],
               )
             ],

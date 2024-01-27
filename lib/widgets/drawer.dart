@@ -3,6 +3,7 @@ import 'package:let_tutor_app/views/lessons/schedule_screen.dart';
 import 'package:let_tutor_app/views/courses/courses_screen.dart';
 import 'package:let_tutor_app/views/lessons/history_screen.dart';
 import 'package:let_tutor_app/views/home_screen.dart';
+import 'package:let_tutor_app/views/user/setting_screen.dart';
 
 // TODO: add navigation to other screens
 class DrawerOnly extends StatelessWidget {
@@ -37,6 +38,13 @@ class DrawerOnly extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
+  void _pushUserSetting(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingScreen()),
     );
   }
 
@@ -118,7 +126,7 @@ class DrawerOnly extends StatelessWidget {
         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
       onTap: () {
-        Navigator.pop(context);
+        _pushUserSetting(context);
       },
     );
   }
@@ -142,6 +150,7 @@ class DrawerOnly extends StatelessWidget {
           _logout(context);
           break;
         default:
+          _popDrawer(context);
           break;
       }
     }

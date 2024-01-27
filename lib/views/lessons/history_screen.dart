@@ -47,7 +47,7 @@ class _BodyState extends State<Body> {
                   return Column(
                     children: [
                       ..._lessonCards(data: snapshot.data!.rows),
-                      Pagination(snapshot.data!.count, itemPerPage: 20),
+                      Pagination(snapshot.data!.count, itemPerPage: 10),
                     ],
                   );
                 } else if (snapshot.hasError) {

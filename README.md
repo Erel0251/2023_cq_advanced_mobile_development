@@ -30,7 +30,8 @@ Flutter Chat AI is a minor Project to create a mobile app to represent ChatGPT, 
 
 ## Links
 
-- Video Demo: [Youtube](https://youtu.be/Y4cs9W6_PhM)
+* Widget tree [DrawIO](https://drive.google.com/file/d/1oBhzARVAJL_djFraJP4JtYDyiroQznOm/view?usp=sharing)
+* Video Demo: [Youtube](https://youtu.be/Y4cs9W6_PhM)
 
 ## Visuals
 
